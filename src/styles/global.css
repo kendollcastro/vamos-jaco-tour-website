@@ -1,0 +1,212 @@
+@import "tailwindcss";
+
+@theme {
+    /* ───────────  Typography  ─────────── */
+    --font-sans: 'Poppins', sans-serif;
+    --font-script: 'Inter', sans-serif;
+
+    /* ───────────  Colors  ─────────── */
+    --color-primary: #D92818;
+    --color-primary-dark: #B02113;
+    --color-brand-teal: #03A696;
+    --color-brand-orange: #F27F1B;
+    --color-brand-yellow: #F2AB27;
+    --color-dark: #0D0B08;
+    --color-dark-soft: #1A1816;
+    --color-light: #F2F2F2;
+
+    /* ───────────  Border Radius  ─────────── */
+    --radius-card: 25px;
+
+    /* ───────────  Box Shadows  ─────────── */
+    --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.05);
+    --shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.1);
+    --shadow-neon: 0 0 10px rgba(3, 166, 150, 0.5), 0 0 20px rgba(3, 166, 150, 0.3);
+
+    /* ───────────  Animations  ─────────── */
+    --animate-fade-in-up: fadeInUp 0.8s ease-out forwards;
+    --animate-zoom-in: zoomIn 0.5s ease-out forwards;
+    --animate-float: float 6s ease-in-out infinite;
+}
+
+/* ───────────  Keyframes  ─────────── */
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes zoomIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* ───────────  Animated Gradient Text  ─────────── */
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.animate-gradient-text {
+    background-size: 200% 200%;
+    animation: gradientShift 4s ease-in-out infinite;
+}
+
+/* ───────────  Pulse Glow for CTAs  ─────────── */
+@keyframes pulseGlow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 10px rgba(220, 53, 34, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 0 25px rgba(220, 53, 34, 0.6), 0 0 50px rgba(220, 53, 34, 0.2);
+    }
+}
+
+.animate-pulse-glow {
+    animation: pulseGlow 3s ease-in-out infinite;
+}
+
+/* ───────────  Sparkle / Twinkle Particle  ─────────── */
+@keyframes sparkle {
+
+    0%,
+    100% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+}
+
+/* ───────────  Ambient Drift  ─────────── */
+@keyframes drift {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    25% {
+        transform: translate(15px, -20px);
+    }
+
+    50% {
+        transform: translate(-10px, -40px);
+    }
+
+    75% {
+        transform: translate(20px, -60px);
+    }
+
+    100% {
+        transform: translate(0, -80px);
+    }
+}
+
+/* ───────────  Glow Pulse for Dust  ─────────── */
+@keyframes glowPulse {
+
+    0%,
+    100% {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.7;
+        transform: scale(1.15);
+    }
+}
+
+/* ───────────  Staggered Children Animation  ─────────── */
+.stagger-children>* {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.stagger-children.is-visible>*:nth-child(1) {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0ms;
+}
+
+.stagger-children.is-visible>*:nth-child(2) {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 100ms;
+}
+
+.stagger-children.is-visible>*:nth-child(3) {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 200ms;
+}
+
+.stagger-children.is-visible>*:nth-child(4) {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 300ms;
+}
+
+.stagger-children.is-visible>*:nth-child(5) {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 400ms;
+}
+
+.stagger-children.is-visible>*:nth-child(6) {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 500ms;
+}
+
+.stagger-children.is-visible>*:nth-child(n+7) {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 600ms;
+}
+
+/* ───────────  Global Dark Mode  ─────────── */
+body {
+    background-color: var(--color-dark);
+    color: var(--color-light);
+}

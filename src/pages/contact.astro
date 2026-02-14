@@ -1,0 +1,39 @@
+---
+import Layout from "../layouts/Layout.astro";
+import ContactHero from "../components/ContactHero";
+import ContactForm from "../components/ContactForm";
+import NewsletterSection from "../components/NewsletterSection";
+---
+
+<Layout title="Contact Us | Vamos Jacó Tours">
+    <main>
+        {/* Parallax Hero */}
+        <ContactHero client:load />
+
+        {
+            /* Form Section (Overlapping Hero slightly via negative margin in component) */
+        }
+        <ContactForm client:load />
+
+        {/* Map Section */}
+        <section
+            class="min-h-[400px] w-full bg-dark-soft relative grayscale hover:grayscale-0 transition-all duration-700"
+        >
+            {
+                /* Simple iframe map for now, can be replaced with custom map component if needed */
+            }
+            <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15729.986795267432!2d-84.63678519921666!3d9.615178796856041!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8fa25036b1322d73%3A0x6767675549069680!2sPastor%20Diaz%20Ave%2C%20Puntarenas%20Province%2C%20Jaco!5e0!3m2!1sen!2scr!4v1707000000000!5m2!1sen!2scr"
+                width="100%"
+                height="450"
+                style="border:0;"
+                allowfullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                class="w-full h-full min-h-[450px]"></iframe>
+        </section>
+
+        {/* Newsletter */}
+        <NewsletterSection client:visible />
+    </main>
+</Layout>

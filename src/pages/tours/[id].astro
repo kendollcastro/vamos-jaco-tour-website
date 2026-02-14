@@ -1,0 +1,413 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { tours } from "../../data/tours";
+import TourCard from "../../components/TourCard";
+import NewsletterSection from "../../components/NewsletterSection";
+
+export function getStaticPaths() {
+    return tours.map((tour) => ({
+        params: { id: tour.id },
+        props: { tour },
+    }));
+}
+
+const { tour } = Astro.props;
+
+// Related tours: same category, excluding current
+const relatedTours = tours
+    .filter((t) => t.category === tour.category && t.id !== tour.id)
+    .slice(0, 3);
+---
+
+<Layout title={`${tour.title.en} | Vamos Jacó Tours`}>
+    <main>
+        <!-- Tour Hero -->
+        <section
+            class="relative h-[55vh] min-h-[450px] flex items-end overflow-hidden"
+        >
+            <div class="absolute inset-0 z-0">
+                <img
+                    src={tour.image_url}
+                    alt={tour.title.en}
+                    class="w-full h-full object-cover"
+                />
+                <div
+                    class="absolute inset-0 bg-gradient-to-t from-dark via-dark/50 to-dark/20"
+                >
+                </div>
+                <div
+                    class="absolute inset-0 bg-gradient-to-r from-dark/30 via-transparent to-dark/30"
+                >
+                </div>
+            </div>
+
+            <!-- Glowing Orbs -->
+            <div
+                class="absolute inset-0 z-[1] pointer-events-none overflow-hidden"
+            >
+                <div
+                    class="absolute bottom-0 left-1/4 w-80 h-80 bg-primary/8 rounded-full blur-[120px] animate-pulse"
+                >
+                </div>
+                <div
+                    class="absolute top-1/3 right-0 w-72 h-72 bg-brand-teal/8 rounded-full blur-[100px] animate-pulse"
+                    style="animation-delay: 2s;"
+                >
+                </div>
+            </div>
+
+            <!-- Hero Content -->
+            <div class="relative z-10 w-full max-w-7xl mx-auto px-6 pb-12">
+                <div class="flex flex-wrap items-end justify-between gap-6">
+                    <div>
+                        <!-- Back Link -->
+                        <a
+                            href="/tours"
+                            class="inline-flex items-center gap-2 text-white/60 hover:text-white text-sm font-medium mb-4 transition-colors"
+                        >
+                            <svg
+                                class="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                ><path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                            Back to Tours
+                        </a>
+
+                        <!-- Badge -->
+                        {
+                            tour.badge && (
+                                <div class="mb-3">
+                                    <span
+                                        class:list={[
+                                            "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider",
+                                            tour.badge.color === "red" &&
+                                                "bg-red-500 text-white",
+                                            tour.badge.color === "yellow" &&
+                                                "bg-yellow-400 text-gray-900",
+                                            tour.badge.color === "green" &&
+                                                "bg-green-500 text-white",
+                                        ]}
+                                    >
+                                        {tour.badge.text}
+                                    </span>
+                                </div>
+                            )
+                        }
+
+                        <!-- Title -->
+                        <h1
+                            class="text-4xl md:text-6xl font-black text-white uppercase tracking-tight italic drop-shadow-2xl leading-[0.95]"
+                        >
+                            {tour.title.en}
+                        </h1>
+
+                        <!-- Meta -->
+                        <div
+                            class="flex items-center gap-4 mt-4 text-white/70 text-sm"
+                        >
+                            <span class="flex items-center gap-1.5">
+                                <svg
+                                    class="w-4 h-4 text-primary"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                    ><path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                                    ></path><path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                                    ></path>
+                                </svg>
+                                {tour.location}
+                            </span>
+                            <span class="w-1 h-1 bg-white/30 rounded-full"
+                            ></span>
+                            <span class="flex items-center gap-1.5">
+                                <svg
+                                    class="w-4 h-4 text-primary"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                    ><path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                    ></path>
+                                </svg>
+                                {tour.duration}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Price Badge -->
+                    <div
+                        class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-5 text-center min-w-[140px]"
+                    >
+                        <p class="text-xs text-white/60 font-medium mb-1">
+                            Starting From
+                        </p>
+                        <p class="text-3xl font-black text-white">
+                            ${tour.price}
+                        </p>
+                        <p class="text-xs text-white/50 mt-1">per person</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <section class="relative py-16 md:py-20">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                    <!-- Left: Tour Details -->
+                    <div class="lg:col-span-2 space-y-10">
+                        <!-- Description -->
+                        <div>
+                            <h2
+                                class="text-2xl font-bold text-white mb-4 flex items-center gap-3"
+                            >
+                                <span
+                                    class="w-8 h-1 bg-gradient-to-r from-primary to-brand-orange rounded-full"
+                                ></span>
+                                About This Tour
+                            </h2>
+                            <p class="text-gray-300 text-lg leading-relaxed">
+                                {tour.description.en}
+                            </p>
+                        </div>
+
+                        <!-- Highlights -->
+                        {
+                            tour.highlights && (
+                                <div>
+                                    <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                                        <span class="w-8 h-1 bg-gradient-to-r from-primary to-brand-orange rounded-full" />
+                                        Tour Highlights
+                                    </h2>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        {tour.highlights.en.map(
+                                            (highlight: string) => (
+                                                <div class="flex items-start gap-3 bg-dark-soft/50 rounded-xl p-4 border border-white/5">
+                                                    <div class="mt-0.5 w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                                                        <svg
+                                                            class="w-3 h-3 text-primary"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            viewBox="0 0 24 24"
+                                                        >
+                                                            <path
+                                                                stroke-linecap="round"
+                                                                stroke-linejoin="round"
+                                                                stroke-width="3"
+                                                                d="M5 13l4 4L19 7"
+                                                            />
+                                                        </svg>
+                                                    </div>
+                                                    <span class="text-gray-300 text-sm font-medium">
+                                                        {highlight}
+                                                    </span>
+                                                </div>
+                                            )
+                                        )}
+                                    </div>
+                                </div>
+                            )
+                        }
+
+                        <!-- What's Included -->
+                        {
+                            tour.includes && (
+                                <div>
+                                    <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                                        <span class="w-8 h-1 bg-gradient-to-r from-primary to-brand-orange rounded-full" />
+                                        What's Included
+                                    </h2>
+                                    <div class="flex flex-wrap gap-3">
+                                        {tour.includes.en.map(
+                                            (item: string) => (
+                                                <span class="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-2 text-sm text-gray-300">
+                                                    <svg
+                                                        class="w-4 h-4 text-green-400"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path
+                                                            stroke-linecap="round"
+                                                            stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                                                        />
+                                                    </svg>
+                                                    {item}
+                                                </span>
+                                            )
+                                        )}
+                                    </div>
+                                </div>
+                            )
+                        }
+                    </div>
+
+                    <!-- Right: Pricing Sidebar -->
+                    <div class="lg:col-span-1">
+                        <div class="sticky top-28 space-y-6">
+                            <!-- Pricing Card -->
+                            <div
+                                class="bg-dark-soft rounded-2xl border border-white/10 overflow-hidden"
+                            >
+                                <div
+                                    class="bg-gradient-to-r from-primary/20 to-brand-orange/20 px-6 py-4 border-b border-white/10"
+                                >
+                                    <h3 class="text-lg font-bold text-white">
+                                        Select Duration
+                                    </h3>
+                                </div>
+                                <div class="p-6 space-y-3">
+                                    {
+                                        tour.pricing_options.map(
+                                            (
+                                                option: {
+                                                    duration: string;
+                                                    price: number;
+                                                },
+                                                index: number
+                                            ) => (
+                                                <div
+                                                    class:list={[
+                                                        "flex items-center justify-between p-4 rounded-xl border transition-all duration-200 cursor-pointer hover:border-primary/50 hover:bg-primary/5",
+                                                        index === 0
+                                                            ? "border-primary/50 bg-primary/5 ring-1 ring-primary/30"
+                                                            : "border-white/10",
+                                                    ]}
+                                                >
+                                                    <div class="flex items-center gap-3">
+                                                        <div
+                                                            class:list={[
+                                                                "w-4 h-4 rounded-full border-2 flex items-center justify-center",
+                                                                index === 0
+                                                                    ? "border-primary"
+                                                                    : "border-white/30",
+                                                            ]}
+                                                        >
+                                                            {index === 0 && (
+                                                                <div class="w-2 h-2 rounded-full bg-primary" />
+                                                            )}
+                                                        </div>
+                                                        <span class="text-white font-medium text-sm">
+                                                            {option.duration}
+                                                        </span>
+                                                    </div>
+                                                    <span class="text-white font-bold text-lg">
+                                                        ${option.price}
+                                                    </span>
+                                                </div>
+                                            )
+                                        )
+                                    }
+                                </div>
+
+                                <!-- WhatsApp CTA -->
+                                <div class="px-6 pb-6">
+                                    <a
+                                        href={`https://wa.me/50685858462?text=Hi! I'm interested in booking the ${tour.title.en} tour.`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="w-full flex items-center justify-center gap-3 bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-xl transition-all duration-300 hover:scale-[1.02] shadow-[0_0_25px_rgba(34,197,94,0.3)] hover:shadow-[0_0_40px_rgba(34,197,94,0.5)]"
+                                    >
+                                        <svg
+                                            class="w-5 h-5"
+                                            fill="currentColor"
+                                            viewBox="0 0 24 24"
+                                            ><path
+                                                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"
+                                            ></path><path
+                                                d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.5.5 0 00.611.611l4.458-1.495A11.952 11.952 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-2.319 0-4.478-.677-6.309-1.834l-.452-.274-2.645.887.887-2.645-.274-.452A9.955 9.955 0 012 12C2 6.486 6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"
+                                            ></path>
+                                        </svg>
+                                        Book via WhatsApp
+                                    </a>
+                                    <p
+                                        class="text-center text-xs text-gray-500 mt-3"
+                                    >
+                                        Instant reply • Free cancellation
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Quick Contact -->
+                            <div
+                                class="bg-dark-soft rounded-2xl border border-white/10 p-6 text-center"
+                            >
+                                <p class="text-sm text-gray-400 mb-3">
+                                    Need help choosing?
+                                </p>
+                                <a
+                                    href="/contact"
+                                    class="text-primary hover:text-primary/80 font-bold text-sm transition-colors"
+                                >
+                                    Contact Us →
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Related Tours -->
+        {
+            relatedTours.length > 0 && (
+                <section class="py-16 md:py-20 relative overflow-hidden border-t border-white/5">
+                    <div class="absolute top-0 right-1/4 w-80 h-80 bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+                    <div class="max-w-7xl mx-auto px-6">
+                        <div class="text-center mb-12">
+                            <span class="text-primary font-bold text-sm tracking-[0.2em] uppercase">
+                                More Adventures
+                            </span>
+                            <h2 class="text-3xl md:text-4xl font-black text-white uppercase tracking-tight italic mt-2">
+                                Similar{" "}
+                                <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-brand-orange">
+                                    Tours
+                                </span>
+                            </h2>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {relatedTours.map((t) => (
+                                <a
+                                    href={`/tours/${t.id}`}
+                                    class="block hover:scale-[1.02] transition-transform duration-300"
+                                >
+                                    <TourCard
+                                        title={t.title}
+                                        price={t.price}
+                                        originalPrice={t.originalPrice}
+                                        image_url={t.image_url}
+                                        location={t.location}
+                                        duration={t.duration}
+                                        badge={t.badge}
+                                    />
+                                </a>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            )
+        }
+
+        <!-- Newsletter -->
+        <NewsletterSection client:visible />
+    </main>
+</Layout>

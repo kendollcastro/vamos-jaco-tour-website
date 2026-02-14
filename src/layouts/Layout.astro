@@ -1,0 +1,97 @@
+---
+import "../styles/global.css";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import ParallaxBg from "../components/ParallaxBg";
+
+interface Props {
+	title?: string;
+	description?: string;
+	image?: string;
+}
+
+const {
+	title = "Vamos Jacó Tours | Costa Rica Adventures",
+	description = "Explore the best adventure tours in Jacó, Costa Rica. ATV rides, jet ski, surfing, flyboard, and more. Book your unforgettable experience today!",
+	image = "/images/contact-hero.png",
+} = Astro.props;
+
+const canonicalURL = new URL(
+	Astro.url.pathname,
+	Astro.site || "https://vamosjaco.com"
+);
+---
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+
+		<!-- SEO -->
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		<link rel="canonical" href={canonicalURL.href} />
+
+		<!-- Open Graph / Social -->
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={image} />
+		<meta property="og:url" content={canonicalURL.href} />
+		<meta property="og:site_name" content="Vamos Jacó Tours" />
+
+		<!-- Twitter -->
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={image} />
+
+		<!-- Security -->
+		<meta http-equiv="X-Content-Type-Options" content="nosniff" />
+		<meta name="referrer" content="strict-origin-when-cross-origin" />
+
+		<!-- Google Fonts: Preloaded for performance -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link
+			rel="preconnect"
+			href="https://fonts.gstatic.com"
+			crossorigin="anonymous"
+		/>
+		<link
+			rel="preload"
+			as="style"
+			href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+		/>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+			rel="stylesheet"
+			media="print"
+			onload="this.media='all'"
+		/>
+		<noscript>
+			<link
+				href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+				rel="stylesheet"
+			/>
+		</noscript>
+	</head>
+	<body class="font-sans antialiased">
+		<div class="relative z-10">
+			<Header client:load />
+			<slot />
+			<Footer client:visible />
+		</div>
+		<style is:global>
+			:root {
+				--font-family: "Poppins", sans-serif;
+			}
+			html {
+				font-family: var(--font-family);
+				scroll-behavior: smooth;
+			}
+		</style>
+	</body>
+</html>
