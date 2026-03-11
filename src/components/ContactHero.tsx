@@ -43,7 +43,7 @@ export default function ContactHero() {
                 style={{ transform: `translateY(${offset * 0.3}px)` }}
             >
                 <img
-                    src="/images/contact-hero.png"
+                    src="/images/Sidebyside/sidebyside-vamos-jaco-tours-003.webp"
                     alt="ATV adventure through Costa Rica jungle"
                     className="w-full h-[120%] object-cover"
                     onLoad={() => setIsLoaded(true)}
