@@ -1,7 +1,13 @@
 import React from 'react';
-import { Zap, Shield, Mountain, ArrowRight } from 'lucide-react';
+import { Zap, Shield, Mountain, ArrowRight, type LucideIcon } from 'lucide-react';
 import { useStore } from '@nanostores/react';
 import { language } from '../store';
+
+const IconMap: Record<string, LucideIcon> = {
+    Zap,
+    Shield,
+    Mountain
+};
 
 export default function ServicesBanner() {
     const $language = useStore(language);
@@ -33,18 +39,29 @@ export default function ServicesBanner() {
         }
     };
 
-    const content = $language === 'en' ? t.en : t.es;
+    const fallbackContent = $language === 'en' ? t.en : t.es;
+
+    const titleBold = fallbackContent.titleBold;
+    const titleScript = fallbackContent.titleScript;
+    const ctaText = fallbackContent.ctaText;
+    const ctaButton = fallbackContent.ctaButton;
+
+    const features = [
+        { title: fallbackContent.feature1Title, description: fallbackContent.feature1Desc, icon: 'Zap' },
+        { title: fallbackContent.feature2Title, description: fallbackContent.feature2Desc, icon: 'Shield' },
+        { title: fallbackContent.feature3Title, description: fallbackContent.feature3Desc, icon: 'Mountain' }
+    ];
 
     return (
         <section className="py-12 md:py-24 px-4 relative">
             <div className="max-w-7xl mx-auto bg-dark-soft rounded-[2.5rem] md:rounded-[4rem] px-6 py-12 md:py-20 relative overflow-hidden ring-1 ring-white/10">
 
                 {/* Background: Adventure Image Underlay */}
-                <div className="absolute inset-0 opacity-[0.06] pointer-events-none">
+                <div className="absolute inset-0 opacity-20 mix-blend-overlay pointer-events-none">
                     <img
-                        src="https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=2070&auto=format&fit=crop"
-                        alt=""
-                        className="w-full h-full object-cover"
+                        src="/images/jetski-vamos-jaco-tours-005.webp"
+                        alt="Extreme adventure"
+                        className="w-full h-full object-cover filter contrast-125"
                     />
                 </div>
 
@@ -55,62 +72,50 @@ export default function ServicesBanner() {
                 {/* Header */}
                 <div className="text-center mb-16 md:mb-20 relative z-10">
                     <h2 className="text-3xl md:text-5xl font-bold text-white mb-2">
-                        {content.titleBold}
+                        {titleBold}
                     </h2>
                     <p className="text-3xl md:text-5xl font-['Inter'] text-transparent bg-clip-text bg-gradient-to-r from-brand-teal to-brand-teal/70">
-                        {content.titleScript}
+                        {titleScript}
                     </p>
                 </div>
 
                 {/* Features Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 relative z-10 mb-16 md:mb-24 px-4 md:px-12">
+                    {features.map((feature, i) => {
+                        const IconComponent = IconMap[feature.icon] || Zap;
+                        const bgColors = ['bg-primary', 'bg-brand-orange', 'bg-brand-teal'];
+                        const shadowColors = ['shadow-primary/30', 'shadow-brand-orange/30', 'shadow-brand-teal/30'];
+                        const bgColor = bgColors[i % bgColors.length];
+                        const shadowColor = shadowColors[i % shadowColors.length];
 
-                    {/* Feature 1 */}
-                    <div className="flex flex-col items-center md:items-start text-center md:text-left gap-4 group">
-                        <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mb-2 shadow-lg shadow-primary/30 group-hover:scale-110 transition-transform duration-300">
-                            <Zap className="w-8 h-8 text-white" />
-                        </div>
-                        <h3 className="text-xl font-bold text-white">{content.feature1Title}</h3>
-                        <p className="text-gray-400 leading-relaxed text-sm md:text-base">
-                            {content.feature1Desc}
-                        </p>
-                    </div>
-
-                    {/* Feature 2 */}
-                    <div className="flex flex-col items-center md:items-start text-center md:text-left gap-4 group">
-                        <div className="w-16 h-16 bg-brand-orange rounded-2xl flex items-center justify-center mb-2 shadow-lg shadow-brand-orange/30 group-hover:scale-110 transition-transform duration-300">
-                            <Shield className="w-8 h-8 text-white" />
-                        </div>
-                        <h3 className="text-xl font-bold text-white">{content.feature2Title}</h3>
-                        <p className="text-gray-400 leading-relaxed text-sm md:text-base">
-                            {content.feature2Desc}
-                        </p>
-                    </div>
-
-                    {/* Feature 3 */}
-                    <div className="flex flex-col items-center md:items-start text-center md:text-left gap-4 group">
-                        <div className="w-16 h-16 bg-brand-teal rounded-2xl flex items-center justify-center mb-2 shadow-lg shadow-brand-teal/30 group-hover:scale-110 transition-transform duration-300">
-                            <Mountain className="w-8 h-8 text-white" />
-                        </div>
-                        <h3 className="text-xl font-bold text-white">{content.feature3Title}</h3>
-                        <p className="text-gray-400 leading-relaxed text-sm md:text-base">
-                            {content.feature3Desc}
-                        </p>
-                    </div>
-
+                        return (
+                            <div key={i} className="flex flex-col items-center md:items-start text-center md:text-left gap-4 group">
+                                <div className={`w-16 h-16 ${bgColor} rounded-2xl flex items-center justify-center mb-2 shadow-lg ${shadowColor} group-hover:scale-110 transition-transform duration-300`}>
+                                    <IconComponent className="w-8 h-8 text-white" />
+                                </div>
+                                <h3 className="text-xl font-bold text-white">{feature.title}</h3>
+                                <p className="text-gray-400 leading-relaxed text-sm md:text-base">
+                                    {feature.description}
+                                </p>
+                            </div>
+                        );
+                    })}
                 </div>
 
                 {/* CTA Bar */}
-                <div className="bg-dark/80 backdrop-blur-sm rounded-full p-2 md:p-3 shadow-lg ring-1 ring-white/10 max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 relative z-10">
-                    <div className="px-6 py-2 text-center md:text-left">
+                <div className="bg-dark/80 backdrop-blur-sm rounded-[2rem] md:rounded-full p-4 md:p-3 shadow-lg ring-1 ring-white/10 max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 md:gap-4 relative z-10 w-full">
+                    <div className="px-2 md:px-6 py-2 text-center md:text-left w-full">
                         <p className="text-gray-300 font-medium text-sm md:text-base">
-                            {content.ctaText}
+                            {ctaText}
                         </p>
                     </div>
-                    <button className="bg-gradient-to-r from-primary to-brand-orange text-white px-8 py-4 rounded-full font-bold text-sm md:text-base flex items-center gap-2 hover:shadow-[0_0_25px_rgba(220,53,34,0.4)] transition-all duration-300 hover:scale-105 w-full md:w-auto justify-center">
-                        {content.ctaButton}
-                        <ArrowRight className="w-5 h-5" />
-                    </button>
+                    <a href="/tours" className="relative inline-flex items-center justify-center px-4 md:px-8 py-4 text-sm md:text-lg font-black text-white uppercase tracking-wider md:tracking-widest bg-gradient-to-r from-primary to-brand-orange hover:shadow-[0_0_25px_rgba(220,53,34,0.4)] transition-all duration-300 hover:scale-105 rounded-full overflow-hidden group w-full md:w-auto shrink-0">
+                        <span className="absolute inset-0 w-full h-full -mt-1 rounded-full opacity-30 shadow-inset"></span>
+                        <span className="relative z-10 flex items-center gap-2 md:gap-3 text-center">
+                            {ctaButton}
+                            <ArrowRight className="w-4 h-4 md:w-5 md:h-5 transform group-hover:translate-x-2 transition-transform duration-300" />
+                        </span>
+                    </a>
                 </div>
 
             </div>

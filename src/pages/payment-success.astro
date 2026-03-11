@@ -1,0 +1,109 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout
+    title="Payment Successful | Vamos Jacó Tours"
+    robots="noindex, nofollow"
+>
+    <div
+        class="min-h-screen bg-dark flex items-center justify-center relative overflow-hidden"
+    >
+        <!-- Background Elements -->
+        <div
+            class="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-[120px] pointer-events-none"
+        >
+        </div>
+        <div
+            class="absolute bottom-0 left-0 w-96 h-96 bg-brand-orange/10 rounded-full blur-[120px] pointer-events-none"
+        >
+        </div>
+
+        <div class="max-w-md w-full mx-auto px-6 relative z-10 text-center">
+            <div
+                class="bg-dark-soft border border-white/10 rounded-3xl p-8 md:p-12 shadow-2xl"
+            >
+                <!-- Success Icon -->
+                <div
+                    class="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6 ring-2 ring-green-500/50"
+                >
+                    <svg
+                        class="w-10 h-10 text-green-500"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="3"
+                            d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+
+                <h1
+                    class="text-3xl font-black text-white italic uppercase tracking-tight mb-4"
+                >
+                    Booking <span
+                        class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-brand-orange"
+                        >Confirmed!</span
+                    >
+                </h1>
+
+                <p class="text-gray-400 mb-8">
+                    Thank you for booking with Vamos Jacó Tours. We have sent a
+                    confirmation email with all the details.
+                </p>
+
+                <div class="space-y-4">
+                    <a
+                        href="/"
+                        class="block w-full bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold py-3 rounded-xl transition-colors"
+                    >
+                        Return Home
+                    </a>
+                    <a
+                        href="/tours"
+                        class="block w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-primary/20"
+                    >
+                        Book Another Adventure
+                    </a>
+                </div>
+            </div>
+
+            <p class="mt-8 text-xs text-gray-500">
+                Order Reference: <span
+                    id="order-ref"
+                    class="font-mono text-gray-400">Loading...</span
+                >
+            </p>
+        </div>
+    </div>
+</Layout>
+
+<script>
+    // Simple script to show a mock order ref
+    const urlParams = new URLSearchParams(window.location.search);
+    const tourId = urlParams.get("tourId");
+    const orderRefEl = document.getElementById("order-ref");
+    if (orderRefEl) {
+        orderRefEl.textContent = `ORD-${Math.floor(
+            Math.random() * 10000
+        )}-${tourId}`;
+    }
+
+    // Clear the cart on success
+    import { bookingStore } from "../store/booking";
+    // Reset store
+    bookingStore.set({
+        tourId: null,
+        tourTitle: null,
+        date: null,
+        time: null,
+        adults: 1,
+        children: 0,
+        pricePerAdult: 0,
+        pricePerChild: 0,
+        totalPrice: 0,
+    });
+</script>

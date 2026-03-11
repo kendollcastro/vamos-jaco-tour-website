@@ -7,41 +7,6 @@ import { MapPin, Calendar, ChevronRight, ChevronLeft, ArrowUpRight } from 'lucid
 import { useStore } from '@nanostores/react';
 import { language } from '../store';
 
-const inspirations = [
-    {
-        id: 1,
-        location: "Jacó, Costa Rica",
-        title: "Tropical Escapes & Beach Getaways.",
-        date: "12 Sep, 2025",
-        description: "Escape to the World's Most Breathtaking Islands and immerse yourself in paradise.",
-        image: "https://images.unsplash.com/photo-1540206395-688085723adb?q=80&w=2574&auto=format&fit=crop"
-    },
-    {
-        id: 2,
-        location: "Manuel Antonio, Costa Rica",
-        title: "Crystal-Clear Waters & White Sands.",
-        date: "12 Sep, 2025",
-        description: "Escape to the World's Most Breathtaking Islands and immerse yourself in paradise.",
-        image: "https://images.unsplash.com/photo-1596422846543-75c6fc197f07?q=80&w=2574&auto=format&fit=crop"
-    },
-    {
-        id: 3,
-        location: "Tortuga Island, Costa Rica",
-        title: "Hidden Gems of the Pacific Coast.",
-        date: "15 Oct, 2025",
-        description: "Discover secluded beaches and vibrant marine life in this unforgettable journey.",
-        image: "https://images.unsplash.com/photo-1589553416260-f586c8f1514f?q=80&w=2574&auto=format&fit=crop"
-    },
-    {
-        id: 4,
-        location: "Monteverde, Costa Rica",
-        title: "Cloud Forests & Canopy Tours.",
-        date: "20 Nov, 2025",
-        description: "Experience the magic of the cloud forest from high above in the canopy.",
-        image: "https://images.unsplash.com/photo-1621262609935-4303498f3957?q=80&w=2574&auto=format&fit=crop"
-    }
-];
-
 export default function TravelInspirations() {
     const $language = useStore(language);
 
@@ -58,7 +23,46 @@ export default function TravelInspirations() {
         }
     };
 
-    const content = $language === 'en' ? t.en : t.es;
+    const fallbackContent = $language === 'en' ? t.en : t.es;
+
+    const title = fallbackContent.title;
+    const subtitle = fallbackContent.subtitle;
+    const viewAllBtn = fallbackContent.viewAll;
+
+    const inspirationsList = [
+        {
+            id: 1,
+            location: "Herradura Coast, Costa Rica",
+            title: "Catch the Perfect Wave.",
+            date: "Daily Classes",
+            description: "Master the art of surfing with our professional instructors in some of the most consistent and beginner-friendly waves in the world.",
+            image: "https://images.unsplash.com/photo-1502680390469-be75c86b636f?q=80&w=2670&auto=format&fit=crop"
+        },
+        {
+            id: 2,
+            location: "Jaco Rain Forest, Costa Rica",
+            title: "Canopy Zipline Adventure.",
+            date: "Year-Round",
+            description: "Soar through the treetops of the dense Costa Rican jungle and experience the vibrant wildlife from a bird's eye perspective.",
+            image: "https://images.unsplash.com/photo-1621262609935-4303498f3957?q=80&w=2574&auto=format&fit=crop"
+        },
+        {
+            id: 3,
+            location: "Savegre River, Costa Rica",
+            title: "Whitewater Rafting Thrills.",
+            date: "Wet Season Special",
+            description: "Navigate exhilarating rapids surrounded by pristine rainforest. A perfect mix of adrenaline and breathtaking natural scenery.",
+            image: "https://images.unsplash.com/photo-1530866495561-507c9faab9ed?q=80&w=2576&auto=format&fit=crop"
+        },
+        {
+            id: 4,
+            location: "Tarcoles, Costa Rica",
+            title: "Mangrove & Crocodile Safari.",
+            date: "Daily Tours",
+            description: "Explore the complex mangrove ecosystems and get up close with massive American Crocodiles in their natural habitat.",
+            image: "https://images.unsplash.com/photo-1549479366-a320bed9e52e?q=80&w=2670&auto=format&fit=crop"
+        }
+    ];
 
     return (
         <section className="py-24 relative">
@@ -67,10 +71,10 @@ export default function TravelInspirations() {
                 {/* Header */}
                 <div className="text-center max-w-3xl mx-auto mb-16">
                     <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
-                        {content.title}
+                        {title}
                     </h2>
                     <p className="text-gray-400 leading-relaxed text-lg max-w-2xl mx-auto">
-                        {content.subtitle}
+                        {subtitle}
                     </p>
                 </div>
 
@@ -100,7 +104,7 @@ export default function TravelInspirations() {
                         }}
                         className="!px-1 !py-4"
                     >
-                        {inspirations.map((item) => (
+                        {inspirationsList.map((item) => (
                             <SwiperSlide key={item.id} className="h-auto">
                                 <div className="bg-dark-soft ring-1 ring-white/10 rounded-[2rem] overflow-hidden flex flex-col sm:flex-row h-full hover:ring-white/20 transition-all duration-300 group/card">
                                     {/* Image Side */}
@@ -148,7 +152,7 @@ export default function TravelInspirations() {
                 {/* View All Button */}
                 <div className="text-center mt-12">
                     <button className="inline-flex items-center gap-2 px-8 py-3 rounded-xl border border-white/20 font-bold text-white hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 group">
-                        {content.viewAll}
+                        {viewAllBtn}
                         <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
                     </button>
                 </div>

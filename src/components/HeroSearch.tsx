@@ -6,6 +6,10 @@ import { language } from '../store';
 export default function HeroSearch() {
     const $language = useStore(language);
 
+    const [activity, setActivity] = useState('');
+    const [date, setDate] = useState('');
+    const [people, setPeople] = useState('');
+
     const translations = {
         en: {
             activity: 'Activity',
@@ -27,8 +31,21 @@ export default function HeroSearch() {
 
     const t = translations[$language];
 
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+
+        // Build query string
+        const params = new URLSearchParams();
+        if (activity) params.append('q', activity);
+        if (date) params.append('date', date);
+        if (people) params.append('guests', people);
+
+        // Redirect to tours page with query params
+        window.location.href = `/tours?${params.toString()}`;
+    };
+
     return (
-        <div className="w-full max-w-4xl mx-auto">
+        <form onSubmit={handleSearch} className="w-full max-w-4xl mx-auto">
             <div className="bg-dark-soft/80 backdrop-blur-xl rounded-[2rem] md:rounded-[2.5rem] shadow-xl shadow-black/20 p-2 md:p-3 flex flex-col md:flex-row items-center gap-1 md:gap-2 ring-1 ring-white/10">
 
                 {/* Activity Input */}
@@ -38,6 +55,8 @@ export default function HeroSearch() {
                         <MapPin className="w-4 h-4 md:w-5 md:h-5 text-primary/70" />
                         <input
                             type="text"
+                            value={activity}
+                            onChange={(e) => setActivity(e.target.value)}
                             placeholder={t.activityPlaceholder}
                             className="w-full bg-transparent border-none outline-none text-sm md:text-base placeholder-gray-500 font-medium text-white"
                         />
@@ -54,7 +73,9 @@ export default function HeroSearch() {
                         <Calendar className="w-4 h-4 md:w-5 md:h-5 text-primary/70" />
                         <input
                             type="date"
-                            className="w-full bg-transparent border-none outline-none text-sm md:text-base font-medium text-white"
+                            value={date}
+                            onChange={(e) => setDate(e.target.value)}
+                            className="w-full bg-transparent border-none outline-none text-sm md:text-base font-medium text-white [&::-webkit-calendar-picker-indicator]:hidden"
                         />
                     </div>
                 </div>
@@ -70,6 +91,8 @@ export default function HeroSearch() {
                         <input
                             type="number"
                             min="1"
+                            value={people}
+                            onChange={(e) => setPeople(e.target.value)}
                             placeholder={t.peoplePlaceholder}
                             className="w-full bg-transparent border-none outline-none text-sm md:text-base placeholder-gray-500 font-medium text-white"
                         />
@@ -78,13 +101,13 @@ export default function HeroSearch() {
 
                 {/* Search Button */}
                 <div className="p-1 w-full md:w-auto mt-1 md:mt-0">
-                    <button className="bg-primary text-white p-4 rounded-full shadow-lg shadow-primary/30 hover:shadow-primary/40 hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2 w-full md:w-auto md:aspect-square">
+                    <button type="submit" className="bg-primary text-white p-4 rounded-full shadow-lg shadow-primary/30 hover:shadow-primary/40 hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2 w-full md:w-auto md:aspect-square">
                         <Search className="w-6 h-6" />
                         <span className="md:hidden font-bold">{t.search}</span>
                     </button>
                 </div>
 
             </div>
-        </div>
+        </form>
     );
 }

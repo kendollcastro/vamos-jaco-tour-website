@@ -1,0 +1,65 @@
+---
+// Admin Dashboard - No public layout (Header/Footer)
+import "../../styles/global.css";
+import AdminLayout from "../../components/admin/AdminLayout";
+---
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Admin | Vamos Jacó Tours</title>
+        <meta name="robots" content="noindex, nofollow" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+            rel="preconnect"
+            href="https://fonts.gstatic.com"
+            crossorigin="anonymous"
+        />
+        <link rel="preconnect" href="https://ddukdjdiqjvfjywuhnpn.supabase.co" crossorigin />
+        <link rel="preconnect" href="https://images.unsplash.com" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            :root {
+                --font-family: "Poppins", sans-serif;
+            }
+            html {
+                font-family: var(--font-family);
+                scroll-behavior: smooth;
+            }
+        </style>
+    </head>
+    <body
+        class="font-sans antialiased bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-dark dark:text-light"
+    >
+        <script is:inline>
+            // Avoid flash of unstyled content
+            const theme = (() => {
+                if (
+                    typeof localStorage !== "undefined" &&
+                    localStorage.getItem("theme")
+                ) {
+                    return localStorage.getItem("theme");
+                }
+                if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+                    return "dark";
+                }
+                return "light";
+            })();
+
+            if (theme === "dark") {
+                document.documentElement.classList.add("dark");
+            } else {
+                document.documentElement.classList.remove("dark");
+            }
+            window.localStorage.setItem("theme", theme);
+        </script>
+
+        <AdminLayout client:load />
+    </body>
+</html>

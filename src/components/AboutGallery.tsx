@@ -15,11 +15,11 @@ export default function AboutGallery() {
     const subtitle = $language === 'en' ? 'Follow us on Instagram' : 'Síguenos en Instagram';
 
     const images = [
-        "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=2069&auto=format&fit=crop", // Zip Line
-        "https://images.unsplash.com/photo-1502680390469-be75c86b636f?q=80&w=2070&auto=format&fit=crop", // Surf
-        "https://images.unsplash.com/photo-1599368383849-c1b2f93933c0?q=80&w=2070&auto=format&fit=crop", // ATV
-        "https://images.unsplash.com/photo-1534445698717-3932a370e08f?q=80&w=2070&auto=format&fit=crop", // Fishing
-        "https://images.unsplash.com/photo-1582650082728-1c4b14647347?q=80&w=2070&auto=format&fit=crop"  // Jet Ski
+        "/images/Bestmoments/bestmoments-vamos-jaco-tours-004.jpg", // Zip Line
+        "/images/Bestmoments/bestmoments-vamos-jaco-tours-001.jpg", // Surf
+        "/images/Tube/tube-vamos-jaco-tours-004.png", // ATV
+        "/images/Bestmoments/bestmoments-vamos-jaco-tours-003.jpg", // Fishing
+        "/images/Bestmoments/bestmoments-vamos-jaco-tours-002.jpg"  // Jet Ski
     ];
 
     if (!mounted) return <div className="min-h-[400px]"></div>;

@@ -8,18 +8,34 @@ interface Props {
 	title?: string;
 	description?: string;
 	image?: string;
+	keywords?: string;
+	robots?: string;
+	jsonLd?: Record<string, any> | Record<string, any>[];
+	preloadImage?: string;
 }
 
 const {
 	title = "Vamos Jacó Tours | Costa Rica Adventures",
 	description = "Explore the best adventure tours in Jacó, Costa Rica. ATV rides, jet ski, surfing, flyboard, and more. Book your unforgettable experience today!",
 	image = "/images/contact-hero.png",
+	keywords = "Costa Rica tours, Jacó tours, ATV tours Jacó, jet ski Costa Rica, surfing Jacó, adventure tours, flyboard, zipline, Vamos Jacó",
+	robots = "index, follow",
+	jsonLd,
+    preloadImage,
 } = Astro.props;
 
 const canonicalURL = new URL(
 	Astro.url.pathname,
 	Astro.site || "https://vamosjaco.com"
 );
+
+// Ensure image is absolute for OG
+const ogImage = image?.startsWith("http")
+	? image
+	: `${Astro.site || "https://vamosjaco.com"}${image}`;
+
+// Build JSON-LD array
+const schemas = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [];
 ---
 
 <!DOCTYPE html>
@@ -33,33 +49,56 @@ const canonicalURL = new URL(
 		<!-- SEO -->
 		<title>{title}</title>
 		<meta name="description" content={description} />
+		<meta name="keywords" content={keywords} />
+		<meta name="robots" content={robots} />
 		<link rel="canonical" href={canonicalURL.href} />
+
+        <!-- LCP Image Preload -->
+        {preloadImage && <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />}
 
 		<!-- Open Graph / Social -->
 		<meta property="og:type" content="website" />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
-		<meta property="og:image" content={image} />
+		<meta property="og:image" content={ogImage} />
 		<meta property="og:url" content={canonicalURL.href} />
 		<meta property="og:site_name" content="Vamos Jacó Tours" />
+		<meta property="og:locale" content="en_US" />
+		<meta property="og:locale:alternate" content="es_CR" />
 
 		<!-- Twitter -->
 		<meta name="twitter:card" content="summary_large_image" />
 		<meta name="twitter:title" content={title} />
 		<meta name="twitter:description" content={description} />
-		<meta name="twitter:image" content={image} />
+		<meta name="twitter:image" content={ogImage} />
+
+		<!-- Geo -->
+		<meta name="geo.region" content="CR-P" />
+		<meta name="geo.placename" content="Jacó" />
+		<meta name="geo.position" content="9.6151;-84.6368" />
+		<meta name="ICBM" content="9.6151, -84.6368" />
 
 		<!-- Security -->
 		<meta http-equiv="X-Content-Type-Options" content="nosniff" />
 		<meta name="referrer" content="strict-origin-when-cross-origin" />
 
-		<!-- Google Fonts: Preloaded for performance -->
+		<!-- JSON-LD Structured Data -->
+		{
+			schemas.map((schema) => (
+				<script
+					type="application/ld+json"
+					set:html={JSON.stringify(schema)}
+				/>
+			))
+		}
+
+		<!-- Resource Hints -->
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link
-			rel="preconnect"
-			href="https://fonts.gstatic.com"
-			crossorigin="anonymous"
-		/>
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+		<link rel="preconnect" href="https://images.unsplash.com" />
+		<link rel="preconnect" href="https://yebtzzqngiurwddrvhry.supabase.co" />
+
+		<!-- Google Fonts: Preloaded for performance -->
 		<link
 			rel="preload"
 			as="style"

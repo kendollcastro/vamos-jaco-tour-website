@@ -1,119 +1,215 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import { getAllTours } from "../data/tours";
+import { fetchWPAPI } from "../lib/wp";
+import { getTeamMembers } from "../lib/supabase-team";
+import { getWebsiteComponent } from "../lib/supabase-components";
+import {
+    getOrganizationSchema,
+    getWebsiteSchema,
+    getFAQSchema,
+} from "../lib/seo-schemas";
 import HeroSlider from "../components/HeroSlider";
+import TourCard from "../components/TourCard";
+import TourFilter from "../components/TourFilter";
 import TrustBar from "../components/TrustBar";
-import AboutSection from "../components/AboutSection";
 import PopularActivities from "../components/PopularActivities";
+import AboutSection from "../components/AboutSection";
 import ServicesBanner from "../components/ServicesBanner";
 import TourGrid from "../components/TourGrid";
 import TeamSection from "../components/TeamSection";
 import TestimonialsSection from "../components/TestimonialsSection";
 import TravelInspirations from "../components/TravelInspirations";
 import FaqSection from "../components/FaqSection";
+import AtvRulesFaq from "../components/AtvRulesFaq";
 import NewsletterSection from "../components/NewsletterSection";
 import ScrollReveal from "../components/ScrollReveal";
+
+const tours = await getAllTours();
+
+// Fetch Team Members from Supabase
+let teamMembers: any[] = [];
+try {
+    const members = await getTeamMembers();
+    if (members && members.length > 0) {
+        teamMembers = members.map((m) => ({
+            id: m.id,
+            name: m.name,
+            position: m.position_en || "Team Member",
+            position_en: m.position_en || undefined,
+            position_es: m.position_es || undefined,
+            image:
+                m.image_url ||
+                "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=2574&auto=format&fit=crop",
+            social: {
+                instagram: m.social_instagram || undefined,
+                linkedin: m.social_linkedin || undefined,
+                twitter: m.social_twitter || undefined,
+            },
+        }));
+    }
+} catch (e) {
+    console.error("Failed to load Team Members:", e);
+}
+
+// Fetch FAQs
+let wpFaqs: any[] = [];
+try {
+    const rawFaqs = await fetchWPAPI("faq");
+    if (rawFaqs && Array.isArray(rawFaqs)) {
+        wpFaqs = rawFaqs.map((f: any) => ({
+            question: f.title.rendered,
+            answer: f.excerpt.rendered.replace(/<\/?p>/g, "").trim(),
+        }));
+    }
+} catch (e) {
+    console.error("Failed to load WP FAQs:", e);
+}
+
+// Fetch Trust Bar Items
+let trustBarItems: any[] = [];
+try {
+    const tb = await getWebsiteComponent("trust_bar");
+    if (tb && tb.data) {
+        trustBarItems = tb.data;
+    }
+} catch (e) {
+    console.error("Failed to load Trust Bar:", e);
+}
+
+// SEO
+const seo = {
+    title: "Vamos Jacó Tours | Best Adventure Tours in Costa Rica",
+    description:
+        "Book the best adventure tours in Jacó, Costa Rica — ATV rides, jet ski, side by side buggies, surfing, flyboard, zipline canopy and more. Unforgettable experiences with local guides. Best price guaranteed!",
+    keywords:
+        "Jacó tours, Costa Rica adventures, ATV Jacó, side by side tour Costa Rica, buggy tour Jaco, jet ski Costa Rica, surfing lessons Jacó, flyboard, zipline canopy, adventure tours Costa Rica, things to do in Jacó, Vamos Jacó Tours",
+};
+
+// JSON-LD schemas
+const schemas = [
+    getOrganizationSchema(),
+    getWebsiteSchema(),
+    ...(wpFaqs.length > 0 ? [getFAQSchema(wpFaqs)] : []),
+].filter(Boolean);
 ---
 
-<Layout title="Vamos Jacó Tours | Costa Rica Adventures">
-	<main>
-		{/* Hero Section */}
-		<HeroSlider client:only="react" />
+<Layout
+    title={seo.title}
+    description={seo.description}
+    keywords={seo.keywords}
+    jsonLd={schemas}
+>
+    <HeroSlider client:load />
+    {/* Tours Content */}
+    <main class="py-20 relative min-h-screen">
+        {
+            /* ... existing background blobs ...
+             */
+        }
+        <div
+            class="absolute top-0 right-0 w-1/3 h-1/3 bg-brand-teal/10 blur-[100px] rounded-full pointer-events-none"
+        >
+        </div>
+        <div
+            class="absolute bottom-0 left-0 w-1/3 h-1/3 bg-primary/10 blur-[100px] rounded-full pointer-events-none"
+        >
+        </div>
+        {/* Trust Bar */}
+        <ScrollReveal client:visible animation="fade-up">
+            <TrustBar client:visible items={trustBarItems} />
+        </ScrollReveal>
 
-		{/* Trust Bar */}
-		<TrustBar client:visible />
+        {/* Popular Activities — Fade Up */}
+        <ScrollReveal client:visible animation="fade-up">
+            <PopularActivities client:visible />
+        </ScrollReveal>
 
-		{/* Popular Activities — Fade Up */}
-		<ScrollReveal client:visible animation="fade-up">
-			<PopularActivities client:visible />
-		</ScrollReveal>
+        <div class="max-w-7xl mx-auto px-6 py-12">
+            <div
+                class="flex items-end justify-between mb-16 border-b border-white/10 pb-6"
+            >
+                <div>
+                    <span
+                        class="text-brand-orange font-bold tracking-widest uppercase mb-2 block"
+                    >
+                        Best Sellers
+                    </span>
+                    <h2 class="text-4xl md:text-5xl font-bold text-white">
+                        Choose Your Next Experience
+                    </h2>
+                </div>
+                <div class="hidden md:block text-right">
+                    <p class="text-gray-400 font-medium">Top Experiences</p>
+                </div>
+            </div>
 
-		{/* Services Banner — Scale In */}
-		<ScrollReveal client:visible animation="scale-in" delay={100}>
-			<ServicesBanner client:visible />
-		</ScrollReveal>
+            {/* Filterable Grid */}
+            <TourFilter
+                client:visible
+                initialTours={tours}
+                defaultLimit={6}
+                hideLoadMore={true}
+                hideFilter={true}
+                gridCols="grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+                featuredSlugs={[
+                    "side-by-side-tour",
+                    "jet-ski-tour",
+                    "surf-class",
+                    "flyboard",
+                    "banana",
+                    "jaco-atv-adventure",
+                ]}
+            />
 
-		{/* Featured Tours Section */}
-		<section class="py-24 px-6 md:px-12 lg:px-20 relative overflow-hidden">
-			{/* Glowing Orbs */}
-			<div
-				class="absolute top-20 -left-20 w-96 h-96 bg-primary/8 rounded-full blur-[150px] pointer-events-none"
-			>
-			</div>
-			<div
-				class="absolute bottom-20 -right-20 w-80 h-80 bg-brand-teal/8 rounded-full blur-[120px] pointer-events-none"
-			>
-			</div>
+            <ScrollReveal client:visible animation="fade-up" delay={300}>
+                <div class="mt-14 text-center">
+                    <a
+                        href="/tours"
+                        class="inline-flex items-center gap-3 text-white bg-gradient-to-r from-primary to-brand-orange hover:shadow-[0_0_30px_rgba(220,53,34,0.4)] px-10 py-4 rounded-full font-bold text-lg transition-all duration-300 hover:scale-105 animate-pulse-glow"
+                    >
+                        View All Adventures <span class="text-xl">→</span>
+                    </a>
+                </div>
+            </ScrollReveal>
+        </div>
 
-			<div class="max-w-7xl mx-auto relative z-10">
-				<ScrollReveal client:visible animation="blur-in">
-					<div class="text-center mb-16">
-						<span
-							class="inline-flex items-center gap-2 text-brand-orange font-bold uppercase tracking-[0.2em] text-sm mb-4"
-						>
-							🔥 Adrenaline Rush
-						</span>
-						<h2
-							class="text-4xl md:text-6xl lg:text-7xl font-black text-white mb-6 uppercase tracking-tight"
-						>
-							Popular{" "}
-							<span
-								class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-brand-orange to-brand-yellow italic animate-gradient-text"
-							>
-								Adventures
-							</span>
-						</h2>
-						<p class="text-gray-400 max-w-2xl mx-auto text-lg">
-							Discover the most sought-after adrenaline
-							experiences in Jacó and surrounding areas.
-						</p>
-					</div>
-				</ScrollReveal>
+        {/* Services Banner — Scale In */}
+        <ScrollReveal client:visible animation="scale-in" delay={100}>
+            <ServicesBanner client:visible />
+        </ScrollReveal>
+        {/* About / Welcome Section */}
+        <ScrollReveal client:visible animation="fade-left">
+            <AboutSection client:visible />
+        </ScrollReveal>
+        {
+            /* Travel Inspirations Section 
+        <ScrollReveal client:visible animation="fade-right">
+            <TravelInspirations client:visible />
+        </ScrollReveal>
+        */
+        }
 
-				<ScrollReveal client:visible animation="fade-up" delay={200}>
-					<TourGrid client:visible />
-				</ScrollReveal>
+        {/* ATV Rules FAQ Section */}
+        <ScrollReveal client:visible animation="fade-up">
+            <AtvRulesFaq client:visible />
+        </ScrollReveal>
 
-				<ScrollReveal client:visible animation="fade-up" delay={300}>
-					<div class="mt-14 text-center">
-						<a
-							href="/tours"
-							class="inline-flex items-center gap-3 text-white bg-gradient-to-r from-primary to-brand-orange hover:shadow-[0_0_30px_rgba(220,53,34,0.4)] px-10 py-4 rounded-full font-bold text-lg transition-all duration-300 hover:scale-105 animate-pulse-glow"
-						>
-							View All Adventures <span class="text-xl">→</span>
-						</a>
-					</div>
-				</ScrollReveal>
-			</div>
-		</section>
+        {/* Team Section */}
+        <ScrollReveal client:visible animation="fade-up">
+            <TeamSection client:visible members={teamMembers} />
+        </ScrollReveal>
+        <ScrollReveal client:visible animation="scale-in">
+            <TestimonialsSection client:visible />
+        </ScrollReveal>
 
-		{/* About / Welcome Section */}
-		<ScrollReveal client:visible animation="fade-left">
-			<AboutSection client:visible />
-		</ScrollReveal>
-
-		{/* Travel Inspirations Section */}
-		<ScrollReveal client:visible animation="fade-right">
-			<TravelInspirations client:visible />
-		</ScrollReveal>
-
-		{/* Team Section */}
-		<ScrollReveal client:visible animation="fade-up">
-			<TeamSection client:visible />
-		</ScrollReveal>
-
-		{/* Testimonials Section */}
-		<ScrollReveal client:visible animation="scale-in">
-			<TestimonialsSection client:visible />
-		</ScrollReveal>
-
-		{/* FAQ Section */}
-		<ScrollReveal client:visible animation="blur-in">
-			<FaqSection client:visible />
-		</ScrollReveal>
-
-		{/* Newsletter Section */}
-		<ScrollReveal client:visible animation="fade-up">
-			<NewsletterSection client:visible />
-		</ScrollReveal>
-	</main>
+        {/* FAQ Section */}
+        <ScrollReveal client:visible animation="blur-in">
+            <FaqSection client:visible />
+        </ScrollReveal>
+        {/* Newsletter Section */}
+        <ScrollReveal client:visible animation="fade-up">
+            <NewsletterSection client:visible />
+        </ScrollReveal>
+    </main>
 </Layout>

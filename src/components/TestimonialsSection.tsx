@@ -54,6 +54,8 @@ const testimonials = [
 export default function TestimonialsSection() {
     const $language = useStore(language);
 
+    const displayReviews = testimonials;
+
     const t = {
         en: {
             title: "Hear It from Travelers",
@@ -107,7 +109,7 @@ export default function TestimonialsSection() {
                         }}
                         className="!pb-4"
                     >
-                        {testimonials.map((item) => (
+                        {displayReviews.map((item) => (
                             <SwiperSlide key={item.id} className="h-auto">
                                 <div className="bg-dark-soft p-8 rounded-[2rem] h-full flex flex-col shadow-sm ring-1 ring-white/10 hover:ring-white/20 transition-all">
                                     {/* Rating */}

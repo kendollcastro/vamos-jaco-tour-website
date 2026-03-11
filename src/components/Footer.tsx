@@ -8,32 +8,32 @@ export default function Footer() {
 
     const t = {
         en: {
-            inquiry: { title: "To More Inquiry", subtitle: "Don't hesitate Call to Vamos Jacó." },
-            whatsapp: { title: "WhatsApp", subtitle: "+506 1234 5678" },
-            mail: { title: "Mail Us", subtitle: "info@vamosjaco.com" },
-            call: { title: "Call Us", subtitle: "+506 8765 4321" },
+            inquiry: { title: "More Inquiry?", subtitle: "Don't hesitate to contact Vamos Jacó Tours." },
+            whatsapp: { title: "WhatsApp", subtitle: "+506 8585 8462" },
+            mail: { title: "Mail Us", subtitle: "info@vamosjacotours.com" },
+            call: { title: "Call Us", subtitle: "+506 8585 8462" },
             brand: { address: "Jacó, Puntarenas, Costa Rica" },
             cols: {
-                destinations: "Top Destination",
-                search: "Popular Search",
-                resources: "Resources"
+                destinations: "Top Destinations",
+                search: "Popular Activities",
+                resources: "Quick Links"
             },
-            rights: "All Right Reserved.",
-            payment: "Accepted Payment Methods :"
+            rights: "All Rights Reserved.",
+            payment: "Accepted Payment Methods:"
         },
         es: {
-            inquiry: { title: "Más Información", subtitle: "No dudes en llamar a Vamos Jacó." },
-            whatsapp: { title: "WhatsApp", subtitle: "+506 1234 5678" },
-            mail: { title: "Escríbenos", subtitle: "info@vamosjaco.com" },
-            call: { title: "Llámanos", subtitle: "+506 8765 4321" },
+            inquiry: { title: "¿Más Información?", subtitle: "No dudes en contactar a Vamos Jacó Tours." },
+            whatsapp: { title: "WhatsApp", subtitle: "+506 8585 8462" },
+            mail: { title: "Escríbenos", subtitle: "info@vamosjacotours.com" },
+            call: { title: "Llámanos", subtitle: "+506 8585 8462" },
             brand: { address: "Jacó, Puntarenas, Costa Rica" },
             cols: {
                 destinations: "Destinos Top",
-                search: "Búsquedas Populares",
-                resources: "Recursos"
+                search: "Actividades Populares",
+                resources: "Enlaces Rápidos"
             },
             rights: "Todos los derechos reservados.",
-            payment: "Métodos de Pago Aceptados :"
+            payment: "Métodos de Pago Aceptados:"
         }
     };
 
@@ -103,8 +103,18 @@ export default function Footer() {
 
                     {/* Column 1: Brand Info */}
                     <div>
-                        <a href="/" className="text-3xl font-bold font-['Inter'] text-white items-center gap-2 flex mb-6">
-                            <span className="text-primary">V</span>amos Jacó
+                        <a href="/" className="mb-6 block">
+                            <img
+                                src="/logo.png"
+                                alt="Vamos Jacó Tours Logo"
+                                className="h-16 md:h-20 w-auto object-contain"
+                                onError={(e) => {
+                                    e.currentTarget.style.display = 'none';
+                                    if (e.currentTarget.parentElement) {
+                                        e.currentTarget.parentElement.innerHTML = '<span class="text-3xl font-bold font-[\'Inter\'] text-white"><span class="text-primary">V</span>amos Jacó</span>';
+                                    }
+                                }}
+                            />
                         </a>
                         <p className="text-gray-400 text-sm mb-2 font-bold">Vamos Jacó Tours Agency</p>
                         <p className="text-gray-500 text-sm mb-6 leading-relaxed">
@@ -112,10 +122,9 @@ export default function Footer() {
                         </p>
 
                         <div className="flex gap-3 mb-8">
-                            <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition-colors text-white"><Facebook className="w-4 h-4" /></a>
-                            <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-black transition-colors text-white"><ArrowRight className="w-4 h-4 rotate-[-45deg]" /></a> {/* Creating a custom X icon or similar */}
-                            <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-red-600 transition-colors text-white"><Instagram className="w-4 h-4" /></a>
-                            <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-600 transition-colors text-white"><Linkedin className="w-4 h-4" /></a>
+                            <a href="https://www.facebook.com" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-600 transition-colors text-white"><Facebook className="w-4 h-4" /></a>
+                            <a href="https://www.instagram.com/vamosjacotours" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-pink-600 transition-colors text-white"><Instagram className="w-4 h-4" /></a>
+                            <a href="https://wa.me/50685858462" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-green-600 transition-colors text-white"><MessageCircle className="w-4 h-4" /></a>
                         </div>
                     </div>
 
@@ -123,11 +132,10 @@ export default function Footer() {
                     <div>
                         <h4 className="text-lg font-bold mb-8">{content.cols.destinations}</h4>
                         <ul className="space-y-4 text-gray-400 text-sm">
-                            <li className="hover:text-primary transition-colors cursor-pointer">Jacó Beach</li>
-                            <li className="hover:text-primary transition-colors cursor-pointer">Manuel Antonio</li>
-                            <li className="hover:text-primary transition-colors cursor-pointer">Tortuga Island</li>
-                            <li className="hover:text-primary transition-colors cursor-pointer">Monteverde</li>
-                            <li className="hover:text-primary transition-colors cursor-pointer">Arenal Volcano</li>
+                            <li><a href="/tours" className="hover:text-primary transition-colors">Jacó Beach</a></li>
+                            <li><a href="/tours" className="hover:text-primary transition-colors">Herradura</a></li>
+                            <li><a href="/tours" className="hover:text-primary transition-colors">Los Sueños</a></li>
+                            <li><a href="/tours" className="hover:text-primary transition-colors">Hermosa Beach</a></li>
                         </ul>
                     </div>
 
@@ -135,11 +143,11 @@ export default function Footer() {
                     <div>
                         <h4 className="text-lg font-bold mb-8">{content.cols.search}</h4>
                         <ul className="space-y-4 text-gray-400 text-sm">
-                            <li className="hover:text-primary transition-colors cursor-pointer">Adventure Tours</li>
-                            <li className="hover:text-primary transition-colors cursor-pointer">Water Rafting</li>
-                            <li className="hover:text-primary transition-colors cursor-pointer">Zip Lining</li>
-                            <li className="hover:text-primary transition-colors cursor-pointer">Surfing Lessons</li>
-                            <li className="hover:text-primary transition-colors cursor-pointer">ATV Jungle</li>
+                            <li><a href="/tours" className="hover:text-primary transition-colors">ATV Tours</a></li>
+                            <li><a href="/tours" className="hover:text-primary transition-colors">Side by Side (Buggy)</a></li>
+                            <li><a href="/tours" className="hover:text-primary transition-colors">Jet Ski</a></li>
+                            <li><a href="/tours" className="hover:text-primary transition-colors">Zipline Canopy</a></li>
+                            <li><a href="/tours" className="hover:text-primary transition-colors">Surfing Lessons</a></li>
                         </ul>
                     </div>
 
@@ -147,11 +155,10 @@ export default function Footer() {
                     <div>
                         <h4 className="text-lg font-bold mb-8">{content.cols.resources}</h4>
                         <ul className="space-y-4 text-gray-400 text-sm">
-                            <li className="hover:text-primary transition-colors cursor-pointer">About Us</li>
-                            <li className="hover:text-primary transition-colors cursor-pointer">Safety Measures</li>
-                            <li className="hover:text-primary transition-colors cursor-pointer">Travel Guides</li>
-                            <li className="hover:text-primary transition-colors cursor-pointer">Terms & Conditions</li>
-                            <li className="hover:text-primary transition-colors cursor-pointer">Privacy Policy</li>
+                            <li><a href="/" className="hover:text-primary transition-colors">{$language === 'en' ? 'Home' : 'Inicio'}</a></li>
+                            <li><a href="/tours" className="hover:text-primary transition-colors">Tours & Adventures</a></li>
+                            <li><a href="/about" className="hover:text-primary transition-colors">{$language === 'en' ? 'About Us' : 'Nosotros'}</a></li>
+                            <li><a href="/contact" className="hover:text-primary transition-colors">{$language === 'en' ? 'Contact' : 'Contacto'}</a></li>
                         </ul>
                     </div>
 

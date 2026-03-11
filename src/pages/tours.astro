@@ -1,15 +1,27 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { tours } from "../data/tours";
+import { getAllTours } from "../data/tours";
+import { getBreadcrumbSchema } from "../lib/seo-schemas";
 import TourCard from "../components/TourCard";
 import TourFilter from "../components/TourFilter";
 
-// Hero Image
-const HERO_IMAGE =
-    "https://images.unsplash.com/photo-1533105079780-92b9be482077?q=80&w=2069&auto=format&fit=crop";
+const tours = await getAllTours();
+
+const HERO_IMAGE = "/images/Jetski/jetski-vamos-jaco-tours-003.webp";
+
+const breadcrumbs = getBreadcrumbSchema([
+    { name: "Home", url: "/" },
+    { name: "Tours & Adventures", url: "/tours" },
+]);
 ---
 
-<Layout title="Tours & Adventures | Vamos Jacó Tours">
+<Layout
+    title="Tours & Adventures | Vamos Jacó Tours — Costa Rica"
+    description="Browse all adventure tours in Jacó, Costa Rica. ATV mountain rides, side by side buggies, jet ski rentals and tours, surfing lessons, flyboard, zipline canopy and more."
+    keywords="adventure tours Jacó, Costa Rica tours, ATV tour Jacó, side by side Jaco, buggy tour Costa Rica, jet ski rental, jet ski tour Jaco, surf lessons Costa Rica, zipline Jacó, activities Costa Rica"
+    jsonLd={breadcrumbs}
+    preloadImage={HERO_IMAGE}
+>
     {/* Hero Section */}
     <section
         class="relative h-[60vh] min-h-[400px] flex items-center justify-center overflow-hidden"
@@ -17,8 +29,10 @@ const HERO_IMAGE =
         <div class="absolute inset-0">
             <img
                 src={HERO_IMAGE}
-                alt="Costa Rica Adventure"
+                alt="Adventure tours in Jacó Costa Rica"
                 class="w-full h-full object-cover opacity-60"
+                fetchpriority="high"
+                decoding="sync"
             />
             <div
                 class="absolute inset-0 bg-gradient-to-b from-dark/30 via-dark/60 to-dark"
@@ -81,7 +95,7 @@ const HERO_IMAGE =
             </div>
 
             {/* Filterable Grid */}
-            <TourFilter client:load />
+            <TourFilter client:load initialTours={tours} defaultLimit={100} />
         </div>
     </main>
 </Layout>

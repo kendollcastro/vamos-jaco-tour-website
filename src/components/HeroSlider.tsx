@@ -14,7 +14,7 @@ export default function HeroSlider() {
         return () => clearTimeout(timer);
     }, []);
 
-    const HERO_VIDEO = 'https://cdn.coverr.co/videos/coverr-driving-an-atv-4536/1080p.mp4';
+    const HERO_VIDEO = '/vamos-jaco-tour-home-hero-video.mp4';
     const HERO_POSTER = 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=2070&auto=format&fit=crop';
 
     const content = {
@@ -48,9 +48,12 @@ export default function HeroSlider() {
                     muted
                     loop
                     playsInline
+                    preload="auto"
                     poster={HERO_POSTER}
                     className="w-full h-full object-cover scale-105"
                     onLoadedData={() => setIsLoaded(true)}
+                    // @ts-ignore - React 19 supports fetchpriority but some types lagging
+                    fetchpriority="high"
                 >
                     <source src={HERO_VIDEO} type="video/mp4" />
                 </video>
@@ -70,7 +73,7 @@ export default function HeroSlider() {
             </div>
 
             {/* Hero Content */}
-            <div className={`relative z-10 flex-1 flex flex-col items-center justify-center text-center px-6 pt-20 md:pt-0 transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+            <div className={`relative z-10 flex-1 flex flex-col items-center justify-center text-center px-6 pt-20 md:pt-0 pb-32 md:pb-96 lg:pb-80 xl:pb-48 transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
 
                 {/* Tagline Badge */}
                 <div className="mb-6 md:mb-8">
@@ -82,10 +85,10 @@ export default function HeroSlider() {
 
                 {/* Main Title - Extreme Typography */}
                 <h1 className="mb-6 md:mb-8">
-                    <span className="block text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-black text-white uppercase tracking-tighter italic drop-shadow-2xl leading-[0.9]">
+                    <span className="block text-5xl sm:text-6xl md:text-7xl lg:text-9xl font-black text-white uppercase tracking-tighter italic drop-shadow-2xl leading-[1.1] pb-1">
                         {t.titleLine1}
                     </span>
-                    <span className="block text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-black uppercase tracking-tighter italic drop-shadow-2xl leading-[0.9] text-transparent bg-clip-text bg-gradient-to-r from-primary via-brand-orange to-brand-yellow animate-gradient-text">
+                    <span className="block text-5xl sm:text-6xl md:text-7xl lg:text-9xl font-black uppercase tracking-tighter italic drop-shadow-2xl leading-[1.1] pt-1 text-transparent bg-clip-text bg-gradient-to-r from-primary via-brand-orange to-brand-yellow animate-gradient-text">
                         {t.titleAccent}
                     </span>
                 </h1>

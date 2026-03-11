@@ -1,5 +1,5 @@
-import React from 'react';
-import { Send, Flame } from 'lucide-react';
+import React, { useState } from 'react';
+import { Send, Flame, CheckCircle2 } from 'lucide-react';
 import { useStore } from '@nanostores/react';
 import { language } from '../store';
 
@@ -21,7 +21,26 @@ export default function NewsletterSection() {
         }
     };
 
-    const content = $language === 'en' ? t.en : t.es;
+    const fallbackContent = $language === 'en' ? t.en : t.es;
+
+    const [email, setEmail] = useState('');
+    const [status, setStatus] = useState<'idle' | 'loading' | 'success'>('idle');
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!email) return;
+
+        setStatus('loading');
+        // Simulate API call for newsletter subscription
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        setStatus('success');
+        setEmail('');
+    };
+
+    const tagline = fallbackContent.tagline;
+    const title = fallbackContent.title;
+    const placeholder = fallbackContent.placeholder;
+    const subtext = fallbackContent.subtext;
 
     return (
         <section className="py-4">
@@ -45,27 +64,47 @@ export default function NewsletterSection() {
                     <div className="relative z-10 max-w-2xl mx-auto pt-4 pb-4">
                         <span className="inline-flex items-center gap-2 text-brand-yellow font-bold text-xs tracking-[0.2em] uppercase mb-6">
                             <Flame className="w-4 h-4" />
-                            {content.tagline}
+                            {tagline}
                             <Flame className="w-4 h-4" />
                         </span>
 
                         <h2 className="text-3xl md:text-5xl font-black text-white mb-10 leading-tight uppercase tracking-tight">
-                            {content.title}
+                            {title}
                         </h2>
 
-                        <div className="bg-dark/40 backdrop-blur-xl p-2 rounded-full flex items-center ring-1 ring-white/20 max-w-xl mx-auto w-full mb-6 hover:ring-white/30 transition-colors">
-                            <input
-                                type="email"
-                                placeholder={content.placeholder}
-                                className="flex-grow px-6 py-3 rounded-full bg-transparent text-white focus:outline-none placeholder:text-gray-400 font-medium"
-                            />
-                            <button className="bg-gradient-to-r from-primary to-brand-orange text-white w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg shadow-primary/30">
-                                <Send className="w-5 h-5 -ml-0.5 translate-x-0.5" />
-                            </button>
-                        </div>
+                        {status === 'success' ? (
+                            <div className="bg-brand-teal/20 border border-brand-teal/30 p-4 rounded-3xl flex items-center justify-center gap-3 max-w-xl mx-auto mb-6 text-brand-teal animate-fade-in-up">
+                                <CheckCircle2 className="w-6 h-6" />
+                                <span className="font-bold text-lg">
+                                    {$language === 'en' ? 'Thanks for subscribing!' : '¡Gracias por suscribirte!'}
+                                </span>
+                            </div>
+                        ) : (
+                            <form onSubmit={handleSubmit} className="bg-dark/40 backdrop-blur-xl p-2 rounded-full flex items-center ring-1 ring-white/20 max-w-xl mx-auto w-full mb-6 hover:ring-white/30 transition-colors focus-within:ring-primary/50">
+                                <input
+                                    type="email"
+                                    required
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder={placeholder}
+                                    className="flex-grow px-6 py-3 rounded-full bg-transparent text-white focus:outline-none placeholder:text-gray-400 font-medium"
+                                />
+                                <button
+                                    type="submit"
+                                    disabled={status === 'loading'}
+                                    className="bg-gradient-to-r from-primary to-brand-orange text-white w-12 h-12 rounded-full flex items-center justify-center hover:scale-105 transition-transform shadow-lg shadow-primary/30 disabled:opacity-50"
+                                >
+                                    {status === 'loading' ? (
+                                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                    ) : (
+                                        <Send className="w-5 h-5 -ml-0.5 translate-x-0.5" />
+                                    )}
+                                </button>
+                            </form>
+                        )}
 
                         <p className="text-gray-300/80 text-sm md:text-base font-medium">
-                            {content.subtext}
+                            {subtext}
                         </p>
                     </div>
 

@@ -1,0 +1,63 @@
+/* Custom Navigation Styles */
+.swiper-button-next,
+.swiper-button-prev {
+    /* Controls the size of the icon */
+    background-color: rgba(0, 0, 0, 0.4) !important;
+    backdrop-filter: blur(4px) !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    color: white !important;
+    transition: all 0.3s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-top: -16px !important;
+}
+
+.swiper-button-next::after,
+.swiper-button-prev::after {
+    display: none !important;
+    /* Hide default icon font if it still exists */
+}
+
+/* Swiper 11+ Uses SVG Icons */
+.swiper-button-next svg,
+.swiper-button-prev svg {
+    width: 14px !important;
+    /* Forces the SVG arrow to be smaller than the 32px circle */
+    height: 14px !important;
+    object-fit: contain !important;
+}
+
+@media (min-width: 768px) {
+
+    .swiper-button-next,
+    .swiper-button-prev {
+        width: 44px !important;
+        height: 44px !important;
+        margin-top: -22px !important;
+    }
+
+    .swiper-button-next svg,
+    .swiper-button-prev svg {
+        width: 18px !important;
+        /* Forces the SVG arrow to be smaller than the 44px circle */
+        height: 18px !important;
+    }
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+    background-color: #DC3522 !important;
+    /* brand-orange */
+    transform: scale(1.1) !important;
+}
+
+.thumbs-swiper .swiper-slide-thumb-active {
+    opacity: 1 !important;
+}
+
+.thumbs-swiper .swiper-slide-thumb-active img {
+    border-color: #DC3522 !important;
+}

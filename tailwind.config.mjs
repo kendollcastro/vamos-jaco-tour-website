@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
 	content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
+	darkMode: 'class',
 	theme: {
 		extend: {
 			fontFamily: {
@@ -16,8 +17,8 @@ export default {
 				'brand-teal': '#03A696', // POINTER Teal
 				'brand-orange': '#F27F1B', // POINTER Orange
 				'brand-yellow': '#F2AB27', // Sunset Yellow (kept as accent)
-				dark: '#0D0B08',    // Black from logo
-				'dark-soft': '#1A1816',
+				dark: '#0D0D12',    // Mockup Dark BG
+				'dark-soft': '#1C1E24', // Mockup Card BG
 				light: '#F2F2F2',   // White/Light Gray
 			},
 			boxShadow: {

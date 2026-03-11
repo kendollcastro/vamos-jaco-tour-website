@@ -5,14 +5,75 @@ import TeamSection from "../components/TeamSection";
 import TrustBar from "../components/TrustBar";
 import AboutGallery from "../components/AboutGallery";
 import NewsletterSection from "../components/NewsletterSection";
+import FaqSection from "../components/FaqSection";
 import ScrollReveal from "../components/ScrollReveal";
+import { fetchWPAPI } from "../lib/wp";
+import { getTeamMembers } from "../lib/supabase-team";
+import {
+    getOrganizationSchema,
+    getBreadcrumbSchema,
+    getFAQSchema,
+} from "../lib/seo-schemas";
 
 // Hero Image - Costa Rica jungle themed
-const HERO_IMAGE =
-    "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=2568&auto=format&fit=crop";
+const HERO_IMAGE = "/images/Flyboard/flyboard-vamos-jaco-tours-004.jpg";
+
+// Fetch Team Members from Supabase
+let teamMembers: any[] = [];
+try {
+    const members = await getTeamMembers();
+    if (members && members.length > 0) {
+        teamMembers = members.map((m) => ({
+            id: m.id,
+            name: m.name,
+            position: m.position_en || "Team Member",
+            position_en: m.position_en || undefined,
+            position_es: m.position_es || undefined,
+            image:
+                m.image_url ||
+                "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=2574&auto=format&fit=crop",
+            social: {
+                instagram: m.social_instagram || undefined,
+                linkedin: m.social_linkedin || undefined,
+                twitter: m.social_twitter || undefined,
+            },
+        }));
+    }
+} catch (e) {
+    console.error("Failed to load Team Members:", e);
+}
+
+// Fetch FAQs
+let wpFaqs: any[] = [];
+try {
+    const rawFaqs = await fetchWPAPI("faq");
+    if (rawFaqs && Array.isArray(rawFaqs)) {
+        wpFaqs = rawFaqs.map((f: any) => ({
+            question: f.title.rendered,
+            // Remove the <p> tags from the excerpt
+            answer: f.excerpt.rendered.replace(/<\/?p>/g, "").trim(),
+        }));
+    }
+} catch (e) {
+    console.error("Failed to load WP FAQs:", e);
+}
+
+const schemas = [
+    getOrganizationSchema(),
+    getBreadcrumbSchema([
+        { name: "Home", url: "/" },
+        { name: "About Us", url: "/about" },
+    ]),
+    ...(wpFaqs.length > 0 ? [getFAQSchema(wpFaqs)] : []),
+].filter(Boolean);
 ---
 
-<Layout title="About Us | Vamos Jacó Tours">
+<Layout
+    title="About Us | Vamos Jacó Tours — Local Adventure Experts"
+    description="Meet the Vamos Jacó Tours team. Local guides passionate about sharing the best adventures in Costa Rica — from ATV rides through the jungle to ocean experiences. Family-owned since 2018."
+    keywords="about Vamos Jacó, Costa Rica tour guides, Jacó local guides, adventure tour company, Costa Rica travel agency"
+    jsonLd={schemas}
+>
     {/* Page Hero */}
     <section
         class="relative h-[60vh] min-h-[450px] flex items-center justify-center overflow-hidden"
@@ -72,7 +133,7 @@ const HERO_IMAGE =
 
         {/* Team Carousel */}
         <ScrollReveal client:visible animation="fade-left">
-            <TeamSection client:visible />
+            <TeamSection client:visible members={teamMembers} />
         </ScrollReveal>
 
         {/* Gallery "Moments" */}
@@ -83,6 +144,11 @@ const HERO_IMAGE =
         {/* Trust/Partners */}
         <ScrollReveal client:visible animation="blur-in">
             <TrustBar client:visible />
+        </ScrollReveal>
+
+        {/* FAQ Section */}
+        <ScrollReveal client:visible animation="blur-in">
+            <FaqSection client:visible />
         </ScrollReveal>
 
         {/* Newsletter CTA */}

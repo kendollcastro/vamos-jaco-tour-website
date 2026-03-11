@@ -43,11 +43,20 @@ export default function Header() {
             <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between relative z-50">
                 <div className="flex items-center gap-2">
                     {/* Logo */}
-                    <a href="/" className={clsx(
-                        "text-2xl font-bold transition-colors",
-                        (isScrolled || isMobileMenuOpen) ? "text-primary" : "text-white drop-shadow-md"
-                    )}>
-                        Vamos Jacó
+                    <a href="/" className="flex items-center gap-2 transition-transform hover:scale-105">
+                        <img
+                            src="/logo.png"
+                            alt="Vamos Jacó Tours Logo"
+                            className="h-14 md:h-16 w-auto object-contain"
+                            onError={(e) => {
+                                // Fallback to text if logo.png doesn't exist yet
+                                e.currentTarget.style.display = 'none';
+                                e.currentTarget.parentElement?.classList.add('text-2xl', 'font-bold', isScrolled || isMobileMenuOpen ? 'text-primary' : 'text-white', 'drop-shadow-md');
+                                if (e.currentTarget.parentElement) {
+                                    e.currentTarget.parentElement.innerHTML = 'Vamos Jacó';
+                                }
+                            }}
+                        />
                     </a>
                 </div>
 

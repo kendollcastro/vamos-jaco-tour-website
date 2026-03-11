@@ -1,0 +1,279 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout
+    title="Checkout | Vamos Jacó Tours"
+    description="Complete your booking with Vamos Jacó Tours. Secure payment processing."
+    robots="noindex, nofollow"
+>
+    <div class="min-h-screen bg-dark pt-32 pb-20">
+        <div class="max-w-4xl mx-auto px-6">
+            <h1
+                class="text-4xl md:text-5xl font-black text-white mb-8 border-b border-white/10 pb-6"
+            >
+                Checkout
+            </h1>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Left: Booking Summary -->
+                <div class="md:col-span-2 space-y-8">
+                    <!-- Guest Details Form -->
+                    <div
+                        class="bg-dark-soft rounded-2xl border border-white/10 p-6 md:p-8"
+                    >
+                        <h2
+                            class="text-xl font-bold text-white mb-6 flex items-center gap-3"
+                        >
+                            <span
+                                class="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center text-sm font-bold"
+                                >1</span
+                            >
+                            Your Details
+                        </h2>
+                        <form class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label
+                                        class="block text-sm text-gray-400 mb-1"
+                                        >First Name</label
+                                    >
+                                    <input
+                                        type="text"
+                                        class="w-full bg-dark border border-white/10 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none"
+                                        placeholder="John"
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-sm text-gray-400 mb-1"
+                                        >Last Name</label
+                                    >
+                                    <input
+                                        type="text"
+                                        class="w-full bg-dark border border-white/10 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none"
+                                        placeholder="Doe"
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-1"
+                                    >Email Address</label
+                                >
+                                <input
+                                    type="email"
+                                    class="w-full bg-dark border border-white/10 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none"
+                                    placeholder="john@example.com"
+                                />
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-1"
+                                    >Phone Number (WhatsApp)</label
+                                >
+                                <input
+                                    type="tel"
+                                    class="w-full bg-dark border border-white/10 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none"
+                                    placeholder="+1 (555) 000-0000"
+                                />
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Payment Method -->
+                    <div
+                        class="bg-dark-soft rounded-2xl border border-white/10 p-6 md:p-8"
+                    >
+                        <h2
+                            class="text-xl font-bold text-white mb-6 flex items-center gap-3"
+                        >
+                            <span
+                                class="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center text-sm font-bold"
+                                >2</span
+                            >
+                            Payment Method
+                        </h2>
+
+                        <div
+                            class="bg-white/5 rounded-xl p-4 border border-primary/30 flex items-center gap-4"
+                        >
+                            <div
+                                class="w-12 h-12 bg-white rounded-lg flex items-center justify-center p-1"
+                            >
+                                <img
+                                    src="/images/tilopay-logo-placeholder.png"
+                                    alt="TiloPay"
+                                    class="object-contain"
+                                    onerror="this.src='https://placehold.co/100x100/white/black?text=TiloPay'"
+                                />
+                            </div>
+                            <div>
+                                <h4 class="text-white font-bold">
+                                    Credit / Debit Card
+                                </h4>
+                                <p class="text-xs text-gray-400">
+                                    Secure payment via TiloPay (Costa Rica)
+                                </p>
+                            </div>
+                            <div class="ml-auto">
+                                <div
+                                    class="w-5 h-5 rounded-full border-4 border-primary bg-white"
+                                >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Order Summary -->
+                <div class="md:col-span-1">
+                    <div
+                        class="bg-dark-soft rounded-2xl border border-white/10 p-6 sticky top-28"
+                    >
+                        <h3 class="text-lg font-bold text-white mb-4">
+                            Order Summary
+                        </h3>
+
+                        <!-- Dynamic Content Placeholder (Client-side populated) -->
+                        <div id="order-summary-content" class="space-y-4 mb-6">
+                            <div
+                                class="skeleton h-4 w-3/4 bg-white/10 rounded animate-pulse"
+                            >
+                            </div>
+                            <div
+                                class="skeleton h-4 w-1/2 bg-white/10 rounded animate-pulse"
+                            >
+                            </div>
+                        </div>
+
+                        <div class="border-t border-white/10 pt-4 mb-6">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-gray-400">Subtotal</span>
+                                <span
+                                    class="text-white font-medium"
+                                    id="summary-subtotal">--</span
+                                >
+                            </div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-gray-400">Taxes</span>
+                                <span class="text-white font-medium">$0.00</span
+                                >
+                            </div>
+                            <div
+                                class="flex justify-between items-center pt-2 border-t border-white/10 mt-2"
+                            >
+                                <span class="text-white font-bold text-lg"
+                                    >Total</span
+                                >
+                                <span
+                                    class="text-brand-orange font-black text-2xl"
+                                    id="summary-total">--</span
+                                >
+                            </div>
+                        </div>
+
+                        <button
+                            class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-95 flex items-center justify-center gap-2"
+                        >
+                            Pay Securely
+                            <svg
+                                class="w-5 h-5"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                ><path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                                ></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</Layout>
+
+<script>
+    import { bookingStore } from "../store/booking";
+
+    // Subscribe to store to update UI
+    const summaryContainer = document.getElementById("order-summary-content");
+    const totalEl = document.getElementById("summary-total");
+    const subtotalEl = document.getElementById("summary-subtotal");
+
+    bookingStore.subscribe((state) => {
+        if (summaryContainer && state.tourId) {
+            summaryContainer.innerHTML = `
+                <div class="flex gap-3 mb-4">
+                    <div class="flex-1">
+                        <h4 class="text-white font-bold leading-tight mb-1">${
+                            state.tourTitle || "Selected Tour"
+                        }</h4>
+                        <p class="text-xs text-gray-400">Date: ${
+                            state.date
+                                ? new Date(state.date).toLocaleDateString()
+                                : "Not selected"
+                        }</p>
+                    </div>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-300">Guests</span>
+                    <span class="text-white font-medium">${
+                        state.adults
+                    } Adults, ${state.children} Kids</span>
+                </div>
+            `;
+
+            if (totalEl) totalEl.textContent = `$${state.totalPrice}`;
+            if (subtotalEl) subtotalEl.textContent = `$${state.totalPrice}`;
+        } else if (summaryContainer) {
+            summaryContainer.innerHTML = `<p class="text-gray-500 text-sm">No tour selected.</p>`;
+        }
+    });
+
+    const payStartBtn = document.querySelector("button"); // Selects the Pay Securely button
+    if (payStartBtn) {
+        payStartBtn.addEventListener("click", async () => {
+            const state = bookingStore.get();
+            if (!state.tourId) {
+                alert("Please select a tour first.");
+                return;
+            }
+
+            try {
+                payStartBtn.disabled = true;
+                payStartBtn.innerText = "Processing...";
+
+                const res = await fetch("/api/create-payment", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        tourId: state.tourId,
+                        amount: state.totalPrice,
+                        date: state.date,
+                        adults: state.adults,
+                        children: state.children,
+                    }),
+                });
+
+                const data = await res.json();
+                if (data.redirectUrl) {
+                    window.location.href = data.redirectUrl;
+                } else {
+                    alert(
+                        "Payment initialization failed: " +
+                            (data.message || "Unknown error")
+                    );
+                    payStartBtn.disabled = false;
+                    payStartBtn.innerHTML = `Pay Securely <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>`;
+                }
+            } catch (e) {
+                console.error(e);
+                alert("An error occurred. Please try again.");
+                payStartBtn.disabled = false;
+            }
+        });
+    }
+</script>

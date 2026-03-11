@@ -1,37 +1,86 @@
+'use client';
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, ArrowRight } from 'lucide-react';
 import { useStore } from '@nanostores/react';
 import { language } from '../store';
 import clsx from 'clsx';
 
-const faqs = [
-    {
-        question: "What Services Does Your Travel Agency Provide?",
-        answer: "A travel agency typically provides a wide range of services to ensure a smooth and enjoyable travel experience. As like- Hotel booking, Flight Booking, Visa & Customized Travel Pakcge etc."
-    },
-    {
-        question: "Do You Offer Customized Travel Packages?",
-        answer: "Yes! We specialize in creating tailor-made itineraries that match your preferences, budget, and travel style. Whether you want a relaxing beach getaway or an action-packed adventure, we can build it for you."
-    },
-    {
-        question: "Can I Book Flights, Hotels, and Tours Separately?",
-        answer: "Absolutely. While we offer comprehensive packages, you can also book individual services like flight tickets, hotel stays, or specific day tours and activities through us."
-    },
-    {
-        question: "Do You Provide Visa Assistance?",
-        answer: "Yes, we provide guidance and assistance with visa applications for many destinations. However, the final approval lies with the respective embassy or consulate."
-    },
-    {
-        question: "What Payment Methods Do You Accept?",
-        answer: "We accept all major credit cards, bank transfers, and secure online payment platforms to make your booking process convenient and safe."
-    },
-    {
-        question: "What Travel Documents are Required for International Travel?",
-        answer: "Typically, you will need a valid passport (usually with 6 months validity), a visa (depending on destination), and sometimes proof of vaccinations or travel insurance. We will guide you on specific requirements for your trip."
-    }
-];
+const faqs = {
+    en: [
+        {
+            question: "How far in advance should I book my tour?",
+            answer: "We recommend booking at least 2-3 days in advance, especially during the high season (December to April) to ensure availability for your preferred dates."
+        },
+        {
+            question: "Is round-trip transportation included?",
+            answer: "Yes! Many of our tours include free round-trip transportation from hotels and rentals within the Jaco and Herradura areas. Please check the specific details of your chosen tour."
+        },
+        {
+            question: "Are the tours suitable for children?",
+            answer: "Most tours are family-friendly. For example, the Crocodile Safari and Banana Boat have very low minimum ages. However, ATV and Jet Ski driving is strictly for adults (18+)."
+        },
+        {
+            question: "What is your cancellation policy?",
+            answer: "We offer a full refund for cancellations made at least 48 hours prior to the tour start time. Cancellations within 48 hours are non-refundable."
+        },
+        {
+            question: "Do I need prior experience for the ATV or Jet Ski tours?",
+            answer: "No prior experience is necessary. Our professional guides provide a full safety briefing and operational instructions before every tour begins."
+        },
+        {
+            question: "What should I bring to the tours?",
+            answer: "It depends on the tour, but generally we highly recommend sunscreen, insect repellent, comfortable clothes, closed-toe shoes (for ATV/Zipline), and a swimsuit/towel for water tours."
+        },
+        {
+            question: "Do tours operate if it rains?",
+            answer: "Yes, we operate rain or shine. In fact, ATV and Rafting tours are even more fun in the rain! We only cancel in case of extreme weather conditions that compromise safety."
+        },
+        {
+            question: "Do you offer options for large groups or corporate events?",
+            answer: "Absolutely! We can organize unforgettable experiences for groups, weddings, or corporate events. Contact us directly for special rates and custom packages."
+        }
+    ],
+    es: [
+        {
+            question: "¿Con cuánta anticipación debo reservar mi tour?",
+            answer: "Recomendamos reservar con al menos 2 o 3 días de anticipación, especialmente durante la temporada alta (diciembre a abril) para asegurar su lugar."
+        },
+        {
+            question: "¿Está incluido el transporte de ida y vuelta?",
+            answer: "¡Sí! Muchos de nuestros tours incluyen transporte gratuito desde hoteles en Jacó y Herradura. Por favor revise los detalles específicos del tour elegido."
+        },
+        {
+            question: "¿Los tours son aptos para niños?",
+            answer: "La mayoría son ideales para familias, como el Safari de Cocodrilos o Banana Boat. Sin embargo, manejar ATV y Jet Ski es estrictamente para adultos (18+)."
+        },
+        {
+            question: "¿Cuál es su política de cancelación?",
+            answer: "Ofrecemos reembolso completo para cancelaciones realizadas al menos 48 horas antes del inicio del tour. Cancelaciones en menos de 48 horas no son reembolsables."
+        },
+        {
+            question: "¿Necesito experiencia previa para los ATV o Jet Ski?",
+            answer: "No se requiere experiencia previa. Nuestros guías profesionales brindan una sesión completa de seguridad y manejo antes de iniciar cada recorrido."
+        },
+        {
+            question: "¿Qué debo llevar a los tours?",
+            answer: "Depende del tour, pero en general recomendamos: protector solar, repelente de insectos, ropa cómoda, zapatos cerrados (para ATV/Zipline) y traje de baño/toalla para tours acuáticos."
+        },
+        {
+            question: "¿Los tours se realizan si llueve?",
+            answer: "Sí, operamos bajo lluvia o sol. De hecho, ¡los tours de ATV y Rafting son aún más divertidos con lluvia! Solo cancelamos en caso de condiciones climáticas extremas que comprometan la seguridad."
+        },
+        {
+            question: "¿Ofrecen opciones para grupos grandes o eventos corporativos?",
+            answer: "¡Por supuesto! Podemos organizar experiencias inolvidables para grupos, bodas o eventos corporativos. Contáctenos directamente para tarifas y paquetes especiales."
+        }
+    ]
+};
 
-export default function FaqSection() {
+interface FaqSectionProps {
+    faqs?: any[]; // Allow override from props if needed
+}
+
+export default function FaqSection({ faqs: wpFaqs }: FaqSectionProps) {
     const [openIndex, setOpenIndex] = useState<number | null>(0);
     const $language = useStore(language);
 
@@ -41,54 +90,49 @@ export default function FaqSection() {
 
     const t = {
         en: {
-            bannerTitle: "Water Rafting",
-            bannerSubtitle: "View All Package",
-            title: "Questions & Answer",
-            subtitle: "We're committed to offering more than just products—we provide exceptional experiences.",
+            bannerTitle: "Need Answers?",
+            bannerSubtitle: "Frequently Asked Questions",
+            title: "Questions & Answers",
+            subtitle: "We're committed to offering more than just tours—we provide secure, exceptional experiences.",
         },
         es: {
-            bannerTitle: "Rafting en Aguas",
-            bannerSubtitle: "Ver Todos los Paquetes",
+            bannerTitle: "¿Dudas?",
+            bannerSubtitle: "Preguntas Frecuentes",
             title: "Preguntas y Respuestas",
-            subtitle: "Estamos comprometidos a ofrecer más que solo productos: brindamos experiencias excepcionales.",
+            subtitle: "Estamos comprometidos a ofrecer más que tours: brindamos experiencias seguras y excepcionales.",
         }
     };
 
-    const content = $language === 'en' ? t.en : t.es;
+    const fallbackContent = $language === 'en' ? t.en : t.es;
+
+    const bannerTitle = fallbackContent.bannerTitle;
+    const bannerSubtitle = fallbackContent.bannerSubtitle;
+    const title = fallbackContent.title;
+    const subtitle = fallbackContent.subtitle;
+
+    const currentLanguageFaqs = $language === 'en' ? faqs.en : faqs.es;
+    const faqsToDisplay = wpFaqs && wpFaqs.length > 0 ? wpFaqs : currentLanguageFaqs;
 
     return (
         <section className="relative pb-24">
 
             {/* Header / Banner Image */}
             <div className="relative h-[400px] md:h-[500px] w-full overflow-hidden">
-                <div className="absolute inset-0 bg-black/30 z-10"></div>
+                <div className="absolute inset-0 bg-gradient-to-b from-dark/80 via-dark/40 to-dark/90 z-10"></div>
                 <img
-                    src="https://images.unsplash.com/photo-1530866495561-507c9faab9ed?q=80&w=2576&auto=format&fit=crop"
-                    alt="Rafting Adventure"
+                    src="/images/Sidebyside/sidebyside-vamos-jaco-tours-001.webp"
+                    alt="Adventure Background"
                     className="w-full h-full object-cover"
                 />
 
                 {/* Banner Content */}
                 <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center text-white pb-32">
                     <h2 className="font-['Inter'] text-5xl md:text-7xl mb-2 drop-shadow-lg">
-                        {content.bannerTitle}
+                        {bannerTitle}
                     </h2>
                     <p className="text-sm md:text-base font-bold uppercase tracking-widest opacity-90 mb-6">
-                        {content.bannerSubtitle}
+                        {bannerSubtitle}
                     </p>
-
-                    {/* Decorative Icons (Simulated from design) */}
-                    <div className="absolute right-6 top-1/2 -translate-y-1/2 flex flex-col gap-4 hidden md:flex">
-                        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white/50 shadow-lg">
-                            <img src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?q=80&w=2670&auto=format&fit=crop" className="w-full h-full object-cover" />
-                        </div>
-                        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white/50 shadow-lg translate-x-4">
-                            <img src="https://images.unsplash.com/photo-1519999482648-25049ddd37b1?q=80&w=2626&auto=format&fit=crop" className="w-full h-full object-cover" />
-                        </div>
-                        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white/50 shadow-lg">
-                            <img src="https://images.unsplash.com/photo-1621262609935-4303498f3957?q=80&w=2574&auto=format&fit=crop" className="w-full h-full object-cover" />
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -98,15 +142,15 @@ export default function FaqSection() {
 
                     {/* Title */}
                     <div className="text-center mb-12">
-                        <h3 className="text-3xl font-bold text-white mb-4">{content.title}</h3>
+                        <h3 className="text-3xl font-bold text-white mb-4">{title}</h3>
                         <p className="text-gray-400 max-w-xl mx-auto text-sm md:text-base">
-                            {content.subtitle}
+                            {subtitle}
                         </p>
                     </div>
 
                     {/* Accordion */}
                     <div className="space-y-4">
-                        {faqs.map((faq, index) => (
+                        {faqsToDisplay.map((faq, index) => (
                             <div
                                 key={index}
                                 className={clsx(

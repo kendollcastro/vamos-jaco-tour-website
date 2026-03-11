@@ -27,6 +27,7 @@
     --animate-fade-in-up: fadeInUp 0.8s ease-out forwards;
     --animate-zoom-in: zoomIn 0.5s ease-out forwards;
     --animate-float: float 6s ease-in-out infinite;
+    --animate-ken-burns: kenBurns 15s ease-out forwards;
 }
 
 /* ───────────  Keyframes  ─────────── */
@@ -51,6 +52,16 @@
     100% {
         opacity: 1;
         transform: scale(1);
+    }
+}
+
+@keyframes kenBurns {
+    0% {
+        transform: scale(1);
+    }
+
+    100% {
+        transform: scale(1.1);
     }
 }
 
@@ -203,6 +214,21 @@
     opacity: 1;
     transform: translateY(0);
     transition-delay: 600ms;
+}
+
+/* ───────────  Custom Swiper Pagination  ─────────── */
+.swiper-pagination-custom .swiper-pagination-bullet {
+    width: 10px !important;
+    height: 10px !important;
+    background-color: rgba(255, 255, 255, 0.4) !important;
+    opacity: 1 !important;
+    margin: 0 !important;
+    transition: all 0.3s ease;
+}
+
+.swiper-pagination-custom .swiper-pagination-bullet-active {
+    background-color: var(--color-primary) !important;
+    transform: scale(1.2);
 }
 
 /* ───────────  Global Dark Mode  ─────────── */

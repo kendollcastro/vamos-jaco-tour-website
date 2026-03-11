@@ -1,35 +1,97 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { tours } from "../../data/tours";
+import { getAllTours, getTourById, type Tour } from "../../data/tours";
+import { getTourSchema, getBreadcrumbSchema } from "../../lib/seo-schemas";
 import TourCard from "../../components/TourCard";
 import NewsletterSection from "../../components/NewsletterSection";
+import BookingSidebar from "../../components/BookingSidebar";
+import TourGallery from "../../components/TourGallery";
+import TourAccordion from "../../components/TourAccordion";
+import TranslatedText from "../../components/TranslatedText";
+import TranslatedMarkdown from "../../components/TranslatedMarkdown";
+import TourInfoList from "../../components/TourInfoList";
+import { marked } from "marked";
 
-export function getStaticPaths() {
+export async function getStaticPaths() {
+    const tours = await getAllTours();
     return tours.map((tour) => ({
         params: { id: tour.id },
         props: { tour },
     }));
 }
 
-const { tour } = Astro.props;
+interface Props {
+    tour?: Tour;
+}
+
+// In SSR mode without `prerender=true`, getStaticPaths props might be ignored.
+// We should fetch the tour from the URL param if Astro.props.tour is missing.
+const { id } = Astro.params;
+const tour = Astro.props.tour || (id ? await getTourById(id) : null);
+
+if (!tour) {
+    return Astro.redirect("/404");
+}
+
+// Fetch all tours for related tours filtering (Astro props from getStaticPaths are mostly for static building)
+const allTours = await getAllTours();
 
 // Related tours: same category, excluding current
-const relatedTours = tours
+const relatedTours = allTours
     .filter((t) => t.category === tour.category && t.id !== tour.id)
     .slice(0, 3);
+
+// SEO schemas
+const tourSchema = getTourSchema({
+    name: tour.title.en,
+    description: tour.description.en.substring(0, 200),
+    image: tour.image_url,
+    price: tour.price,
+    duration: tour.duration,
+    location: tour.location,
+    url: `https://vamosjaco.com/tours/${tour.id}`,
+    category: tour.category,
+});
+
+const breadcrumbs = getBreadcrumbSchema([
+    { name: "Home", url: "/" },
+    { name: "Tours", url: "/tours" },
+    { name: tour.title.en, url: `/tours/${tour.id}` },
+]);
+
+const schemas = [tourSchema, breadcrumbs];
+
+const leadDescription = {
+    en: tour.description?.en ? tour.description.en.split("\n\n")[0] : "",
+    es: tour.description?.es ? tour.description.es.split("\n\n")[0] : "",
+};
+
+const remainingDescription = {
+    en: tour.description?.en ? tour.description.en.split("\n\n").slice(1).join("\n\n") : "",
+    es: tour.description?.es ? tour.description.es.split("\n\n").slice(1).join("\n\n") : "",
+};
 ---
 
-<Layout title={`${tour.title.en} | Vamos Jacó Tours`}>
+<Layout
+    title={tour.seo?.title || `${tour.title.en} | Vamos Jacó Tours`}
+    description={tour.seo?.description || tour.description.en.substring(0, 160)}
+    image={tour.seo?.image || tour.image_url}
+    keywords={`${tour.title.en}, ${tour.category} tour Jacó, adventure tour Costa Rica, ${tour.location}`}
+    jsonLd={schemas}
+    preloadImage={tour.image_url}
+>
     <main>
         <!-- Tour Hero -->
         <section
             class="relative h-[55vh] min-h-[450px] flex items-end overflow-hidden"
         >
-            <div class="absolute inset-0 z-0">
+            <div class="absolute inset-0 z-0 overflow-hidden bg-dark">
                 <img
                     src={tour.image_url}
                     alt={tour.title.en}
-                    class="w-full h-full object-cover"
+                    class="w-full h-full object-cover animate-ken-burns origin-center"
+                    fetchpriority="high"
+                    decoding="sync"
                 />
                 <div
                     class="absolute inset-0 bg-gradient-to-t from-dark via-dark/50 to-dark/20"
@@ -76,7 +138,7 @@ const relatedTours = tours
                                     stroke-width="2"
                                     d="M15 19l-7-7 7-7"></path>
                             </svg>
-                            Back to Tours
+                            <TranslatedText client:load content={{ en: "Back to Tours", es: "Volver a los Tours" }} />
                         </a>
 
                         <!-- Badge -->
@@ -104,16 +166,18 @@ const relatedTours = tours
                         <h1
                             class="text-4xl md:text-6xl font-black text-white uppercase tracking-tight italic drop-shadow-2xl leading-[0.95]"
                         >
-                            {tour.title.en}
+                            <TranslatedText client:load content={tour.title} fallback={tour.title.en} />
                         </h1>
 
                         <!-- Meta -->
                         <div
-                            class="flex items-center gap-4 mt-4 text-white/70 text-sm"
+                            class="flex flex-wrap items-center gap-4 mt-6 text-white/80 text-sm"
                         >
-                            <span class="flex items-center gap-1.5">
+                            <div
+                                class="flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10"
+                            >
                                 <svg
-                                    class="w-4 h-4 text-primary"
+                                    class="w-4 h-4 text-brand-orange"
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"
@@ -130,12 +194,13 @@ const relatedTours = tours
                                     ></path>
                                 </svg>
                                 {tour.location}
-                            </span>
-                            <span class="w-1 h-1 bg-white/30 rounded-full"
-                            ></span>
-                            <span class="flex items-center gap-1.5">
+                            </div>
+
+                            <div
+                                class="flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10"
+                            >
                                 <svg
-                                    class="w-4 h-4 text-primary"
+                                    class="w-4 h-4 text-brand-orange"
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"
@@ -147,220 +212,130 @@ const relatedTours = tours
                                     ></path>
                                 </svg>
                                 {tour.duration}
-                            </span>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Price Badge -->
                     <div
-                        class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-5 text-center min-w-[140px]"
+                        class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-5 text-center min-w-[140px] shadow-2xl"
                     >
-                        <p class="text-xs text-white/60 font-medium mb-1">
-                            Starting From
+                        <p
+                            class="text-xs text-white/80 font-medium mb-1 uppercase tracking-wider"
+                        >
+                            <TranslatedText client:load content={{en: "Starting From", es: "Desde"}} />
                         </p>
-                        <p class="text-3xl font-black text-white">
+                        <p
+                            class="text-4xl font-black text-white"
+                            id="hero-price"
+                        >
                             ${tour.price}
                         </p>
-                        <p class="text-xs text-white/50 mt-1">per person</p>
+                        <p class="text-xs text-white/60 mt-1"><TranslatedText client:load content={{en: "per person", es: "por persona"}} /></p>
                     </div>
                 </div>
+            </div>
+
+            <!-- Scroll Indicator -->
+            <div
+                class="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce opacity-70 hidden md:flex flex-col items-center gap-2"
+            >
+                <span
+                    class="text-[10px] uppercase tracking-[0.2em] text-white font-bold"
+                    ><TranslatedText client:load content={{en: "Scroll", es: "Deslizar"}} /></span
+                >
+                <svg
+                    class="w-4 h-4 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                </svg>
             </div>
         </section>
 
         <!-- Main Content -->
         <section class="relative py-16 md:py-20">
             <div class="max-w-7xl mx-auto px-6">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                <div class="flex flex-col lg:flex-row gap-12 justify-between">
                     <!-- Left: Tour Details -->
-                    <div class="lg:col-span-2 space-y-10">
-                        <!-- Description -->
-                        <div>
+                    <div class="flex-1 space-y-12 min-w-0 md:max-w-3xl">
+                        {/* Photo Gallery - Carousel Slider */}
+                        {
+                            tour.gallery && tour.gallery.length > 0 && (
+                                <TourGallery
+                                    client:only="react"
+                                    images={tour.gallery}
+                                    title={tour.title.en}
+                                />
+                            )
+                        }
+
+                        {/* Description & Accordion */}
+                        <div class="mt-8 md:mt-12">
                             <h2
-                                class="text-2xl font-bold text-white mb-4 flex items-center gap-3"
+                                class="text-3xl font-black text-white mb-6 flex items-center gap-3 italic uppercase tracking-tight"
                             >
                                 <span
                                     class="w-8 h-1 bg-gradient-to-r from-primary to-brand-orange rounded-full"
                                 ></span>
-                                About This Tour
+                                <TranslatedText client:load content={{en: "About This Tour", es: "Acerca de este Tour"}} />
                             </h2>
-                            <p class="text-gray-300 text-lg leading-relaxed">
-                                {tour.description.en}
-                            </p>
+
+                            <div class="space-y-8">
+                                {/* Lead Paragraph */}
+                                <TranslatedMarkdown
+                                    client:load
+                                    content={leadDescription}
+                                    className="text-gray-300 text-lg md:text-xl leading-[1.8] font-light [&>p]:mb-6 last:[&>p]:mb-0 [&_strong]:text-white [&_strong]:font-semibold [&>ul]:list-disc [&>ul]:pl-5 [&>ul]:mb-6 [&>ul>li]:mb-3 [&>ul>li::marker]:text-brand-orange [&>ol]:list-decimal [&>ol]:pl-5 [&>ol]:mb-6 [&>ol>li]:mb-3 [&>h3]:text-xl [&>h3]:font-bold [&>h3]:text-white [&>h3]:mb-4 [&>h3]:mt-8 first:[&>h3]:mt-0"
+                                />
+
+                                {
+                                    /* Accordion for the rest of the content (if any) */
+                                }
+                                {
+                                    tour.description.en.split("\n\n").length >
+                                        1 && (
+                                        <TourAccordion
+                                            client:load
+                                            items={[
+                                                {
+                                                    id: "details",
+                                                    title: {en: "The Experience", es: "La Experiencia"},
+                                                    content: remainingDescription,
+                                                    iconName: "info",
+                                                },
+                                            ]}
+                                        />
+                                    )
+                                }
+                            </div>
                         </div>
 
                         <!-- Highlights -->
-                        {
-                            tour.highlights && (
-                                <div>
-                                    <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                                        <span class="w-8 h-1 bg-gradient-to-r from-primary to-brand-orange rounded-full" />
-                                        Tour Highlights
-                                    </h2>
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                        {tour.highlights.en.map(
-                                            (highlight: string) => (
-                                                <div class="flex items-start gap-3 bg-dark-soft/50 rounded-xl p-4 border border-white/5">
-                                                    <div class="mt-0.5 w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                                                        <svg
-                                                            class="w-3 h-3 text-primary"
-                                                            fill="none"
-                                                            stroke="currentColor"
-                                                            viewBox="0 0 24 24"
-                                                        >
-                                                            <path
-                                                                stroke-linecap="round"
-                                                                stroke-linejoin="round"
-                                                                stroke-width="3"
-                                                                d="M5 13l4 4L19 7"
-                                                            />
-                                                        </svg>
-                                                    </div>
-                                                    <span class="text-gray-300 text-sm font-medium">
-                                                        {highlight}
-                                                    </span>
-                                                </div>
-                                            )
-                                        )}
-                                    </div>
-                                </div>
-                            )
-                        }
+                        <TourInfoList client:load type="highlights" data={tour.highlights} />
 
                         <!-- What's Included -->
-                        {
-                            tour.includes && (
-                                <div>
-                                    <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                                        <span class="w-8 h-1 bg-gradient-to-r from-primary to-brand-orange rounded-full" />
-                                        What's Included
-                                    </h2>
-                                    <div class="flex flex-wrap gap-3">
-                                        {tour.includes.en.map(
-                                            (item: string) => (
-                                                <span class="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-2 text-sm text-gray-300">
-                                                    <svg
-                                                        class="w-4 h-4 text-green-400"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        viewBox="0 0 24 24"
-                                                    >
-                                                        <path
-                                                            stroke-linecap="round"
-                                                            stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                                                        />
-                                                    </svg>
-                                                    {item}
-                                                </span>
-                                            )
-                                        )}
-                                    </div>
-                                </div>
-                            )
-                        }
+                        <TourInfoList client:load type="includes" data={tour.includes} />
                     </div>
 
                     <!-- Right: Pricing Sidebar -->
-                    <div class="lg:col-span-1">
-                        <div class="sticky top-28 space-y-6">
-                            <!-- Pricing Card -->
-                            <div
-                                class="bg-dark-soft rounded-2xl border border-white/10 overflow-hidden"
-                            >
-                                <div
-                                    class="bg-gradient-to-r from-primary/20 to-brand-orange/20 px-6 py-4 border-b border-white/10"
-                                >
-                                    <h3 class="text-lg font-bold text-white">
-                                        Select Duration
-                                    </h3>
-                                </div>
-                                <div class="p-6 space-y-3">
-                                    {
-                                        tour.pricing_options.map(
-                                            (
-                                                option: {
-                                                    duration: string;
-                                                    price: number;
-                                                },
-                                                index: number
-                                            ) => (
-                                                <div
-                                                    class:list={[
-                                                        "flex items-center justify-between p-4 rounded-xl border transition-all duration-200 cursor-pointer hover:border-primary/50 hover:bg-primary/5",
-                                                        index === 0
-                                                            ? "border-primary/50 bg-primary/5 ring-1 ring-primary/30"
-                                                            : "border-white/10",
-                                                    ]}
-                                                >
-                                                    <div class="flex items-center gap-3">
-                                                        <div
-                                                            class:list={[
-                                                                "w-4 h-4 rounded-full border-2 flex items-center justify-center",
-                                                                index === 0
-                                                                    ? "border-primary"
-                                                                    : "border-white/30",
-                                                            ]}
-                                                        >
-                                                            {index === 0 && (
-                                                                <div class="w-2 h-2 rounded-full bg-primary" />
-                                                            )}
-                                                        </div>
-                                                        <span class="text-white font-medium text-sm">
-                                                            {option.duration}
-                                                        </span>
-                                                    </div>
-                                                    <span class="text-white font-bold text-lg">
-                                                        ${option.price}
-                                                    </span>
-                                                </div>
-                                            )
-                                        )
-                                    }
-                                </div>
-
-                                <!-- WhatsApp CTA -->
-                                <div class="px-6 pb-6">
-                                    <a
-                                        href={`https://wa.me/50685858462?text=Hi! I'm interested in booking the ${tour.title.en} tour.`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        class="w-full flex items-center justify-center gap-3 bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-xl transition-all duration-300 hover:scale-[1.02] shadow-[0_0_25px_rgba(34,197,94,0.3)] hover:shadow-[0_0_40px_rgba(34,197,94,0.5)]"
-                                    >
-                                        <svg
-                                            class="w-5 h-5"
-                                            fill="currentColor"
-                                            viewBox="0 0 24 24"
-                                            ><path
-                                                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"
-                                            ></path><path
-                                                d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.5.5 0 00.611.611l4.458-1.495A11.952 11.952 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-2.319 0-4.478-.677-6.309-1.834l-.452-.274-2.645.887.887-2.645-.274-.452A9.955 9.955 0 012 12C2 6.486 6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"
-                                            ></path>
-                                        </svg>
-                                        Book via WhatsApp
-                                    </a>
-                                    <p
-                                        class="text-center text-xs text-gray-500 mt-3"
-                                    >
-                                        Instant reply • Free cancellation
-                                    </p>
-                                </div>
-                            </div>
-
-                            <!-- Quick Contact -->
-                            <div
-                                class="bg-dark-soft rounded-2xl border border-white/10 p-6 text-center"
-                            >
-                                <p class="text-sm text-gray-400 mb-3">
-                                    Need help choosing?
-                                </p>
-                                <a
-                                    href="/contact"
-                                    class="text-primary hover:text-primary/80 font-bold text-sm transition-colors"
-                                >
-                                    Contact Us →
-                                </a>
-                            </div>
+                    <div
+                        class="w-full lg:w-[380px] xl:w-[420px] flex-shrink-0 border-t lg:border-t-0 border-white/10 pt-10 lg:pt-0"
+                    >
+                        <div class="sticky top-28">
+                            <BookingSidebar
+                                client:load
+                                tourId={tour.id}
+                                tourTitle={tour.title.en}
+                                price={tour.price}
+                                durationOptions={tour.pricing_options}
+                            />
                         </div>
                     </div>
                 </div>
@@ -375,22 +350,24 @@ const relatedTours = tours
                     <div class="max-w-7xl mx-auto px-6">
                         <div class="text-center mb-12">
                             <span class="text-primary font-bold text-sm tracking-[0.2em] uppercase">
-                                More Adventures
+                                <TranslatedText client:load content={{en: "More Adventures", es: "Más Aventuras"}} />
                             </span>
                             <h2 class="text-3xl md:text-4xl font-black text-white uppercase tracking-tight italic mt-2">
-                                Similar{" "}
+                                <TranslatedText client:load content={{en: "Similar", es: "Tours"}} />{" "}
                                 <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-brand-orange">
-                                    Tours
+                                    <TranslatedText client:load content={{en: "Tours", es: "Similares"}} />
                                 </span>
                             </h2>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <div class="flex flex-wrap justify-center gap-8">
                             {relatedTours.map((t) => (
                                 <a
                                     href={`/tours/${t.id}`}
-                                    class="block hover:scale-[1.02] transition-transform duration-300"
+                                    class="block hover:scale-[1.03] transition-all duration-300 hover:shadow-[0_0_30px_rgba(242,127,27,0.15)] rounded-[25px]"
                                 >
                                     <TourCard
+                                        client:visible
+                                        id={t.id}
                                         title={t.title}
                                         price={t.price}
                                         originalPrice={t.originalPrice}
@@ -411,3 +388,24 @@ const relatedTours = tours
         <NewsletterSection client:visible />
     </main>
 </Layout>
+
+<script>
+    import { bookingStore } from "../../store/booking";
+
+    // Update Hero Price when booking options change
+    const heroPriceEl = document.getElementById("hero-price");
+
+    if (heroPriceEl) {
+        bookingStore.subscribe((state) => {
+            if (state.totalPrice > 0) {
+                // If guests > 1, show total, otherwise show per person price (which is effectively total for 1)
+                // Actually, let's just show the base price per adult for the selected duration in the hero,
+                // or the total? Usually Hero "Starting From" implies per person base.
+                // But if they change duration, the "base" changes.
+                // Let's show the pricePerAdult corresponding to the selected duration.
+
+                heroPriceEl.textContent = `$${state.pricePerAdult}`;
+            }
+        });
+    }
+</script>

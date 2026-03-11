@@ -3,9 +3,26 @@ import Layout from "../layouts/Layout.astro";
 import ContactHero from "../components/ContactHero";
 import ContactForm from "../components/ContactForm";
 import NewsletterSection from "../components/NewsletterSection";
+import {
+    getLocalBusinessSchema,
+    getBreadcrumbSchema,
+} from "../lib/seo-schemas";
+
+const schemas = [
+    getLocalBusinessSchema(),
+    getBreadcrumbSchema([
+        { name: "Home", url: "/" },
+        { name: "Contact", url: "/contact" },
+    ]),
+];
 ---
 
-<Layout title="Contact Us | Vamos Jacó Tours">
+<Layout
+    title="Contact Us | Vamos Jacó Tours — Book Your Adventure"
+    description="Contact Vamos Jacó Tours to book your Costa Rica adventure. Call us, send a message on WhatsApp, or fill out our form. Located on Avenida Pastor Díaz, Jacó, Puntarenas."
+    keywords="contact Vamos Jacó, book tour Jacó, Costa Rica tour booking, WhatsApp Jacó tours, Jacó tour operator contact"
+    jsonLd={schemas}
+>
     <main>
         {/* Parallax Hero */}
         <ContactHero client:load />

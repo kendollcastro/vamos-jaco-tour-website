@@ -9,46 +9,67 @@ import { ChevronLeft, ChevronRight, Linkedin, Twitter, Instagram } from 'lucide-
 import { useStore } from '@nanostores/react';
 import { language } from '../store';
 
-const teamMembers = [
+interface TeamMember {
+    id: number | string;
+    name: string;
+    position?: string;
+    position_en?: string;
+    position_es?: string;
+    image: string;
+    social: {
+        linkedin?: string;
+        twitter?: string;
+        instagram?: string;
+    };
+}
+
+const fallbackTeamMembers: TeamMember[] = [
     {
         id: 1,
-        name: "Carlos Rodriguez",
+        name: "Carlos Rodríguez",
+        position_en: "CEO & Founder",
+        position_es: "CEO y Fundador",
         position: "CEO & Founder",
-        image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=2574&auto=format&fit=crop",
-        social: { linkedin: "#", twitter: "#" }
+        image: "/images/team/carlos-rodriguez.png",
+        social: { instagram: "https://www.instagram.com/vamosjacotours" }
     },
     {
         id: 2,
-        name: "Elena Vargas",
+        name: "María Fernández",
+        position_en: "Tour Operations Manager",
+        position_es: "Gerente de Operaciones",
         position: "Tour Operations Manager",
-        image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=2576&auto=format&fit=crop",
-        social: { linkedin: "#", instagram: "#" }
+        image: "/images/team/maria-fernandez.png",
+        social: { instagram: "https://www.instagram.com/vamosjacotours" }
     },
     {
         id: 3,
-        name: "Mateo Silva",
+        name: "José Herrera",
+        position_en: "Lead Adventure Guide",
+        position_es: "Guía de Aventura Principal",
         position: "Lead Adventure Guide",
-        image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=2574&auto=format&fit=crop",
-        social: { twitter: "#", instagram: "#" }
+        image: "/images/team/jose-herrera.png",
+        social: { instagram: "https://www.instagram.com/vamosjacotours" }
     },
     {
         id: 4,
-        name: "Sofia Mendez",
+        name: "Andrea Mora",
+        position_en: "Customer Experience",
+        position_es: "Experiencia del Cliente",
         position: "Customer Experience",
-        image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=2661&auto=format&fit=crop",
-        social: { linkedin: "#" }
+        image: "/images/team/andrea-mora.png",
+        social: { instagram: "https://www.instagram.com/vamosjacotours" }
     },
-    {
-        id: 5,
-        name: "Alejandro Ruiz",
-        position: "Safety Coordinator",
-        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=2574&auto=format&fit=crop",
-        social: { linkedin: "#", instagram: "#" }
-    }
 ];
 
-export default function TeamSection() {
+interface TeamProps {
+    members?: TeamMember[];
+}
+
+export default function TeamSection({ members }: TeamProps) {
     const $language = useStore(language);
+
+    const displayMembers = members && members.length > 0 ? members : fallbackTeamMembers;
 
     const t = {
         en: {
@@ -107,8 +128,9 @@ export default function TeamSection() {
                         pagination={{
                             clickable: true,
                             el: '.swiper-pagination-custom',
-                            bulletClass: 'swiper-pagination-bullet bg-gray-300 opacity-100',
-                            bulletActiveClass: 'swiper-pagination-bullet-active !bg-primary'
+                            renderBullet: function (index, className) {
+                                return '<span class="' + className + ' ring-1 ring-white/50"></span>';
+                            }
                         }}
                         autoplay={{ delay: 5000, disableOnInteraction: false }}
                         breakpoints={{
@@ -118,34 +140,43 @@ export default function TeamSection() {
                         }}
                         className="!pb-16" // Space for pagination
                     >
-                        {teamMembers.map((member) => (
-                            <SwiperSlide key={member.id} className="h-auto">
-                                <div className="group relative h-[400px] rounded-[2rem] overflow-hidden shadow-soft cursor-pointer">
-                                    {/* Image */}
-                                    <img
-                                        src={member.image}
-                                        alt={member.name}
-                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                    />
+                        {displayMembers.map((member) => {
+                            // Determine bilingual position
+                            const displayPosition = $language === 'en'
+                                ? (member.position_en || member.position)
+                                : (member.position_es || member.position);
 
-                                    {/* Gradient Overlay */}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            return (
+                                <SwiperSlide key={member.id} className="h-auto">
+                                    <div className="group relative h-[400px] rounded-[2rem] overflow-hidden shadow-soft cursor-pointer">
+                                        {/* Image */}
+                                        <img
+                                            src={member.image}
+                                            alt={member.name}
+                                            loading="lazy"
+                                            decoding="async"
+                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                        />
 
-                                    {/* Content Box (Floating at bottom like design) */}
-                                    <div className="absolute bottom-4 left-4 right-4 bg-dark-soft/90 backdrop-blur-md p-6 rounded-[1.5rem] shadow-lg ring-1 ring-white/10 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                                        <h3 className="text-xl font-bold text-white mb-1">{member.name}</h3>
-                                        <p className="text-primary font-medium text-sm mb-3">{member.position}</p>
+                                        {/* Gradient Overlay */}
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-                                        {/* Social Links (Hidden initially, reveal on hover could be cool, but keeping simple for now) */}
-                                        <div className="flex gap-3 text-gray-400">
-                                            {member.social.linkedin && <Linkedin className="w-4 h-4 hover:text-primary transition-colors hover:scale-110" />}
-                                            {member.social.twitter && <Twitter className="w-4 h-4 hover:text-brand-teal transition-colors hover:scale-110" />}
-                                            {member.social.instagram && <Instagram className="w-4 h-4 hover:text-brand-orange transition-colors hover:scale-110" />}
+                                        {/* Content Box (Floating at bottom like design) */}
+                                        <div className="absolute bottom-4 left-4 right-4 bg-dark-soft/90 backdrop-blur-md p-6 rounded-[1.5rem] shadow-lg ring-1 ring-white/10 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                                            <h3 className="text-xl font-bold text-white mb-1">{member.name}</h3>
+                                            <p className="text-primary font-medium text-sm mb-3">{displayPosition}</p>
+
+                                            {/* Social Links */}
+                                            <div className="flex gap-3 text-gray-400">
+                                                {member.social?.linkedin && <Linkedin className="w-4 h-4 hover:text-primary transition-colors hover:scale-110" />}
+                                                {member.social?.twitter && <Twitter className="w-4 h-4 hover:text-brand-teal transition-colors hover:scale-110" />}
+                                                {member.social?.instagram && <Instagram className="w-4 h-4 hover:text-brand-orange transition-colors hover:scale-110" />}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </SwiperSlide>
-                        ))}
+                                </SwiperSlide>
+                            );
+                        })}
                     </Swiper>
 
                     {/* Mobile Pagination */}

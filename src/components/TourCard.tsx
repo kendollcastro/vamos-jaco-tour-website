@@ -31,7 +31,7 @@ export default function TourCard({ id, title, price, originalPrice, image_url, l
     const getText = (content: { en: string; es: string } | string) => {
         if (!mounted) return typeof content === 'string' ? content : content.en; // Default to English during SSR to match server
         if (typeof content === 'string') return content;
-        return content[$language];
+        return content[$language] || content.en;
     };
 
     const currentTitle = getText(title);

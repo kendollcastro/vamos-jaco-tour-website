@@ -2,9 +2,14 @@ import React, { useEffect, useRef } from 'react';
 import TourCard from './TourCard';
 import { useStore } from '@nanostores/react';
 import { language } from '../store';
-import { tours } from '../data/tours';
+import type { Tour } from '../data/tours';
 
-export default function TourGrid({ limit = 6 }: { limit?: number }) {
+interface TourGridProps {
+    tours: Tour[];
+    limit?: number;
+}
+
+export default function TourGrid({ tours, limit = 6 }: TourGridProps) {
     const $language = useStore(language);
     const displayedTours = tours.slice(0, limit);
     const gridRef = useRef<HTMLDivElement>(null);
