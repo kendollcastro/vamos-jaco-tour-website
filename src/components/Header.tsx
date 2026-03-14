@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useStore } from '@nanostores/react';
 import { language, toggleLanguage } from '../store';
-import { Globe, Menu, X } from 'lucide-react';
+import Globe from 'lucide-react/dist/esm/icons/globe';
+import Menu from 'lucide-react/dist/esm/icons/menu';
+import X from 'lucide-react/dist/esm/icons/x';
 import { clsx } from 'clsx';
 
 export default function Header() {
@@ -45,8 +47,11 @@ export default function Header() {
                     {/* Logo */}
                     <a href="/" className="flex items-center gap-2 transition-transform hover:scale-105">
                         <img
-                            src="/logo.png"
+                            src="/logo-optimized.png"
                             alt="Vamos Jacó Tours Logo"
+                            width="600"
+                            height="301"
+                            fetchPriority="high"
                             className="h-14 md:h-16 w-auto object-contain"
                             onError={(e) => {
                                 // Fallback to text if logo.png doesn't exist yet

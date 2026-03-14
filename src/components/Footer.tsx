@@ -1,5 +1,10 @@
 import React from 'react';
-import { Facebook, Instagram, Twitter, Linkedin, MessageCircle, Phone, Mail, ArrowRight, CreditCard } from 'lucide-react';
+import Facebook from 'lucide-react/dist/esm/icons/facebook';
+import Instagram from 'lucide-react/dist/esm/icons/instagram';
+import MessageCircle from 'lucide-react/dist/esm/icons/message-circle';
+import Phone from 'lucide-react/dist/esm/icons/phone';
+import Mail from 'lucide-react/dist/esm/icons/mail';
+import CreditCard from 'lucide-react/dist/esm/icons/credit-card';
 import { useStore } from '@nanostores/react';
 import { language } from '../store';
 
@@ -44,7 +49,7 @@ export default function Footer() {
             {/* Background Map Pattern */}
             <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
                 <img
-                    src="https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg"
+                    src="/images/world-map.svg"
                     alt="World Map"
                     className="w-full h-full object-cover grayscale invert"
                 />
@@ -105,8 +110,10 @@ export default function Footer() {
                     <div>
                         <a href="/" className="mb-6 block">
                             <img
-                                src="/logo.png"
+                                src="/logo-optimized.png"
                                 alt="Vamos Jacó Tours Logo"
+                                width="600"
+                                height="301"
                                 className="h-16 md:h-20 w-auto object-contain"
                                 onError={(e) => {
                                     e.currentTarget.style.display = 'none';

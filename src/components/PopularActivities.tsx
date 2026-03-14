@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useStore } from '@nanostores/react';
 import { language } from '../store';
-import { Flame } from 'lucide-react';
+import Flame from 'lucide-react/dist/esm/icons/flame';
 
 export default function PopularActivities() {
     const $language = useStore(language);
@@ -29,16 +29,20 @@ export default function PopularActivities() {
         {
             name: $language === 'en' ? 'ATV Tours' : 'Tours ATV',
             badge: 'EXTREME',
-            image: '/images/activities/untitled-36.jpg',
+            image: '/images/activities/atv-activity-optimized.jpg',
             rotation: '-rotate-6',
-            link: '/tours/jaco-atv-adventure'
+            link: '/tours/jaco-atv-adventure',
+            width: 800,
+            height: 1422
         },
         {
             name: $language === 'en' ? 'Zipline' : 'Tirolesa',
             badge: 'THRILL',
             image: '/images/Zipline/zipline-vamos-jaco-tours-001.jpg',
             rotation: '-rotate-3',
-            link: '/tours/zipline-canopy'
+            link: '/tours/zipline-canopy',
+            width: 800,
+            height: 769
         },
         {
             name: $language === 'en' ? 'Surfing' : 'Surf',
@@ -106,6 +110,8 @@ export default function PopularActivities() {
                             alt={activities[0].name}
                             loading="lazy"
                             decoding="async"
+                            width={activities[0].width}
+                            height={activities[0].height}
                             className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/40 to-transparent"></div>
@@ -130,6 +136,8 @@ export default function PopularActivities() {
                                 alt={activities[1].name}
                                 loading="lazy"
                                 decoding="async"
+                                width={activities[1].width}
+                                height={activities[1].height}
                                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/30 to-transparent"></div>

@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Play, Globe, UserCheck, Smile, Trophy, ArrowRight, Flame, ShieldAlert, X } from 'lucide-react';
+import Play from 'lucide-react/dist/esm/icons/play';
+import Globe from 'lucide-react/dist/esm/icons/globe';
+import UserCheck from 'lucide-react/dist/esm/icons/user-check';
+import Smile from 'lucide-react/dist/esm/icons/smile';
+import Trophy from 'lucide-react/dist/esm/icons/trophy';
+import ArrowRight from 'lucide-react/dist/esm/icons/arrow-right';
+import Flame from 'lucide-react/dist/esm/icons/flame';
+import ShieldAlert from 'lucide-react/dist/esm/icons/shield-alert';
+import X from 'lucide-react/dist/esm/icons/x';
 import { useStore } from '@nanostores/react';
 import { language } from '../store';
 import AnimatedCounter from './AnimatedCounter';

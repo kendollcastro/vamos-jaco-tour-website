@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useStore } from '@nanostores/react';
 import { language } from '../store';
-import { ChevronDown, Play } from 'lucide-react';
+import ChevronDown from 'lucide-react/dist/esm/icons/chevron-down';
+import Play from 'lucide-react/dist/esm/icons/play';
 import HeroSearch from './HeroSearch';
 
 export default function HeroSlider() {
@@ -43,9 +44,11 @@ export default function HeroSlider() {
             {/* Video Background (Desktop Only) vs Image Background (Mobile Only) */}
             <div className="absolute inset-0 z-0">
                 <img
-                    src={HERO_POSTER}
+                    src="/hero-slider-img-vamos-jaco-tours-optimized.jpg"
                     alt="Vamos Jaco Tours Adventure Hero"
-                    className="w-full h-full object-contain bg-dark md:hidden"
+                    className="w-full h-full object-cover bg-dark md:hidden"
+                    width="1200"
+                    height="1816"
                     // @ts-ignore
                     fetchPriority="high"
                 />

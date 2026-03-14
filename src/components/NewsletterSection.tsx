@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import { Send, Flame, CheckCircle2 } from 'lucide-react';
+import Send from 'lucide-react/dist/esm/icons/send';
+import CheckCircle2 from 'lucide-react/dist/esm/icons/check-circle-2';
+import Flame from 'lucide-react/dist/esm/icons/flame';
+import Mail from 'lucide-react/dist/esm/icons/mail';
 import { useStore } from '@nanostores/react';
 import { language } from '../store';
 
