@@ -50,10 +50,11 @@ export default function HeroSearch() {
 
                 {/* Activity Input */}
                 <div className="flex-1 w-full px-4 py-2 md:px-6 md:py-3 hover:bg-white/5 rounded-[1.5rem] md:rounded-[2rem] transition-colors cursor-pointer group">
-                    <label className="block text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wider mb-0.5 md:mb-1 group-hover:text-primary transition-colors">{t.activity}</label>
+                    <label htmlFor="hero-activity" className="block text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wider mb-0.5 md:mb-1 group-hover:text-primary transition-colors">{t.activity}</label>
                     <div className="flex items-center gap-2 md:gap-3 text-gray-400 group-hover:text-white">
                         <MapPin className="w-4 h-4 md:w-5 md:h-5 text-primary/70" />
                         <input
+                            id="hero-activity"
                             type="text"
                             value={activity}
                             onChange={(e) => setActivity(e.target.value)}
@@ -68,10 +69,11 @@ export default function HeroSearch() {
 
                 {/* Date Input */}
                 <div className="flex-1 w-full px-4 py-2 md:px-6 md:py-3 hover:bg-white/5 rounded-[1.5rem] md:rounded-[2rem] transition-colors cursor-pointer group">
-                    <label className="block text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wider mb-0.5 md:mb-1 group-hover:text-primary transition-colors">{t.date}</label>
+                    <label htmlFor="hero-date" className="block text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wider mb-0.5 md:mb-1 group-hover:text-primary transition-colors">{t.date}</label>
                     <div className="flex items-center gap-2 md:gap-3 text-gray-400 group-hover:text-white">
                         <Calendar className="w-4 h-4 md:w-5 md:h-5 text-primary/70" />
                         <input
+                            id="hero-date"
                             type="date"
                             value={date}
                             onChange={(e) => setDate(e.target.value)}
@@ -85,10 +87,11 @@ export default function HeroSearch() {
 
                 {/* People Input */}
                 <div className="flex-1 w-full px-4 py-2 md:px-6 md:py-3 hover:bg-white/5 rounded-[1.5rem] md:rounded-[2rem] transition-colors cursor-pointer group">
-                    <label className="block text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wider mb-0.5 md:mb-1 group-hover:text-primary transition-colors">{t.people}</label>
+                    <label htmlFor="hero-people" className="block text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wider mb-0.5 md:mb-1 group-hover:text-primary transition-colors">{t.people}</label>
                     <div className="flex items-center gap-2 md:gap-3 text-gray-400 group-hover:text-white">
                         <Users className="w-4 h-4 md:w-5 md:h-5 text-primary/70" />
                         <input
+                            id="hero-people"
                             type="number"
                             min="1"
                             value={people}
@@ -101,7 +104,11 @@ export default function HeroSearch() {
 
                 {/* Search Button */}
                 <div className="p-1 w-full md:w-auto mt-1 md:mt-0">
-                    <button type="submit" className="bg-primary text-white p-4 rounded-full shadow-lg shadow-primary/30 hover:shadow-primary/40 hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2 w-full md:w-auto md:aspect-square">
+                    <button 
+                        type="submit" 
+                        aria-label={t.search}
+                        className="bg-primary text-white p-4 rounded-full shadow-lg shadow-primary/30 hover:shadow-primary/40 hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2 w-full md:w-auto md:aspect-square"
+                    >
                         <Search className="w-6 h-6" />
                         <span className="md:hidden font-bold">{t.search}</span>
                     </button>

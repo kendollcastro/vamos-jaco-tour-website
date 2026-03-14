@@ -302,7 +302,7 @@ const remainingDescription = {
                                     tour.description.en.split("\n\n").length >
                                         1 && (
                                         <TourAccordion
-                                            client:load
+                                            client:visible
                                             items={[
                                                 {
                                                     id: "details",
@@ -318,10 +318,10 @@ const remainingDescription = {
                         </div>
 
                         <!-- Highlights -->
-                        <TourInfoList client:load type="highlights" data={tour.highlights} />
+                        <TourInfoList client:visible type="highlights" data={tour.highlights} />
 
                         <!-- What's Included -->
-                        <TourInfoList client:load type="includes" data={tour.includes} />
+                        <TourInfoList client:visible type="includes" data={tour.includes} />
                     </div>
 
                     <!-- Right: Pricing Sidebar -->

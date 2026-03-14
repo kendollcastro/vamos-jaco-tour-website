@@ -46,6 +46,8 @@ export default function AboutGallery() {
                         <img
                             src={images[0]}
                             alt="Gallery Highlight"
+                            loading="lazy"
+                            decoding="async"
                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-dark/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity"></div>
@@ -56,6 +58,8 @@ export default function AboutGallery() {
                         <img
                             src={images[1]}
                             alt="Gallery 1"
+                            loading="lazy"
+                            decoding="async"
                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                         />
                         <div className="absolute inset-0 bg-dark/20 group-hover:bg-transparent transition-colors"></div>
@@ -64,6 +68,8 @@ export default function AboutGallery() {
                         <img
                             src={images[2]}
                             alt="Gallery 2"
+                            loading="lazy"
+                            decoding="async"
                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                         />
                         <div className="absolute inset-0 bg-dark/20 group-hover:bg-transparent transition-colors"></div>
@@ -72,6 +78,8 @@ export default function AboutGallery() {
                         <img
                             src={images[3]}
                             alt="Gallery 3"
+                            loading="lazy"
+                            decoding="async"
                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                         />
                         <div className="absolute inset-0 bg-dark/20 group-hover:bg-transparent transition-colors"></div>
@@ -80,6 +88,8 @@ export default function AboutGallery() {
                         <img
                             src={images[4]}
                             alt="Gallery 4"
+                            loading="lazy"
+                            decoding="async"
                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                         />
                         <div className="absolute inset-0 bg-dark/20 group-hover:bg-transparent transition-colors"></div>

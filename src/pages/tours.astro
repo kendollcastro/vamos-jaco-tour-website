@@ -95,7 +95,7 @@ const breadcrumbs = getBreadcrumbSchema([
             </div>
 
             {/* Filterable Grid */}
-            <TourFilter client:load initialTours={tours} defaultLimit={100} />
+            <TourFilter client:visible initialTours={tours} defaultLimit={100} />
         </div>
     </main>
 </Layout>

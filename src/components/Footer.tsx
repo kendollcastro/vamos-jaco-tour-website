@@ -61,7 +61,7 @@ export default function Footer() {
                                 <MessageCircle className="w-6 h-6" />
                             </div>
                             <div>
-                                <h4 className="font-bold text-lg">{content.inquiry.title}</h4>
+                                <h3 className="font-bold text-lg">{content.inquiry.title}</h3>
                                 <p className="text-gray-400 text-sm">{content.inquiry.subtitle}</p>
                             </div>
                         </div>
@@ -71,7 +71,7 @@ export default function Footer() {
                                 <MessageCircle className="w-6 h-6" />
                             </div>
                             <div>
-                                <h4 className="font-bold text-lg">{content.whatsapp.title}</h4>
+                                <h3 className="font-bold text-lg">{content.whatsapp.title}</h3>
                                 <p className="text-gray-400 text-sm">{content.whatsapp.subtitle}</p>
                             </div>
                         </div>
@@ -81,7 +81,7 @@ export default function Footer() {
                                 <Mail className="w-6 h-6" />
                             </div>
                             <div>
-                                <h4 className="font-bold text-lg">{content.mail.title}</h4>
+                                <h3 className="font-bold text-lg">{content.mail.title}</h3>
                                 <p className="text-gray-400 text-sm">{content.mail.subtitle}</p>
                             </div>
                         </div>
@@ -91,7 +91,7 @@ export default function Footer() {
                                 <Phone className="w-6 h-6" />
                             </div>
                             <div>
-                                <h4 className="font-bold text-lg">{content.call.title}</h4>
+                                <h3 className="font-bold text-lg">{content.call.title}</h3>
                                 <p className="text-gray-400 text-sm">{content.call.subtitle}</p>
                             </div>
                         </div>
@@ -117,20 +117,20 @@ export default function Footer() {
                             />
                         </a>
                         <p className="text-gray-400 text-sm mb-2 font-bold">Vamos Jacó Tours Agency</p>
-                        <p className="text-gray-500 text-sm mb-6 leading-relaxed">
+                        <p className="text-gray-400 text-sm mb-6 leading-relaxed">
                             {content.brand.address}
                         </p>
 
                         <div className="flex gap-3 mb-8">
-                            <a href="https://www.facebook.com" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-600 transition-colors text-white"><Facebook className="w-4 h-4" /></a>
-                            <a href="https://www.instagram.com/vamosjacotours" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-pink-600 transition-colors text-white"><Instagram className="w-4 h-4" /></a>
-                            <a href="https://wa.me/50685858462" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-green-600 transition-colors text-white"><MessageCircle className="w-4 h-4" /></a>
+                            <a href="https://www.facebook.com" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-600 transition-colors text-white" aria-label="Facebook"><Facebook className="w-4 h-4" /></a>
+                            <a href="https://www.instagram.com/vamosjacotours" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-pink-600 transition-colors text-white" aria-label="Instagram"><Instagram className="w-4 h-4" /></a>
+                            <a href="https://wa.me/50685858462" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-green-600 transition-colors text-white" aria-label="WhatsApp"><MessageCircle className="w-4 h-4" /></a>
                         </div>
                     </div>
 
                     {/* Column 2: Top Destination */}
                     <div>
-                        <h4 className="text-lg font-bold mb-8">{content.cols.destinations}</h4>
+                        <h3 className="text-lg font-bold mb-8">{content.cols.destinations}</h3>
                         <ul className="space-y-4 text-gray-400 text-sm">
                             <li><a href="/tours" className="hover:text-primary transition-colors">Jacó Beach</a></li>
                             <li><a href="/tours" className="hover:text-primary transition-colors">Herradura</a></li>
@@ -141,7 +141,7 @@ export default function Footer() {
 
                     {/* Column 3: Popular Search */}
                     <div>
-                        <h4 className="text-lg font-bold mb-8">{content.cols.search}</h4>
+                        <h3 className="text-lg font-bold mb-8">{content.cols.search}</h3>
                         <ul className="space-y-4 text-gray-400 text-sm">
                             <li><a href="/tours" className="hover:text-primary transition-colors">ATV Tours</a></li>
                             <li><a href="/tours" className="hover:text-primary transition-colors">Side by Side (Buggy)</a></li>
@@ -153,7 +153,7 @@ export default function Footer() {
 
                     {/* Column 4: Resources */}
                     <div>
-                        <h4 className="text-lg font-bold mb-8">{content.cols.resources}</h4>
+                        <h3 className="text-lg font-bold mb-8">{content.cols.resources}</h3>
                         <ul className="space-y-4 text-gray-400 text-sm">
                             <li><a href="/" className="hover:text-primary transition-colors">{$language === 'en' ? 'Home' : 'Inicio'}</a></li>
                             <li><a href="/tours" className="hover:text-primary transition-colors">Tours & Adventures</a></li>
@@ -166,11 +166,11 @@ export default function Footer() {
 
                 {/* Bottom Bar */}
                 <div className="border-t border-gray-800 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
-                    <p className="text-gray-500 text-sm">
+                    <p className="text-gray-400 text-sm">
                         Copyright {new Date().getFullYear()} Vamos Jacó. {content.rights}
                     </p>
                     <div className="flex items-center gap-4">
-                        <span className="text-gray-500 text-sm hidden md:block">{content.payment}</span>
+                        <span className="text-gray-400 text-sm hidden md:block">{content.payment}</span>
                         <div className="flex gap-2">
                             {/* Simple Payment Icons Placeholders */}
                             <div className="bg-white px-2 py-1 rounded h-6 flex items-center"><img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" className="h-4" alt="Mastercard" /></div>

@@ -106,10 +106,16 @@ export default function TeamSection({ members }: TeamProps) {
 
                     {/* Navigation Buttons (Desktop) */}
                     <div className="hidden md:flex gap-4">
-                        <button className="swiper-button-prev-custom w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-gray-400 hover:bg-primary hover:text-white hover:border-primary transition-all duration-300">
+                        <button 
+                            className="swiper-button-prev-custom w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-gray-400 hover:bg-primary hover:text-white hover:border-primary transition-all duration-300"
+                            aria-label={$language === 'en' ? "Previous slide" : "Diapositiva anterior"}
+                        >
                             <ChevronLeft className="w-6 h-6" />
                         </button>
-                        <button className="swiper-button-next-custom w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-gray-400 hover:bg-primary hover:text-white hover:border-primary transition-all duration-300">
+                        <button 
+                            className="swiper-button-next-custom w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-gray-400 hover:bg-primary hover:text-white hover:border-primary transition-all duration-300"
+                            aria-label={$language === 'en' ? "Next slide" : "Siguiente diapositiva"}
+                        >
                             <ChevronRight className="w-6 h-6" />
                         </button>
                     </div>

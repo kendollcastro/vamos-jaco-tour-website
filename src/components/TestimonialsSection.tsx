@@ -120,7 +120,7 @@ export default function TestimonialsSection() {
                                             </div>
                                         ))}
                                     </div>
-                                    <h4 className="font-bold text-white text-sm mb-4">{content.avg}</h4>
+                                    <p className="font-bold text-white text-sm mb-4">{content.avg}</p>
 
                                     {/* Quote */}
                                     <p className="text-gray-400 leading-relaxed mb-6 flex-grow">
@@ -130,10 +130,10 @@ export default function TestimonialsSection() {
                                     {/* User Info */}
                                     <div className="flex items-center gap-4 mt-auto">
                                         <div className="w-12 h-12 rounded-full overflow-hidden shrink-0">
-                                            <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                            <img src={item.image} alt={item.name} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                                         </div>
                                         <div>
-                                            <h5 className="font-bold text-white">{item.name}</h5>
+                                            <h3 className="font-bold text-white">{item.name}</h3>
                                             <p className="text-xs text-gray-400">{item.role}</p>
                                         </div>
                                     </div>
@@ -167,10 +167,16 @@ export default function TestimonialsSection() {
 
                     {/* Navigation Buttons (Center) */}
                     <div className="flex gap-4">
-                        <button className="testi-prev w-12 h-12 rounded-full bg-dark-soft shadow-soft ring-1 ring-white/10 flex items-center justify-center text-gray-400 hover:bg-primary hover:text-white transition-all duration-300">
+                        <button 
+                            className="testi-prev w-12 h-12 rounded-full bg-dark-soft shadow-soft ring-1 ring-white/10 flex items-center justify-center text-gray-400 hover:bg-primary hover:text-white transition-all duration-300"
+                            aria-label={$language === 'en' ? "Previous testimonial" : "Testimonio anterior"}
+                        >
                             <ChevronLeft className="w-5 h-5" />
                         </button>
-                        <button className="testi-next w-12 h-12 rounded-full bg-dark-soft shadow-soft ring-1 ring-white/10 flex items-center justify-center text-gray-400 hover:bg-primary hover:text-white transition-all duration-300">
+                        <button 
+                            className="testi-next w-12 h-12 rounded-full bg-dark-soft shadow-soft ring-1 ring-white/10 flex items-center justify-center text-gray-400 hover:bg-primary hover:text-white transition-all duration-300"
+                            aria-label={$language === 'en' ? "Next testimonial" : "Siguiente testimonio"}
+                        >
                             <ChevronRight className="w-5 h-5" />
                         </button>
                     </div>

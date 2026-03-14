@@ -112,6 +112,8 @@ export default function TravelInspirations() {
                                         <img
                                             src={item.image}
                                             alt={item.title}
+                                            loading="lazy"
+                                            decoding="async"
                                             className="w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-110"
                                         />
                                         <div className="absolute inset-0 bg-black/10 group-hover/card:bg-transparent transition-colors duration-300"></div>

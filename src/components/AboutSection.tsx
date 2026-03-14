@@ -93,7 +93,7 @@ export default function AboutSection() {
 
                         <h2 className="text-6xl md:text-8xl font-black text-white mb-6 leading-[0.9] uppercase italic tracking-tighter drop-shadow-2xl">
                             Vamos Jacó <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-brand-orange drop-shadow-[0_0_30px_rgba(220,53,34,0.6)]">
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-brand-orange drop-shadow-[0_0_30px_rgba(220,53,34,0.6)] inline-block px-6 -mx-6">
                                 #1
                             </span> AGENCY
                         </h2>
@@ -144,6 +144,7 @@ export default function AboutSection() {
                             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                                 <button 
                                     onClick={() => setShowVideoModal(true)}
+                                    aria-label={$language === 'en' ? "Play video" : "Ver video"}
                                     className="pointer-events-auto relative flex items-center justify-center w-24 h-24 rounded-full bg-black/60 backdrop-blur-md border-2 border-white text-white hover:bg-primary hover:border-primary transition-all duration-300 group shadow-[0_0_30px_rgba(0,0,0,0.5)]"
                                 >
                                     <Play className="w-10 h-10 fill-current ml-2 group-hover:scale-110 transition-transform" />

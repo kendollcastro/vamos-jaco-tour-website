@@ -129,6 +129,7 @@ export default function ContactForm() {
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div className="relative group">
                                 <input
+                                    id="contact-name"
                                     type="text"
                                     required
                                     maxLength={100}
@@ -138,13 +139,14 @@ export default function ContactForm() {
                                     placeholder=" "
                                     className="peer w-full bg-white/5 border-2 border-white/10 rounded-xl px-6 py-4 outline-none focus:border-primary/50 focus:bg-white/10 transition-all text-white font-medium"
                                 />
-                                <label className="absolute left-6 top-4 text-gray-400 text-sm font-medium transition-all peer-placeholder-shown:text-base peer-placeholder-shown:top-4 peer-focus:top-[-10px] peer-focus:text-xs peer-focus:text-primary peer-focus:bg-dark-soft peer-focus:px-2 rounded-full cursor-text pointer-events-none transform -translate-y-1/2 peer-placeholder-shown:translate-y-0 peer-focus:translate-y-0">
+                                <label htmlFor="contact-name" className="absolute left-6 top-4 text-gray-400 text-sm font-medium transition-all peer-placeholder-shown:text-base peer-placeholder-shown:top-4 peer-focus:top-[-10px] peer-focus:text-xs peer-focus:text-primary peer-focus:bg-dark-soft peer-focus:px-2 rounded-full cursor-text pointer-events-none transform -translate-y-1/2 peer-placeholder-shown:translate-y-0 peer-focus:translate-y-0">
                                     {content.name}
                                 </label>
                             </div>
 
                             <div className="relative group">
                                 <input
+                                    id="contact-email"
                                     type="email"
                                     required
                                     maxLength={200}
@@ -154,13 +156,14 @@ export default function ContactForm() {
                                     placeholder=" "
                                     className="peer w-full bg-white/5 border-2 border-white/10 rounded-xl px-6 py-4 outline-none focus:border-primary/50 focus:bg-white/10 transition-all text-white font-medium"
                                 />
-                                <label className="absolute left-6 top-4 text-gray-400 text-sm font-medium transition-all peer-placeholder-shown:text-base peer-placeholder-shown:top-4 peer-focus:top-[-10px] peer-focus:text-xs peer-focus:text-primary peer-focus:bg-dark-soft peer-focus:px-2 rounded-full cursor-text pointer-events-none transform -translate-y-1/2 peer-placeholder-shown:translate-y-0 peer-focus:translate-y-0">
+                                <label htmlFor="contact-email" className="absolute left-6 top-4 text-gray-400 text-sm font-medium transition-all peer-placeholder-shown:text-base peer-placeholder-shown:top-4 peer-focus:top-[-10px] peer-focus:text-xs peer-focus:text-primary peer-focus:bg-dark-soft peer-focus:px-2 rounded-full cursor-text pointer-events-none transform -translate-y-1/2 peer-placeholder-shown:translate-y-0 peer-focus:translate-y-0">
                                     {content.email}
                                 </label>
                             </div>
 
                             <div className="relative group">
                                 <textarea
+                                    id="contact-message"
                                     required
                                     rows={4}
                                     maxLength={2000}
@@ -169,7 +172,7 @@ export default function ContactForm() {
                                     placeholder=" "
                                     className="peer w-full bg-white/5 border-2 border-white/10 rounded-xl px-6 py-4 outline-none focus:border-primary/50 focus:bg-white/10 transition-all text-white font-medium resize-none"
                                 ></textarea>
-                                <label className="absolute left-6 top-4 text-gray-400 text-sm font-medium transition-all peer-placeholder-shown:text-base peer-placeholder-shown:top-4 peer-focus:top-[-10px] peer-focus:text-xs peer-focus:text-primary peer-focus:bg-dark-soft peer-focus:px-2 rounded-full cursor-text pointer-events-none transform -translate-y-1/2 peer-placeholder-shown:translate-y-0 peer-focus:translate-y-0">
+                                <label htmlFor="contact-message" className="absolute left-6 top-4 text-gray-400 text-sm font-medium transition-all peer-placeholder-shown:text-base peer-placeholder-shown:top-4 peer-focus:top-[-10px] peer-focus:text-xs peer-focus:text-primary peer-focus:bg-dark-soft peer-focus:px-2 rounded-full cursor-text pointer-events-none transform -translate-y-1/2 peer-placeholder-shown:translate-y-0 peer-focus:translate-y-0">
                                     {content.message}
                                 </label>
                             </div>

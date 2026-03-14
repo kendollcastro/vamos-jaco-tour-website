@@ -39,7 +39,7 @@ export default function TourGalleryBento({ images, title }: TourGalleryBentoProp
                     onClick={() => openLightbox(0)}
                 >
                     <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10" />
-                    <img src={images[0]} alt={`${title} 1`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                    <img src={images[0]} alt={`${title} 1`} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                 </div>
             );
         }
@@ -50,7 +50,7 @@ export default function TourGalleryBento({ images, title }: TourGalleryBentoProp
                     {images.map((img, i) => (
                         <div key={i} className="w-full h-full cursor-pointer relative overflow-hidden group" onClick={() => openLightbox(i)}>
                             <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10" />
-                            <img src={img} alt={`${title} ${i + 1}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                            <img src={img} alt={`${title} ${i + 1}`} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                         </div>
                     ))}
                 </div>
@@ -69,7 +69,7 @@ export default function TourGalleryBento({ images, title }: TourGalleryBentoProp
                     onClick={() => openLightbox(0)}
                 >
                     <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10" />
-                    <img src={images[0]} alt={`${title} 1`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                    <img src={images[0]} alt={`${title} 1`} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                 </div>
 
                 {/* Right Images (take remaining 2 columns) */}
@@ -85,7 +85,7 @@ export default function TourGalleryBento({ images, title }: TourGalleryBentoProp
                                 onClick={() => openLightbox(actualIndex)}
                             >
                                 <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10" />
-                                <img src={img} alt={`${title} ${actualIndex + 1}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                <img src={img} alt={`${title} ${actualIndex + 1}`} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
 
                                 {isLast && hasMore && (
                                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-20 transition-colors hover:bg-black/50">
@@ -145,6 +145,8 @@ export default function TourGalleryBento({ images, title }: TourGalleryBentoProp
                                     <img
                                         src={img}
                                         alt={`${title} - Photo ${index + 1}`}
+                                        loading="lazy"
+                                        decoding="async"
                                         className="max-w-full max-h-full object-contain rounded-lg drop-shadow-2xl select-none"
                                     />
                                 </SwiperSlide>

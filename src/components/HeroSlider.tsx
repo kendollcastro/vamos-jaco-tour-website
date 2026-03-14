@@ -15,7 +15,7 @@ export default function HeroSlider() {
     }, []);
 
     const HERO_VIDEO = '/vamos-jaco-tour-home-hero-video.mp4';
-    const HERO_POSTER = 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=2070&auto=format&fit=crop';
+    const HERO_POSTER = '/hero-slider-img-vamos-jaco-tours.png';
 
     const content = {
         en: {
@@ -40,8 +40,15 @@ export default function HeroSlider() {
 
     return (
         <div className="relative w-full min-h-[100svh] md:h-screen overflow-hidden flex flex-col justify-between">
-            {/* Video Background */}
+            {/* Video Background (Desktop Only) vs Image Background (Mobile Only) */}
             <div className="absolute inset-0 z-0">
+                <img
+                    src={HERO_POSTER}
+                    alt="Vamos Jaco Tours Adventure Hero"
+                    className="w-full h-full object-contain bg-dark md:hidden"
+                    // @ts-ignore
+                    fetchPriority="high"
+                />
                 <video
                     ref={videoRef}
                     autoPlay
@@ -50,12 +57,13 @@ export default function HeroSlider() {
                     playsInline
                     preload="auto"
                     poster={HERO_POSTER}
-                    className="w-full h-full object-cover scale-105"
+                    className="w-full h-full object-cover scale-105 hidden md:block"
                     onLoadedData={() => setIsLoaded(true)}
-                    // @ts-ignore - React 19 supports fetchpriority but some types lagging
-                    fetchpriority="high"
+                    // @ts-ignore - React 19 supports fetchPriority but some types lagging
+                    fetchPriority="high"
                 >
                     <source src={HERO_VIDEO} type="video/mp4" />
+                    <track kind="captions" />
                 </video>
 
                 {/* Cinematic Gradient Overlay */}

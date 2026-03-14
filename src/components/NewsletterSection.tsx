@@ -82,16 +82,19 @@ export default function NewsletterSection() {
                         ) : (
                             <form onSubmit={handleSubmit} className="bg-dark/40 backdrop-blur-xl p-2 rounded-full flex items-center ring-1 ring-white/20 max-w-xl mx-auto w-full mb-6 hover:ring-white/30 transition-colors focus-within:ring-primary/50">
                                 <input
+                                    id="newsletter-email"
                                     type="email"
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder={placeholder}
+                                    aria-label={placeholder}
                                     className="flex-grow px-6 py-3 rounded-full bg-transparent text-white focus:outline-none placeholder:text-gray-400 font-medium"
                                 />
                                 <button
                                     type="submit"
                                     disabled={status === 'loading'}
+                                    aria-label={$language === 'en' ? 'Subscribe' : 'Suscribirse'}
                                     className="bg-gradient-to-r from-primary to-brand-orange text-white w-12 h-12 rounded-full flex items-center justify-center hover:scale-105 transition-transform shadow-lg shadow-primary/30 disabled:opacity-50"
                                 >
                                     {status === 'loading' ? (
