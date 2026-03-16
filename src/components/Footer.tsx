@@ -1,10 +1,5 @@
 import React from 'react';
-import Facebook from 'lucide-react/dist/esm/icons/facebook';
-import Instagram from 'lucide-react/dist/esm/icons/instagram';
-import MessageCircle from 'lucide-react/dist/esm/icons/message-circle';
-import Phone from 'lucide-react/dist/esm/icons/phone';
-import Mail from 'lucide-react/dist/esm/icons/mail';
-import CreditCard from 'lucide-react/dist/esm/icons/credit-card';
+import { Facebook, Instagram, MessageCircle, Phone, Mail, CreditCard } from 'lucide-react';
 import { useStore } from '@nanostores/react';
 import { language } from '../store';
 
@@ -14,9 +9,9 @@ export default function Footer() {
     const t = {
         en: {
             inquiry: { title: "More Inquiry?", subtitle: "Don't hesitate to contact Vamos Jacó Tours." },
-            whatsapp: { title: "WhatsApp", subtitle: "+506 8585 8462" },
+            whatsapp: { title: "WhatsApp", subtitle: "+506 8774-7250" },
             mail: { title: "Mail Us", subtitle: "info@vamosjacotours.com" },
-            call: { title: "Call Us", subtitle: "+506 8585 8462" },
+            call: { title: "Call Us", subtitle: "+506 8774-7250" },
             brand: { address: "Jacó, Puntarenas, Costa Rica" },
             cols: {
                 destinations: "Top Destinations",
@@ -28,9 +23,9 @@ export default function Footer() {
         },
         es: {
             inquiry: { title: "¿Más Información?", subtitle: "No dudes en contactar a Vamos Jacó Tours." },
-            whatsapp: { title: "WhatsApp", subtitle: "+506 8585 8462" },
+            whatsapp: { title: "WhatsApp", subtitle: "+506 8774-7250" },
             mail: { title: "Escríbenos", subtitle: "info@vamosjacotours.com" },
-            call: { title: "Llámanos", subtitle: "+506 8585 8462" },
+            call: { title: "Llámanos", subtitle: "+506 8774-7250" },
             brand: { address: "Jacó, Puntarenas, Costa Rica" },
             cols: {
                 destinations: "Destinos Top",
@@ -131,7 +126,7 @@ export default function Footer() {
                         <div className="flex gap-3 mb-8">
                             <a href="https://www.facebook.com" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-600 transition-colors text-white" aria-label="Facebook"><Facebook className="w-4 h-4" /></a>
                             <a href="https://www.instagram.com/vamosjacotours" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-pink-600 transition-colors text-white" aria-label="Instagram"><Instagram className="w-4 h-4" /></a>
-                            <a href="https://wa.me/50685858462" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-green-600 transition-colors text-white" aria-label="WhatsApp"><MessageCircle className="w-4 h-4" /></a>
+                            <a href="https://wa.me/50687747250" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-green-600 transition-colors text-white" aria-label="WhatsApp"><MessageCircle className="w-4 h-4" /></a>
                         </div>
                     </div>
 

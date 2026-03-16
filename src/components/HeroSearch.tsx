@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
-import Calendar from 'lucide-react/dist/esm/icons/calendar';
-import Users from 'lucide-react/dist/esm/icons/users';
-import Search from 'lucide-react/dist/esm/icons/search';
-import MapPin from 'lucide-react/dist/esm/icons/map-pin';
+import { Calendar, Users, Search, MapPin } from 'lucide-react';
 import { useStore } from '@nanostores/react';
 import { language } from '../store';
 

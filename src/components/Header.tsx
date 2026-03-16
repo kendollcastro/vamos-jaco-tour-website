@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useStore } from '@nanostores/react';
 import { language, toggleLanguage } from '../store';
-import Globe from 'lucide-react/dist/esm/icons/globe';
-import Menu from 'lucide-react/dist/esm/icons/menu';
-import X from 'lucide-react/dist/esm/icons/x';
+import { Globe, Menu, X } from 'lucide-react';
 import { clsx } from 'clsx';
 
 export default function Header() {
@@ -121,7 +119,7 @@ export default function Header() {
 
                 {/* WhatsApp CTA in mobile menu */}
                 <a
-                    href="https://wa.me/50685858462"
+                    href="https://wa.me/50687747250"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mt-12 inline-flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-8 rounded-full transition-all duration-300"

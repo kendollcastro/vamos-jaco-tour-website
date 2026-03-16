@@ -1,12 +1,7 @@
 import React, { useState } from 'react';
 import { useStore } from '@nanostores/react';
 import { language } from '../store';
-import Phone from 'lucide-react/dist/esm/icons/phone';
-import Mail from 'lucide-react/dist/esm/icons/mail';
-import MapPin from 'lucide-react/dist/esm/icons/map-pin';
-import Send from 'lucide-react/dist/esm/icons/send';
-import MessageSquare from 'lucide-react/dist/esm/icons/message-square';
-import CheckCircle from 'lucide-react/dist/esm/icons/check-circle';
+import { Phone, Mail, MapPin, Send, MessageSquare, CheckCircle } from 'lucide-react';
 
 export default function ContactForm() {
     const $language = useStore(language);
@@ -89,7 +84,7 @@ export default function ContactForm() {
                                     </div>
                                     <div>
                                         <p className="text-white/60 text-sm font-medium mb-1">{content.call}</p>
-                                        <p className="text-lg font-bold">+506 8888-8888</p>
+                                        <p className="text-lg font-bold">+506 8774-7250</p>
                                     </div>
                                 </div>
 

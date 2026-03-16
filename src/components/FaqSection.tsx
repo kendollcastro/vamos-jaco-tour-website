@@ -1,9 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import ChevronDown from 'lucide-react/dist/esm/icons/chevron-down';
-import ChevronUp from 'lucide-react/dist/esm/icons/chevron-up';
-import ArrowRight from 'lucide-react/dist/esm/icons/arrow-right';
-import HelpCircle from 'lucide-react/dist/esm/icons/help-circle';
+import { ChevronDown, ChevronUp, ArrowRight, HelpCircle } from 'lucide-react';
 import { useStore } from '@nanostores/react';
 import { language } from '../store';
 import clsx from 'clsx';

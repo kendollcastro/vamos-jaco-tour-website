@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useStore } from '@nanostores/react';
 import { language } from '../store';
-import ChevronDown from 'lucide-react/dist/esm/icons/chevron-down';
-import Play from 'lucide-react/dist/esm/icons/play';
+import { ChevronDown, Play } from 'lucide-react';
 import HeroSearch from './HeroSearch';
 
 export default function HeroSlider() {

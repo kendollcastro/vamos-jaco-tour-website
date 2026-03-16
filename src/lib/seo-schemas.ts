@@ -27,7 +27,7 @@ export interface FAQItem {
 
 const SITE_URL = 'https://vamosjaco.com';
 const BUSINESS_NAME = 'Vamos Jacó Tours';
-const BUSINESS_PHONE = '+506 8888-8888';
+const BUSINESS_PHONE = '+506 8774-7250';
 const BUSINESS_EMAIL = 'info@vamosjaco.com';
 const BUSINESS_ADDRESS = {
     streetAddress: 'Avenida Pastor Díaz',

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useStore } from '@nanostores/react';
 import { language } from '../store';
-import Flame from 'lucide-react/dist/esm/icons/flame';
+import { Flame } from 'lucide-react';
 
 export default function PopularActivities() {
     const $language = useStore(language);

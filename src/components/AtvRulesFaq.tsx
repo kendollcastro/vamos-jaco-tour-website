@@ -1,11 +1,7 @@
 import React, { useState } from 'react';
 import { useStore } from '@nanostores/react';
 import { language } from '../store';
-import ShieldAlert from 'lucide-react/dist/esm/icons/shield-alert';
-import Route from 'lucide-react/dist/esm/icons/route';
-import AlertTriangle from 'lucide-react/dist/esm/icons/alert-triangle';
-import Hand from 'lucide-react/dist/esm/icons/hand';
-import FileText from 'lucide-react/dist/esm/icons/file-text';
+import { ShieldAlert, Route, AlertTriangle, Hand, FileText } from 'lucide-react';
 
 export default function AtvRulesFaq() {
     const $language = useStore(language);
