@@ -171,8 +171,31 @@ import Layout from "../layouts/Layout.astro";
                             </div>
                         </div>
 
+                        <div id="mobile-checkout-summary" class="md:hidden sticky bottom-4 left-0 right-0 z-50 px-2 pointer-events-none">
+                            <div class="bg-primary/95 backdrop-blur-md rounded-2xl p-4 shadow-2xl border border-white/20 flex items-center justify-between pointer-events-auto">
+                                <div>
+                                    <p class="text-[10px] text-white/70 uppercase font-black tracking-wider leading-none mb-1">Total to Pay</p>
+                                    <p class="text-xl font-black text-white leading-none" id="mobile-summary-total">--</p>
+                                </div>
+                                <button
+                                    id="mobile-pay-trigger"
+                                    class="bg-white text-primary font-black px-6 py-2.5 rounded-xl text-sm transition-all active:scale-95 shadow-lg"
+                                >
+                                    PAY NOW
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 px-2">
+                             <div class="flex items-center gap-2 text-[10px] text-gray-500 justify-center">
+                                <svg class="w-3 h-3 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                                <span>Includes $1000 security hold (refundable)</span>
+                             </div>
+                        </div>
+
                         <button
-                            class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-95 flex items-center justify-center gap-2"
+                            id="pay-button-desktop"
+                            class="hidden md:flex w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-95 items-center justify-center gap-2 mt-6"
                         >
                             Pay Securely
                             <svg
@@ -198,82 +221,114 @@ import Layout from "../layouts/Layout.astro";
 <script>
     import { bookingStore } from "../store/booking";
 
-    // Subscribe to store to update UI
+    // Selectors
     const summaryContainer = document.getElementById("order-summary-content");
     const totalEl = document.getElementById("summary-total");
     const subtotalEl = document.getElementById("summary-subtotal");
+    const taxesEl = document.querySelector("#summary-total")?.parentElement?.previousElementSibling?.querySelector("span:last-child");
+    const mobileTotalEl = document.getElementById("mobile-summary-total");
+    const desktopPayBtn = document.getElementById("pay-button-desktop") as HTMLButtonElement;
+    const mobilePayBtn = document.getElementById("mobile-pay-trigger") as HTMLButtonElement;
 
+    // Helper for updating pay buttons state
+    const setPayButtonsLoading = (isLoading: boolean) => {
+        const btns = [desktopPayBtn, mobilePayBtn];
+        btns.forEach(btn => {
+            if (btn) {
+                btn.disabled = isLoading;
+                btn.innerText = isLoading ? "Processing..." : (btn.id === 'mobile-pay-trigger' ? "PAY NOW" : "Pay Securely");
+            }
+        });
+    };
+
+    // Subscribe to store
     bookingStore.subscribe((state) => {
         if (summaryContainer && state.tourId) {
+            const isVehicleTour = state.tourId === 'side-by-side-tour' || state.tourId === 'jet-ski-tour' || state.tourId === 'jaco-atv-adventure';
+            
+            let guestsHtml = `${state.adults} Adults, ${state.children} Kids`;
+            if (isVehicleTour) {
+                const vehicleName = state.tourId === 'side-by-side-tour' ? 'Buggies' : (state.tourId === 'jet-ski-tour' ? 'Jet Skis' : 'ATVs');
+                guestsHtml = `${state.adults} ${vehicleName}, ${state.extraPassengers} Extra Pax`;
+            }
+
+            // Update Main Summary List
             summaryContainer.innerHTML = `
                 <div class="flex gap-3 mb-4">
                     <div class="flex-1">
-                        <h4 class="text-white font-bold leading-tight mb-1">${
-                            state.tourTitle || "Selected Tour"
-                        }</h4>
-                        <p class="text-xs text-gray-400">Date: ${
-                            state.date
-                                ? new Date(state.date).toLocaleDateString()
-                                : "Not selected"
-                        }</p>
+                        <h4 class="text-white font-bold leading-tight mb-1">${state.tourTitle || "Selected Tour"}</h4>
+                        <p class="text-xs text-gray-400">Date: ${state.date ? new Date(state.date).toLocaleDateString() : "Not selected"}</p>
                     </div>
                 </div>
-                <div class="flex justify-between text-sm">
-                    <span class="text-gray-300">Guests</span>
-                    <span class="text-white font-medium">${
-                        state.adults
-                    } Adults, ${state.children} Kids</span>
+                <div class="flex justify-between text-sm mb-4">
+                    <span class="text-gray-300">Selection</span>
+                    <span class="text-white font-medium">${guestsHtml}</span>
                 </div>
+                
+                ${isVehicleTour ? `
+                <div class="bg-blue-500/10 border border-blue-500/20 rounded-xl p-3 text-[10px] text-gray-400 mt-4 leading-relaxed">
+                    <div class="flex gap-2">
+                        <svg class="w-3.5 h-3.5 text-blue-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <div>
+                            <p class="font-bold text-blue-400 mb-0.5">Security Deposit Hold</p>
+                            <p>A $1000 security hold will be placed on your credit card and released within 24 hours after the tour.</p>
+                        </div>
+                    </div>
+                </div>
+                ` : ''}
             `;
+            
+            // Update Prices
+            const subtotal = state.totalPrice - state.ivaAmount;
+            if (subtotalEl) subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
+            if (taxesEl) taxesEl.textContent = `$${state.ivaAmount.toFixed(2)}`;
+            if (totalEl) totalEl.textContent = `$${state.totalPrice.toFixed(2)}`;
+            if (mobileTotalEl) mobileTotalEl.textContent = `$${state.totalPrice.toFixed(2)}`;
 
-            if (totalEl) totalEl.textContent = `$${state.totalPrice}`;
-            if (subtotalEl) subtotalEl.textContent = `$${state.totalPrice}`;
         } else if (summaryContainer) {
             summaryContainer.innerHTML = `<p class="text-gray-500 text-sm">No tour selected.</p>`;
         }
     });
 
-    const payStartBtn = document.querySelector("button"); // Selects the Pay Securely button
-    if (payStartBtn) {
-        payStartBtn.addEventListener("click", async () => {
-            const state = bookingStore.get();
-            if (!state.tourId) {
-                alert("Please select a tour first.");
-                return;
+    // Payment Logic
+    const handlePayment = async () => {
+        const state = bookingStore.get();
+        if (!state.tourId) {
+            alert("Please select a tour first.");
+            return;
+        }
+
+        try {
+            setPayButtonsLoading(true);
+
+            const res = await fetch("/api/create-payment", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    tourId: state.tourId,
+                    amount: state.totalPrice,
+                    date: state.date,
+                    adults: state.adults,
+                    children: state.children,
+                    extraPassengers: state.extraPassengers,
+                }),
+            });
+
+            const data = await res.json();
+            if (data.redirectUrl) {
+                window.location.href = data.redirectUrl;
+            } else {
+                alert("Payment initialization failed: " + (data.message || "Unknown error"));
+                setPayButtonsLoading(false);
             }
+        } catch (e) {
+            console.error(e);
+            alert("An error occurred. Please try again.");
+            setPayButtonsLoading(false);
+        }
+    };
 
-            try {
-                payStartBtn.disabled = true;
-                payStartBtn.innerText = "Processing...";
-
-                const res = await fetch("/api/create-payment", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        tourId: state.tourId,
-                        amount: state.totalPrice,
-                        date: state.date,
-                        adults: state.adults,
-                        children: state.children,
-                    }),
-                });
-
-                const data = await res.json();
-                if (data.redirectUrl) {
-                    window.location.href = data.redirectUrl;
-                } else {
-                    alert(
-                        "Payment initialization failed: " +
-                            (data.message || "Unknown error")
-                    );
-                    payStartBtn.disabled = false;
-                    payStartBtn.innerHTML = `Pay Securely <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>`;
-                }
-            } catch (e) {
-                console.error(e);
-                alert("An error occurred. Please try again.");
-                payStartBtn.disabled = false;
-            }
-        });
-    }
+    [desktopPayBtn, mobilePayBtn].forEach(btn => {
+        if (btn) btn.addEventListener("click", handlePayment);
+    });
 </script>

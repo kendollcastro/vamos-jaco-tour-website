@@ -27,6 +27,7 @@ export const POST: APIRoute = async ({ request, url }) => {
             date,
             adults = 1,
             children = 0,
+            extraPassengers = 0,
             customerName,
             customerEmail,
             customerPhone,
@@ -54,6 +55,7 @@ export const POST: APIRoute = async ({ request, url }) => {
                     booking_date: date || new Date().toISOString().split('T')[0],
                     adults,
                     children,
+                    extra_passengers: extraPassengers,
                     total_amount: amount,
                     status: 'pending',
                 })

@@ -24,7 +24,7 @@ const faqs = {
         },
         {
             question: "What is your cancellation policy?",
-            answer: "We offer a full refund for cancellations made at least 48 hours prior to the tour start time. Cancellations within 48 hours are non-refundable."
+            answer: "We offer a full refund for cancellations made at least 48 hours prior to the tour start time. Cancellations within 48 hours are non-refundable. Please note that deposit refunds take approximately 24 hours to process due to bank policies."
         },
         {
             question: "Do I need prior experience for the ATV or Jet Ski tours?",
@@ -58,7 +58,7 @@ const faqs = {
         },
         {
             question: "¿Cuál es su política de cancelación?",
-            answer: "Ofrecemos reembolso completo para cancelaciones realizadas al menos 48 horas antes del inicio del tour. Cancelaciones en menos de 48 horas no son reembolsables."
+            answer: "Ofrecemos reembolso completo para cancelaciones realizadas al menos 48 horas antes del inicio del tour. Cancelaciones en menos de 48 horas no son reembolsables. Tome en cuenta que el reembolso del depósito tiene una duración de 24 horas después del trámite por políticas bancarias."
         },
         {
             question: "¿Necesito experiencia previa para los ATV o Jet Ski?",

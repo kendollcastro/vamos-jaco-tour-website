@@ -61,7 +61,7 @@ export default function TourCard({ id, title, price, originalPrice, image_url, l
             <div className="group bg-dark-soft rounded-[20px] overflow-hidden shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full flex flex-col border-none ring-1 ring-white/10 hover:ring-primary/30">
 
                 {/* Image Container */}
-                <div className="relative h-64 overflow-hidden p-3 pb-0">
+                <div className="relative h-52 md:h-64 overflow-hidden p-2 md:p-3 pb-0">
                     <div className="relative h-full w-full rounded-[15px] overflow-hidden">
                         <img
                             src={image_url}

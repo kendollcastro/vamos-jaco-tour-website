@@ -4,7 +4,7 @@ import { type Tour, type TourCategory } from '../data/tours';
 import { useStore } from '@nanostores/react';
 import { language } from '../store';
 import { clsx } from 'clsx';
-import { Filter } from 'lucide-react';
+import { Filter, Search, X, ChevronRight } from 'lucide-react';
 
 interface TourFilterProps {
     initialTours: Tour[];
@@ -35,9 +35,12 @@ export default function TourFilter({ initialTours, defaultLimit = 8, hideLoadMor
     const categories: { id: TourCategory | 'all'; label: { en: string; es: string } }[] = [
         { id: 'all', label: { en: 'All Tours', es: 'Todos los Tours' } },
         { id: 'atv', label: { en: 'ATV & Buggy', es: 'ATV y Buggy' } },
-        { id: 'water', label: { en: 'Water Sports', es: 'Deportes Acuáticos' } },
+        { id: 'water', label: { en: 'Water Sports', es: 'Aventura en el Mar' } },
+        { id: 'canopy', label: { en: 'Canopy & Zip', es: 'Canopy y Tirolesa' } },
         { id: 'extreme', label: { en: 'Extreme', es: 'Extremo' } },
-        // { id: 'nature', label: { en: 'Nature', es: 'Naturaleza' } },
+        { id: 'nature', label: { en: 'Nature & Eco', es: 'Naturaleza y Eco' } },
+        { id: 'relax', label: { en: 'Relax', es: 'Relax' } },
+        { id: 'combos', label: { en: 'Combos', es: 'Combos' } },
     ];
 
     const filteredTours = useMemo(() => {
@@ -65,7 +68,7 @@ export default function TourFilter({ initialTours, defaultLimit = 8, hideLoadMor
         }
 
         return sortedTours;
-    }, [initialTours, activeCategory, featuredSlugs]);
+    }, [initialTours, activeCategory, searchQuery, featuredSlugs]);
 
     if (!mounted) {
         return <div className="min-h-[400px]"></div>; // Prevent hydration mismatch
@@ -80,54 +83,81 @@ export default function TourFilter({ initialTours, defaultLimit = 8, hideLoadMor
     };
 
     return (
-        <div>
-            {/* Filter Controls */}
+        <div className="relative">
+            {/* Search and Filters Container */}
             {!hideFilter && (
-                <div className="flex flex-col items-center gap-6 mb-12">
-                    <div className="flex flex-wrap items-center justify-center gap-4">
-                        <div className="flex items-center gap-2 mr-4 text-gray-400 font-medium">
-                            <Filter className="w-5 h-5" />
-                            <span>{$language === 'en' ? 'Filter by:' : 'Filtrar por:'}</span>
+                <div className="space-y-12 mb-16">
+                    {/* Search Bar - Redesigned for Desktop */}
+                    <div className="max-w-4xl mx-auto w-full">
+                        <div className="relative group">
+                            <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full opacity-0 group-focus-within:opacity-100 transition-opacity duration-500 -z-10" />
+                            <div className="relative flex items-center bg-dark-soft/40 backdrop-blur-xl border border-white/10 rounded-[2rem] p-2 pr-4 focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/10 transition-all duration-300 shadow-2xl">
+                                <div className="pl-6 pr-4 border-r border-white/5 hidden md:block">
+                                    <Search className="w-6 h-6 text-primary animate-pulse-slow" />
+                                </div>
+                                <div className="pl-5 pr-3 md:hidden">
+                                     <Search className="w-5 h-5 text-primary" />
+                                </div>
+                                <input
+                                    type="text"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    placeholder={$language === 'en' ? "Search for tours, activities..." : "Busca tours, actividades..."}
+                                    className="w-full bg-transparent py-4 px-4 text-white text-lg placeholder-gray-500 focus:outline-none"
+                                />
+                                <div className="flex items-center gap-2">
+                                    {searchQuery && (
+                                        <button
+                                            onClick={() => setSearchQuery('')}
+                                            className="p-2 rounded-full bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-all"
+                                            aria-label="Clear search"
+                                        >
+                                            <X className="w-5 h-5" />
+                                        </button>
+                                    )}
+                                    <button className="bg-primary text-white px-8 py-3 rounded-2xl font-black text-sm uppercase tracking-widest hidden md:block hover:bg-red-700 transition-colors shadow-lg shadow-primary/20 active:scale-95">
+                                        {$language === 'en' ? 'Search' : 'Buscar'}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                        {categories.map((cat) => (
-                            <button
-                                key={cat.id}
-                                onClick={() => handleCategoryChange(cat.id)}
-                                className={clsx(
-                                    "px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 shadow-sm border",
-                                    activeCategory === cat.id
-                                        ? "bg-primary text-white border-primary shadow-lg shadow-primary/25 scale-105"
-                                        : "bg-dark-soft text-gray-300 border-white/10 hover:border-primary/30 hover:text-primary hover:bg-white/5"
-                                )}
-                            >
-                                {$language === 'en' ? cat.label.en : cat.label.es}
-                            </button>
-                        ))}
                     </div>
 
-                    {searchQuery && (
-                        <div className="flex items-center gap-3 bg-brand-orange/10 border border-brand-orange/20 px-6 py-2 rounded-full">
-                            <span className="text-brand-orange font-bold text-sm">
-                                {$language === 'en' ? `Showing results for "${searchQuery}"` : `Mostrando resultados para "${searchQuery}"`}
-                            </span>
-                            <button
-                                onClick={() => {
-                                    setSearchQuery('');
-                                    const url = new URL(window.location.href);
-                                    url.searchParams.delete('q');
-                                    window.history.pushState({}, '', url.toString());
-                                }}
-                                className="text-gray-400 hover:text-white text-xs bg-dark px-3 py-1 rounded-full ml-2"
-                            >
-                                {$language === 'en' ? 'Clear Search' : 'Limpiar Búsqueda'}
-                            </button>
+                    {/* Horizontal Categories (Chips) */}
+                    <div className="relative group">
+                        <div className="flex items-center gap-4 text-gray-400 font-bold text-xs uppercase tracking-[0.2em] mb-4 md:justify-center">
+                            <Filter className="w-4 h-4 text-primary" />
+                            <span>{$language === 'en' ? 'Filter by Category' : 'Filtrar por Categoría'}</span>
                         </div>
-                    )}
+                        
+                        <div className="relative">
+                            {/* Scroll indicators/gradients */}
+                            <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-dark to-transparent z-10 pointer-events-none md:hidden" />
+                            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-dark to-transparent z-10 pointer-events-none md:hidden" />
+                            
+                            <div className="flex overflow-x-auto pb-4 gap-3 no-scrollbar md:justify-center md:flex-wrap px-4">
+                                {categories.map((cat) => (
+                                    <button
+                                        key={cat.id}
+                                        onClick={() => handleCategoryChange(cat.id)}
+                                        className={clsx(
+                                            "whitespace-nowrap px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 border shrink-0",
+                                            activeCategory === cat.id
+                                                ? "bg-primary text-white border-primary shadow-lg shadow-primary/25 scale-105"
+                                                : "bg-white/5 text-gray-400 border-white/5 hover:border-white/20 hover:text-white"
+                                        )}
+                                    >
+                                        {$language === 'en' ? cat.label.en : cat.label.es}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             )}
 
             {/* Grid */}
-            <div className={`grid ${gridCols} gap-8`}>
+            <div className={`grid ${gridCols} gap-6 md:gap-8`}>
                 {displayedTours.map((tour) => (
                     <div key={tour.id} className="h-full animate-fade-in-up">
                         <TourCard
@@ -154,12 +184,23 @@ export default function TourFilter({ initialTours, defaultLimit = 8, hideLoadMor
                 <div className="mt-12 text-center">
                     <button
                         onClick={() => setDisplayLimit(prev => prev + 8)}
-                        className="inline-flex items-center gap-2 px-8 py-3 rounded-full border border-white/20 text-white font-medium hover:bg-white/10 transition-colors"
+                        className="inline-flex items-center gap-3 px-10 py-4 rounded-full bg-gradient-to-r from-primary/10 to-brand-orange/10 border border-primary/20 text-white font-bold hover:from-primary hover:to-brand-orange transition-all duration-300 shadow-lg hover:shadow-primary/20"
                     >
-                        {$language === 'en' ? 'Load More Tours' : 'Cargar Más Tours'}
+                        {$language === 'en' ? 'See More Adventures' : 'Ver Más Aventuras'}
+                        <ChevronRight className="w-5 h-5" />
                     </button>
                 </div>
             )}
+
+            <style>{`
+                .no-scrollbar::-webkit-scrollbar {
+                    display: none;
+                }
+                .no-scrollbar {
+                    -ms-overflow-style: none;
+                    scrollbar-width: none;
+                }
+            `}</style>
         </div>
     );
 }

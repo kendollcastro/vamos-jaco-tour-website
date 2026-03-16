@@ -1,4 +1,4 @@
-export type TourCategory = 'atv' | 'water' | 'nature' | 'extreme' | 'relax';
+export type TourCategory = 'atv' | 'water' | 'nature' | 'extreme' | 'relax' | 'canopy' | 'combos';
 
 export interface Tour {
     id: string;

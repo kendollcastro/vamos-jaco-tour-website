@@ -58,7 +58,7 @@ export default function TourInfoList({ type, data }: TourInfoListProps) {
                     <span className="w-10 h-1 bg-gradient-to-r from-brand-teal to-primary rounded-full shadow-[0_0_15px_rgba(45,212,191,0.5)]" />
                     <TranslatedText content={{ en: "What's Included", es: "Qué Incluye" }} />
                 </h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     {list.map((item, idx) => (
                         <div key={idx} className="flex items-center gap-3 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 transition-all duration-300 hover:bg-white/10 hover:border-brand-teal/50 hover:shadow-[0_0_20px_rgba(45,212,191,0.15)] group">
                             <div className="w-8 h-8 rounded-full bg-brand-teal/20 flex items-center justify-center flex-shrink-0 text-brand-teal group-hover:scale-110 group-hover:bg-brand-teal group-hover:text-white transition-all duration-300">
