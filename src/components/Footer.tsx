@@ -1,5 +1,5 @@
 import React from 'react';
-import { Facebook, Instagram, MessageCircle, Phone, Mail, CreditCard } from 'lucide-react';
+import { Facebook, Instagram, MessageCircle, Phone, Mail } from 'lucide-react';
 import { useStore } from '@nanostores/react';
 import { language } from '../store';
 

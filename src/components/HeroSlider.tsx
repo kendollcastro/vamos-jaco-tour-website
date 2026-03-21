@@ -7,7 +7,6 @@ import HeroSearch from './HeroSearch';
 export default function HeroSlider() {
     const $language = useStore(language);
     const [isLoaded, setIsLoaded] = useState(false);
-    const [videoLoaded, setVideoLoaded] = useState(false);
     const videoRef = useRef<HTMLVideoElement>(null);
 
     useEffect(() => {
@@ -63,32 +62,20 @@ export default function HeroSlider() {
 
     return (
         <div className="relative w-full min-h-[100svh] md:h-screen overflow-hidden flex flex-col justify-between">
-            {/* Video Background (Desktop Only) vs Image Background (Mobile Only) */}
-            <div className="absolute inset-0 z-0">
-                <img
-                    src="/hero-slider-img-vamos-jaco-tours-optimized.jpg"
-                    alt="Vamos Jaco Tours Adventure Hero"
-                    className="w-full h-full object-cover bg-dark md:hidden"
-                    width="1200"
-                    height="1816"
-                    // @ts-ignore
-                    fetchPriority="high"
-                />
+            {/* Video Background (All Devices) */}
+            <div className="absolute inset-0 z-0 bg-dark">
                 <video
                     ref={videoRef}
                     autoPlay
                     muted
                     loop
                     playsInline
-                    preload="none"
                     poster={HERO_POSTER}
-                    className={`w-full h-full object-cover scale-105 hidden md:block transition-opacity duration-500 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
-                    onLoadedData={() => setVideoLoaded(true)}
-                    // @ts-ignore - React 19 supports fetchPriority but some types lagging
+                    className="w-full h-full object-cover scale-105"
+                    // @ts-ignore - React 19 supports fetchPriority
                     fetchPriority="high"
                 >
                     <source src={HERO_VIDEO} type="video/mp4" />
-                    <track kind="captions" />
                 </video>
 
                 {/* Cinematic Gradient Overlay */}

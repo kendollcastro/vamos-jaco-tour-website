@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Play, Globe, UserCheck, Smile, Trophy, ArrowRight, Flame, ShieldAlert, X } from 'lucide-react';
+import { Play, Globe, UserCheck, Trophy, ArrowRight, Flame, ShieldAlert, X } from 'lucide-react';
 import { useStore } from '@nanostores/react';
 import { language } from '../store';
 import AnimatedCounter from './AnimatedCounter';
