@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import SalesChart from './SalesChart';
+import AddBookingModal from './AddBookingModal';
 
 interface Stats {
     todayBookings: number;
@@ -24,6 +25,7 @@ export default function DashboardStats() {
     });
     const [loading, setLoading] = useState(true);
     const [recentBookings, setRecentBookings] = useState<any[]>([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const isDemo = !supabase;
 
     useEffect(() => {
@@ -135,17 +137,51 @@ export default function DashboardStats() {
 
     return (
         <div className="space-y-6">
+            {/* Top Section: Welcome & Quick Actions */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-3xl md:text-4xl font-heading font-black text-gray-900 dark:text-white leading-tight tracking-tight mb-1">
+                        Welcome back, Admin! 👋
+                    </h1>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm font-bold uppercase tracking-widest">
+                        Insights & Analytics for Vamos Jacó Tours
+                    </p>
+                </div>
+                <div className="flex items-center gap-2">
+                    <button 
+                        className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-white dark:bg-dark-soft border border-gray-200 dark:border-white/10 rounded-xl text-sm font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/5 transition-all shadow-sm"
+                        onClick={() => fetchStats()}
+                    >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                        Refresh
+                    </button>
+                    <button 
+                        className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-white rounded-xl text-sm font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
+                        onClick={() => setIsModalOpen(true)}
+                    >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+                        Add Booking
+                    </button>
+                </div>
+            </div>
+
+            <AddBookingModal 
+                isOpen={isModalOpen} 
+                onClose={() => setIsModalOpen(false)} 
+                onSuccess={() => fetchStats()} 
+            />
+
             {/* Demo banner */}
             {isDemo && (
-                <div className="bg-brand-teal/5 border border-brand-teal/20 rounded-[20px] px-5 py-4 flex items-center gap-3">
+                <div className="bg-brand-teal/5 border border-brand-teal/20 dark:border-brand-teal/10 rounded-[20px] px-5 py-4 flex items-center gap-3">
                     <div className="w-8 h-8 rounded-xl bg-brand-teal/20 flex items-center justify-center shrink-0">
                         <svg className="w-4 h-4 text-brand-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
                     <div>
-                        <p className="text-brand-teal font-semibold text-sm">Demo Mode</p>
-                        <p className="text-gray-400 text-xs">Showing sample data. Connect Supabase to see real bookings.</p>
+                        <p className="text-brand-teal font-semibold text-sm leading-tight dark:text-emerald-400">Demo Mode Active</p>
+                        <p className="text-gray-500 dark:text-gray-400 text-xs mt-0.5">Showing sample data. Login with Supabase for real-time tracking.</p>
                     </div>
                 </div>
             )}
@@ -159,23 +195,23 @@ export default function DashboardStats() {
                         {statCards.map((card) => (
                             <div
                                 key={card.label}
-                                className="bg-white dark:bg-dark-soft rounded-2xl border border-gray-200 dark:border-white/5 p-5 shadow-sm hover:border-primary/50 transition-colors"
+                                className="glass dark:bg-dark-soft/40 rounded-3xl border border-gray-200 dark:border-white/5 p-6 shadow-premium hover:border-primary/50 transition-premium group"
                             >
-                                <div className="flex items-center justify-between mb-4">
-                                    <div className={`w-10 h-10 rounded-xl ${card.bg} flex items-center justify-center`}>
-                                        <svg className={`w-5 h-5 ${card.color}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div className="flex items-center justify-between mb-5">
+                                    <div className={`w-12 h-12 rounded-2xl ${card.bg} flex items-center justify-center transition-premium group-hover:scale-110 group-hover:rotate-3`}>
+                                        <svg className={`w-6 h-6 ${card.color}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={card.icon} />
                                         </svg>
                                     </div>
                                     {card.percentage.includes('%') ? (
-                                        <span className={`text-xs font-bold ${card.percentage.startsWith('+') ? 'text-green-500' : 'text-primary'}`}>{card.percentage}</span>
+                                        <span className={`text-[10px] font-black px-2.5 py-1 rounded-full ${card.percentage.startsWith('+') ? 'bg-green-500 text-white' : 'bg-primary text-white'}`}>{card.percentage}</span>
                                     ) : (
-                                        <span className="text-[10px] text-gray-500 font-medium uppercase tracking-wider">{card.percentage}</span>
+                                        <span className="text-[10px] text-gray-700 dark:text-gray-200 font-black uppercase tracking-[0.2em] bg-white/10 px-2 py-1 rounded-md">{card.percentage}</span>
                                     )}
                                 </div>
-                                <div>
-                                    <span className="block text-gray-500 dark:text-gray-400 text-[11px] font-bold uppercase tracking-wider mb-1">{card.label}</span>
-                                    <p className="text-2xl font-black text-gray-900 dark:text-white">{card.value}</p>
+                                <div className="space-y-2">
+                                    <span className="block text-gray-700 dark:text-gray-300 text-[10px] font-black uppercase tracking-[0.2em]">{card.label}</span>
+                                    <p className="text-3xl font-heading font-black text-gray-900 dark:text-white leading-none">{card.value}</p>
                                 </div>
                             </div>
                         ))}
@@ -188,37 +224,48 @@ export default function DashboardStats() {
                 {/* Right Column (Recent Activity) */}
                 <div className="space-y-6">
                     {/* Recent Activity */}
-                    <div className="bg-white dark:bg-dark-soft rounded-2xl border border-gray-200 dark:border-white/5 p-6 shadow-sm h-full max-h-[600px] flex flex-col transition-colors duration-300">
-                        <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-gray-900 dark:text-white font-bold text-lg">
+                    <div className="glass dark:bg-dark-soft/40 rounded-3xl border border-gray-200 dark:border-white/5 p-8 shadow-premium h-full max-h-[600px] flex flex-col transition-premium">
+                        <div className="flex items-center justify-between mb-8">
+                            <h3 className="text-gray-900 dark:text-white font-heading font-black text-xl tracking-tight uppercase">
                                 Recent Activity
                             </h3>
-                            <button className="text-primary text-xs font-bold hover:underline">View All</button>
+                            <button className="text-primary text-[10px] font-black uppercase tracking-widest hover:underline">View All</button>
                         </div>
                         {recentBookings.length === 0 ? (
                             <p className="text-gray-500 text-sm py-4 text-center">No bookings yet. They will appear here in real time.</p>
                         ) : (
                             <div className="space-y-3">
                                 {recentBookings.map((booking) => (
-                                    <div key={booking.id} className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-white/5 last:border-0 hover:bg-gray-50 dark:hover:bg-white/[0.01] transition-colors rounded-lg px-2 -mx-2">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold">
+                                    <div key={booking.id} className="group relative flex items-center justify-between p-3 border border-transparent hover:border-primary/20 hover:bg-primary/[0.02] dark:hover:bg-primary/[0.05] transition-all rounded-2xl cursor-pointer">
+                                        <div className="flex items-center gap-4">
+                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black shadow-sm transition-transform group-hover:scale-110 ${
+                                                booking.status === 'confirmed' ? 'bg-green-500/10 text-green-600' : 
+                                                booking.status === 'cancelled' ? 'bg-red-500/10 text-red-600' : 
+                                                'bg-amber-500/10 text-amber-600'
+                                            }`}>
                                                 {booking.customer_name?.charAt(0)?.toUpperCase() || '?'}
                                             </div>
                                             <div>
-                                                <p className="text-gray-900 dark:text-white leading-tight text-sm font-bold">{booking.customer_name}</p>
-                                                <p className="text-gray-500 text-[11px] font-medium">{booking.tour_name}</p>
+                                                <p className="text-gray-900 dark:text-white leading-tight text-sm font-black group-hover:text-primary transition-colors">{booking.customer_name}</p>
+                                                <p className="text-gray-500 dark:text-gray-400 text-[11px] font-bold mt-0.5">{booking.tour_name}</p>
                                             </div>
                                         </div>
                                         <div className="text-right">
-                                            <p className="text-gray-900 dark:text-white text-sm font-black">${Number(booking.total_amount).toLocaleString()}</p>
-                                            <p className="text-gray-400 text-[10px] mt-0.5">2 mins ago</p>
-                                            <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${booking.status === 'confirmed' ? 'bg-green-500/10 text-green-400'
-                                                : booking.status === 'cancelled' ? 'bg-red-500/10 text-red-400'
-                                                    : 'bg-yellow-500/10 text-yellow-400'
+                                            <p className="text-gray-900 dark:text-white text-sm font-black tracking-tighter">${Number(booking.total_amount).toLocaleString()}</p>
+                                            <div className="flex items-center justify-end gap-1.5 mt-1">
+                                                <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${
+                                                    booking.status === 'confirmed' ? 'bg-green-500' : 
+                                                    booking.status === 'cancelled' ? 'bg-red-500' : 
+                                                    'bg-amber-500'
+                                                }`} />
+                                                <span className={`text-[9px] font-black uppercase tracking-widest ${
+                                                    booking.status === 'confirmed' ? 'text-green-500' : 
+                                                    booking.status === 'cancelled' ? 'text-red-500' : 
+                                                    'text-amber-500'
                                                 }`}>
-                                                {booking.status}
-                                            </span>
+                                                    {booking.status}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 ))}

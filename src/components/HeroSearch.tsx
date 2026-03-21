@@ -13,18 +13,18 @@ export default function HeroSearch() {
     const translations = {
         en: {
             activity: 'Activity',
-            activityPlaceholder: 'What do you want to do?',
+            activityPlaceholder: 'Find your next thrill...',
             date: 'Date',
             people: 'People',
-            peoplePlaceholder: 'Add guests',
+            peoplePlaceholder: 'Add adventurers',
             search: 'Search'
         },
         es: {
             activity: 'Actividad',
-            activityPlaceholder: '¿Qué quieres hacer?',
+            activityPlaceholder: 'Encuentra tu aventura...',
             date: 'Fecha',
             people: 'Personas',
-            peoplePlaceholder: 'Agregar huéspedes',
+            peoplePlaceholder: 'Agregar aventureros',
             search: 'Buscar'
         }
     };

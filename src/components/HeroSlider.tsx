@@ -7,6 +7,7 @@ import HeroSearch from './HeroSearch';
 export default function HeroSlider() {
     const $language = useStore(language);
     const [isLoaded, setIsLoaded] = useState(false);
+    const [videoLoaded, setVideoLoaded] = useState(false);
     const videoRef = useRef<HTMLVideoElement>(null);
 
     useEffect(() => {
@@ -14,8 +15,30 @@ export default function HeroSlider() {
         return () => clearTimeout(timer);
     }, []);
 
+    // Lazy load video when it enters viewport
+    useEffect(() => {
+        const video = videoRef.current;
+        if (!video) return;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting && video.paused) {
+                        video.play().catch(() => {
+                            // Autoplay may be blocked by browser
+                        });
+                    }
+                });
+            },
+            { threshold: 0.25 }
+        );
+
+        observer.observe(video);
+        return () => observer.disconnect();
+    }, []);
+
     const HERO_VIDEO = '/vamos-jaco-tour-home-hero-video.mp4';
-    const HERO_POSTER = '/hero-slider-img-vamos-jaco-tours.png';
+    const HERO_POSTER = '/hero-slider-img-vamos-jaco-tours-optimized.jpg';
 
     const content = {
         en: {
@@ -57,10 +80,10 @@ export default function HeroSlider() {
                     muted
                     loop
                     playsInline
-                    preload="auto"
+                    preload="none"
                     poster={HERO_POSTER}
-                    className="w-full h-full object-cover scale-105 hidden md:block"
-                    onLoadedData={() => setIsLoaded(true)}
+                    className={`w-full h-full object-cover scale-105 hidden md:block transition-opacity duration-500 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
+                    onLoadedData={() => setVideoLoaded(true)}
                     // @ts-ignore - React 19 supports fetchPriority but some types lagging
                     fetchPriority="high"
                 >

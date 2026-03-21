@@ -93,31 +93,63 @@ import Layout from "../layouts/Layout.astro";
                             Payment Method
                         </h2>
 
-                        <div
-                            class="bg-white/5 rounded-xl p-4 border border-primary/30 flex items-center gap-4"
-                        >
+                        <div class="space-y-4">
+                            <!-- TiloPay -->
                             <div
-                                class="w-12 h-12 bg-white rounded-lg flex items-center justify-center p-1"
+                                id="tilopay-option"
+                                class="bg-white/5 rounded-xl p-4 border border-primary/30 flex items-center gap-4 cursor-pointer hover:bg-white/10 transition-all"
                             >
-                                <img
-                                    src="/images/tilopay-logo-placeholder.png"
-                                    alt="TiloPay"
-                                    class="object-contain"
-                                    onerror="this.src='https://placehold.co/100x100/white/black?text=TiloPay'"
-                                />
-                            </div>
-                            <div>
-                                <h4 class="text-white font-bold">
-                                    Credit / Debit Card
-                                </h4>
-                                <p class="text-xs text-gray-400">
-                                    Secure payment via TiloPay (Costa Rica)
-                                </p>
-                            </div>
-                            <div class="ml-auto">
                                 <div
-                                    class="w-5 h-5 rounded-full border-4 border-primary bg-white"
+                                    class="w-12 h-12 bg-white rounded-lg flex items-center justify-center p-1"
                                 >
+                                    <img
+                                        src="/images/tilopay-logo-placeholder.png"
+                                        alt="TiloPay"
+                                        class="object-contain"
+                                        onerror="this.src='https://placehold.co/100x100/white/black?text=TiloPay'"
+                                    />
+                                </div>
+                                <div>
+                                    <h4 class="text-white font-bold">
+                                        Credit / Debit Card
+                                    </h4>
+                                    <p class="text-xs text-gray-400">
+                                        Secure payment via TiloPay
+                                    </p>
+                                </div>
+                                <div class="ml-auto">
+                                    <div
+                                        class="w-5 h-5 rounded-full border-4 border-primary bg-white payment-radio shadow-[0_0_10px_rgba(255,87,34,0.3)]"
+                                        data-method="card"
+                                    >
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- WhatsApp/Cash Option -->
+                            <div
+                                id="cash-option"
+                                class="bg-white/5 rounded-xl p-4 border border-white/10 flex items-center gap-4 cursor-pointer hover:bg-white/10 transition-all"
+                            >
+                                <div
+                                    class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center"
+                                >
+                                    <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.067 2.875 1.215 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72 1.031 3.704 1.577 5.72 1.577h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                                </div>
+                                <div>
+                                    <h4 class="text-white font-bold">
+                                        Book with Messenger/WhatsApp
+                                    </h4>
+                                    <p class="text-xs text-gray-400">
+                                        Confirm now, pay on site
+                                    </p>
+                                </div>
+                                <div class="ml-auto">
+                                    <div
+                                        class="w-5 h-5 rounded-full border-2 border-white/20 payment-radio"
+                                        data-method="cash"
+                                    >
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -172,14 +204,14 @@ import Layout from "../layouts/Layout.astro";
                         </div>
 
                         <div id="mobile-checkout-summary" class="md:hidden sticky bottom-4 left-0 right-0 z-50 px-2 pointer-events-none">
-                            <div class="bg-primary/95 backdrop-blur-md rounded-2xl p-4 shadow-2xl border border-white/20 flex items-center justify-between pointer-events-auto">
-                                <div>
-                                    <p class="text-[10px] text-white/70 uppercase font-black tracking-wider leading-none mb-1">Total to Pay</p>
-                                    <p class="text-xl font-black text-white leading-none" id="mobile-summary-total">--</p>
+                            <div class="bg-primary/95 backdrop-blur-md rounded-2xl p-3 shadow-2xl border border-white/20 flex items-center gap-3 pointer-events-auto">
+                                <div class="min-w-[80px]">
+                                    <p class="text-[9px] text-white/70 uppercase font-black tracking-wider leading-none mb-1">Total</p>
+                                    <p class="text-lg font-black text-white leading-none whitespace-nowrap" id="mobile-summary-total">--</p>
                                 </div>
                                 <button
                                     id="mobile-pay-trigger"
-                                    class="bg-white text-primary font-black px-6 py-2.5 rounded-xl text-sm transition-all active:scale-95 shadow-lg"
+                                    class="flex-1 bg-white text-primary font-black px-4 py-3 rounded-xl text-xs uppercase tracking-tighter transition-all active:scale-95 shadow-lg truncate"
                                 >
                                     PAY NOW
                                 </button>
@@ -216,6 +248,66 @@ import Layout from "../layouts/Layout.astro";
             </div>
         </div>
     </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="fixed inset-0 z-[100] flex items-center justify-center px-6 hidden opacity-0 transition-opacity duration-500">
+        <div class="absolute inset-0 bg-dark/80 backdrop-blur-sm"></div>
+        <div class="relative bg-dark-soft border border-white/10 rounded-[32px] p-8 md:p-12 max-w-lg w-full shadow-2xl scale-95 transition-transform duration-500 overflow-hidden group">
+            <!-- Animated Background Glow -->
+            <div class="absolute -top-24 -right-24 w-48 h-48 bg-primary/20 blur-[80px] rounded-full"></div>
+            <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-green-500/10 blur-[80px] rounded-full"></div>
+
+            <div class="text-center relative z-10">
+                <!-- Premium Checkmark Animation -->
+                <div class="mb-8 flex justify-center">
+                    <div class="w-24 h-24 bg-green-500/10 rounded-full flex items-center justify-center border border-green-500/20 relative">
+                        <div class="absolute inset-0 bg-green-500/20 blur-2xl rounded-full scale-0 group-hover:scale-100 transition-transform duration-1000"></div>
+                        <svg class="w-12 h-12 text-green-500 success-checkmark" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" class="checkmark-path"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <h2 class="text-4xl font-black text-white mb-4 tracking-tighter uppercase">Booking Received!</h2>
+                <p class="text-gray-400 font-medium mb-8 leading-relaxed">
+                    Thank you for choosing Vamos Jacó. Our team will contact you via <span class="text-green-500 font-bold">WhatsApp</span> shortly to confirm your adventure and finalize the details.
+                </p>
+
+                <div class="space-y-4">
+                    <a href="/" class="block w-full bg-white text-dark font-black py-4 rounded-2xl hover:bg-gray-100 transition-all active:scale-95 text-sm uppercase tracking-widest shadow-xl">
+                        Return Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .checkmark-path {
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+            animation: dash 0.8s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+            animation-delay: 0.5s;
+        }
+
+        @keyframes dash {
+            from { stroke-dashoffset: 100; }
+            to { stroke-dashoffset: 0; }
+        }
+
+        .success-btn-vibe {
+            background-color: #22c55e !important;
+            box-shadow: 0 10px 30px -5px rgba(34, 197, 94, 0.4) !important;
+        }
+        
+        #success-modal.show {
+            display: flex !important;
+            opacity: 1;
+        }
+        #success-modal.show > div:last-child {
+            transform: scale(1);
+        }
+    </style>
 </Layout>
 
 <script>
@@ -229,6 +321,44 @@ import Layout from "../layouts/Layout.astro";
     const mobileTotalEl = document.getElementById("mobile-summary-total");
     const desktopPayBtn = document.getElementById("pay-button-desktop") as HTMLButtonElement;
     const mobilePayBtn = document.getElementById("mobile-pay-trigger") as HTMLButtonElement;
+    const tilopayOpt = document.getElementById("tilopay-option");
+    const cashOpt = document.getElementById("cash-option");
+    
+    let selectedMethod = "card";
+
+    // Payment Method Switching
+    const updateMethodUI = () => {
+        const radios = document.querySelectorAll('.payment-radio');
+        radios.forEach(r => {
+            const isSelected = r.getAttribute('data-method') === selectedMethod;
+            if (isSelected) {
+                r.classList.add('border-4', 'border-primary', 'bg-white', 'shadow-[0_0_10px_rgba(255,87,34,0.3)]');
+                r.classList.remove('border-2', 'border-white/20');
+            } else {
+                r.classList.remove('border-4', 'border-primary', 'bg-white', 'shadow-[0_0_10px_rgba(255,87,34,0.3)]');
+                r.classList.add('border-2', 'border-white/20');
+            }
+        });
+
+        const options = [tilopayOpt, cashOpt];
+        options.forEach(opt => {
+            if (!opt) return;
+            const isSelected = opt.id === (selectedMethod === 'card' ? 'tilopay-option' : 'cash-option');
+            opt.classList.toggle('border-primary/30', isSelected);
+            opt.classList.toggle('border-white/10', !isSelected);
+        });
+
+        // Update button text
+        const btns = [desktopPayBtn, mobilePayBtn];
+        btns.forEach(btn => {
+            if (btn) {
+                btn.innerText = selectedMethod === 'card' ? 'Pay Securely' : 'Reserve & Pay on Site';
+            }
+        });
+    };
+
+    tilopayOpt?.addEventListener('click', () => { selectedMethod = 'card'; updateMethodUI(); });
+    cashOpt?.addEventListener('click', () => { selectedMethod = 'cash'; updateMethodUI(); });
 
     // Helper for updating pay buttons state
     const setPayButtonsLoading = (isLoading: boolean) => {
@@ -236,7 +366,11 @@ import Layout from "../layouts/Layout.astro";
         btns.forEach(btn => {
             if (btn) {
                 btn.disabled = isLoading;
-                btn.innerText = isLoading ? "Processing..." : (btn.id === 'mobile-pay-trigger' ? "PAY NOW" : "Pay Securely");
+                if (isLoading) {
+                    btn.innerText = "Processing...";
+                } else {
+                    btn.innerText = selectedMethod === 'card' ? 'Pay Securely' : 'Reserve & Pay on Site';
+                }
             }
         });
     };
@@ -301,29 +435,93 @@ import Layout from "../layouts/Layout.astro";
         try {
             setPayButtonsLoading(true);
 
-            const res = await fetch("/api/create-payment", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    tourId: state.tourId,
-                    amount: state.totalPrice,
-                    date: state.date,
-                    adults: state.adults,
-                    children: state.children,
-                    extraPassengers: state.extraPassengers,
-                }),
-            });
+            const formData = {
+                firstName: (document.querySelector('input[placeholder="John"]') as HTMLInputElement)?.value,
+                lastName: (document.querySelector('input[placeholder="Doe"]') as HTMLInputElement)?.value,
+                email: (document.querySelector('input[placeholder="john@example.com"]') as HTMLInputElement)?.value,
+                phone: (document.querySelector('input[placeholder="+1 (555) 000-0000"]') as HTMLInputElement)?.value,
+            };
 
-            const data = await res.json();
-            if (data.redirectUrl) {
-                window.location.href = data.redirectUrl;
-            } else {
-                alert("Payment initialization failed: " + (data.message || "Unknown error"));
+            if (!formData.firstName || !formData.email) {
+                alert("Please fill in your details.");
                 setPayButtonsLoading(false);
+                return;
+            }
+
+            if (selectedMethod === 'cash') {
+                const res = await fetch("/api/bookings/create", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            customerName: `${formData.firstName} ${formData.lastName}`,
+                            customerEmail: formData.email,
+                            customerPhone: formData.phone,
+                            tourId: state.tourId,
+                            tourName: state.tourTitle,
+                            date: state.date,
+                            totalAmount: state.totalPrice,
+                            adults: state.adults,
+                            children: state.children,
+                            status: 'pending' // For cash/whatsapp
+                        }),
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    // Start success sequence
+                    const modal = document.getElementById('success-modal');
+                    const btns = [desktopPayBtn, mobilePayBtn];
+                    
+                    btns.forEach(btn => {
+                        if (btn) {
+                            btn.classList.add('success-btn-vibe');
+                            btn.innerHTML = `
+                                <svg class="w-5 h-5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                CONFIRMED!
+                            `;
+                        }
+                    });
+
+                    setTimeout(() => {
+                        modal?.classList.add('show');
+                        // Auto-redirect after 6 seconds
+                        setTimeout(() => {
+                            window.location.href = "/";
+                        }, 6000);
+                    }, 1000);
+
+                } else {
+                    alert("Failed to create booking: " + (data.message || "Unknown error"));
+                }
+            } else {
+                // TiloPay Flow
+                const res = await fetch("/api/create-payment", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        tourId: state.tourId,
+                        amount: state.totalPrice,
+                        date: state.date,
+                        adults: state.adults,
+                        children: state.children,
+                        extraPassengers: state.extraPassengers,
+                        customer: formData
+                    }),
+                });
+
+                const data = await res.json();
+                if (data.redirectUrl) {
+                    window.location.href = data.redirectUrl;
+                } else {
+                    alert("Payment initialization failed: " + (data.message || "Unknown error"));
+                }
             }
         } catch (e) {
             console.error(e);
             alert("An error occurred. Please try again.");
+        } finally {
             setPayButtonsLoading(false);
         }
     };

@@ -19,7 +19,16 @@ export default function Footer() {
                 resources: "Quick Links"
             },
             rights: "All Rights Reserved.",
-            payment: "Accepted Payment Methods:"
+            payment: "Accepted Payment Methods:",
+            newsletter: {
+                title: "Subscribe to our Newsletter",
+                subtitle: "Get the best deals and adventure news directly in your inbox.",
+                placeholder: "Enter your email address",
+                button: "Join Now",
+                success: "Thanks for subscribing!",
+                alreadySubscribed: "You are already subscribed to our newsletter!",
+                error: "Something went wrong. Please try again."
+            }
         },
         es: {
             inquiry: { title: "¿Más Información?", subtitle: "No dudes en contactar a Vamos Jacó Tours." },
@@ -33,11 +42,56 @@ export default function Footer() {
                 resources: "Enlaces Rápidos"
             },
             rights: "Todos los derechos reservados.",
-            payment: "Métodos de Pago Aceptados:"
+            payment: "Métodos de Pago Aceptados:",
+            newsletter: {
+                title: "Suscríbete a nuestro boletín",
+                subtitle: "Recibe las mejores ofertas y noticias de aventuras directamente en tu correo.",
+                placeholder: "Ingresa tu correo electrónico",
+                button: "Unirse",
+                success: "¡Gracias por suscribirte!",
+                alreadySubscribed: "Usted ya se ha suscrito a nuestro boletín.",
+                error: "Algo salió mal. Por favor intenta de nuevo."
+            }
         }
     };
 
     const content = $language === 'en' ? t.en : t.es;
+
+    const [email, setEmail] = React.useState('');
+    const [status, setStatus] = React.useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+    const [message, setMessage] = React.useState('');
+
+    const handleSubscribe = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!email) return;
+
+        setStatus('loading');
+        try {
+            const response = await fetch('/api/newsletter/subscribe', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                setStatus('success');
+                if (data.alreadySubscribed) {
+                    setMessage(content.newsletter.alreadySubscribed);
+                } else {
+                    setMessage(content.newsletter.success);
+                }
+                setEmail('');
+            } else {
+                setStatus('error');
+                setMessage(data.message || content.newsletter.error);
+            }
+        } catch (error) {
+            setStatus('error');
+            setMessage(content.newsletter.error);
+        }
+    };
 
     return (
         <footer className="bg-[#0B0F19] text-white relative overflow-hidden font-sans">
@@ -95,6 +149,38 @@ export default function Footer() {
                                 <p className="text-gray-400 text-sm">{content.call.subtitle}</p>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                {/* Newsletter Section */}
+                <div className="py-12 border-b border-gray-800">
+                    <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+                        <div className="max-w-md text-center lg:text-left">
+                            <h3 className="text-2xl font-bold mb-2">{content.newsletter.title}</h3>
+                            <p className="text-gray-400 text-sm">{content.newsletter.subtitle}</p>
+                        </div>
+                        <form onSubmit={handleSubscribe} className="w-full max-w-md relative">
+                            <div className="flex bg-gray-800/50 rounded-full p-1 border border-gray-700 focus-within:border-primary transition-all">
+                                <input
+                                    type="email"
+                                    placeholder={content.newsletter.placeholder}
+                                    className="bg-transparent border-none outline-none px-6 py-3 text-sm flex-1 placeholder:text-gray-500"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    disabled={status === 'loading' || status === 'success'}
+                                    required
+                                />
+                                <button
+                                    type="submit"
+                                    disabled={status === 'loading' || status === 'success'}
+                                    className="bg-primary hover:bg-primary-dark text-white px-8 py-3 rounded-full text-sm font-bold transition-all disabled:opacity-50"
+                                >
+                                    {status === 'loading' ? '...' : content.newsletter.button}
+                                </button>
+                            </div>
+                            {status === 'success' && <p className="text-green-500 text-xs mt-3 ml-4 font-medium animate-fade-in-up">{message}</p>}
+                            {status === 'error' && <p className="text-primary text-xs mt-3 ml-4 font-medium animate-fade-in-up">{message}</p>}
+                        </form>
                     </div>
                 </div>
 

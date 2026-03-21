@@ -13,9 +13,20 @@ interface TourFilterProps {
     hideFilter?: boolean;
     featuredSlugs?: string[];
     gridCols?: string;
+    title?: { en: string; es: string };
+    subtitle?: { en: string; es: string };
 }
 
-export default function TourFilter({ initialTours, defaultLimit = 8, hideLoadMore = false, hideFilter = false, featuredSlugs, gridCols = "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" }: TourFilterProps) {
+export default function TourFilter({ 
+    initialTours, 
+    defaultLimit = 8, 
+    hideLoadMore = false, 
+    hideFilter = false, 
+    featuredSlugs, 
+    gridCols = "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
+    title,
+    subtitle
+}: TourFilterProps) {
     const $language = useStore(language);
     const [activeCategory, setActiveCategory] = useState<TourCategory | 'all'>('all');
     const [mounted, setMounted] = useState(false);
@@ -87,11 +98,37 @@ export default function TourFilter({ initialTours, defaultLimit = 8, hideLoadMor
             {/* Search and Filters Container */}
             {!hideFilter && (
                 <div className="space-y-12 mb-16">
+                    {/* Header with Dynamic Count */}
+                    {(title || subtitle) && (
+                        <div className="flex flex-col md:flex-row items-end justify-between border-b border-white/10 pb-6 mb-12">
+                            <div>
+                                {subtitle && (
+                                    <span className="text-brand-orange font-bold tracking-widest uppercase mb-2 block animate-fade-in">
+                                        {$language === 'en' ? subtitle.en : subtitle.es}
+                                    </span>
+                                )}
+                                {title && (
+                                    <h2 className="text-4xl md:text-6xl font-heading font-black text-white leading-[1.1] tracking-tight">
+                                        {$language === 'en' ? title.en : title.es}
+                                    </h2>
+                                )}
+                            </div>
+                            <div className="mt-4 md:mt-0 md:text-right animate-fade-in" key={filteredTours.length}>
+                                <p className="text-gray-400 font-medium whitespace-nowrap bg-white/5 md:bg-transparent px-4 py-2 rounded-full inline-flex items-center">
+                                    <span className="text-primary font-black text-xl mr-2">{filteredTours.length}</span> 
+                                    <span className="text-sm uppercase tracking-wider">
+                                        {$language === 'en' ? 'Experiences Available' : 'Experiencias Disponibles'}
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Search Bar - Redesigned for Desktop */}
                     <div className="max-w-4xl mx-auto w-full">
                         <div className="relative group">
-                            <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full opacity-0 group-focus-within:opacity-100 transition-opacity duration-500 -z-10" />
-                            <div className="relative flex items-center bg-dark-soft/40 backdrop-blur-xl border border-white/10 rounded-[2rem] p-2 pr-4 focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/10 transition-all duration-300 shadow-2xl">
+                            <div className="absolute -inset-1 bg-gradient-to-r from-primary to-brand-orange blur-2xl rounded-full opacity-0 group-focus-within:opacity-20 transition-premium -z-10" />
+                            <div className="relative flex items-center glass border border-white/10 rounded-full p-2 pr-4 focus-within:border-primary/50 transition-premium shadow-2xl">
                                 <div className="pl-6 pr-4 border-r border-white/5 hidden md:block">
                                     <Search className="w-6 h-6 text-primary animate-pulse-slow" />
                                 </div>
@@ -115,7 +152,7 @@ export default function TourFilter({ initialTours, defaultLimit = 8, hideLoadMor
                                             <X className="w-5 h-5" />
                                         </button>
                                     )}
-                                    <button className="bg-primary text-white px-8 py-3 rounded-2xl font-black text-sm uppercase tracking-widest hidden md:block hover:bg-red-700 transition-colors shadow-lg shadow-primary/20 active:scale-95">
+                                    <button className="bg-primary text-white px-8 py-3.5 rounded-full font-black text-xs uppercase tracking-widest hidden md:block hover:bg-primary-dark transition-premium shadow-lg shadow-primary/20 active:scale-95">
                                         {$language === 'en' ? 'Search' : 'Buscar'}
                                     </button>
                                 </div>
@@ -125,9 +162,11 @@ export default function TourFilter({ initialTours, defaultLimit = 8, hideLoadMor
 
                     {/* Horizontal Categories (Chips) */}
                     <div className="relative group">
-                        <div className="flex items-center gap-4 text-gray-400 font-bold text-xs uppercase tracking-[0.2em] mb-4 md:justify-center">
-                            <Filter className="w-4 h-4 text-primary" />
+                        <div className="flex items-center gap-4 text-gray-500 font-bold text-[10px] uppercase tracking-[0.3em] mb-6 md:justify-center">
+                            <div className="h-px w-8 bg-white/10 hidden md:block"></div>
+                            <Filter className="w-3.5 h-3.5 text-primary" />
                             <span>{$language === 'en' ? 'Filter by Category' : 'Filtrar por Categoría'}</span>
+                            <div className="h-px w-8 bg-white/10 hidden md:block"></div>
                         </div>
                         
                         <div className="relative">
@@ -141,10 +180,10 @@ export default function TourFilter({ initialTours, defaultLimit = 8, hideLoadMor
                                         key={cat.id}
                                         onClick={() => handleCategoryChange(cat.id)}
                                         className={clsx(
-                                            "whitespace-nowrap px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 border shrink-0",
+                                            "whitespace-nowrap px-8 py-3.5 rounded-full text-xs font-black uppercase tracking-widest transition-premium border shrink-0",
                                             activeCategory === cat.id
-                                                ? "bg-primary text-white border-primary shadow-lg shadow-primary/25 scale-105"
-                                                : "bg-white/5 text-gray-400 border-white/5 hover:border-white/20 hover:text-white"
+                                                ? "bg-primary text-white border-primary shadow-xl shadow-primary/30 scale-110 active:scale-105"
+                                                : "bg-white/5 text-gray-400 border-white/10 hover:border-white/30 hover:text-white hover:bg-white/10 active:scale-95"
                                         )}
                                     >
                                         {$language === 'en' ? cat.label.en : cat.label.es}
@@ -162,6 +201,7 @@ export default function TourFilter({ initialTours, defaultLimit = 8, hideLoadMor
                     <div key={tour.id} className="h-full animate-fade-in-up">
                         <TourCard
                             id={tour.id}
+                            slug={tour.slug}
                             title={tour.title}
                             price={tour.price}
                             image_url={tour.image_url}
@@ -181,13 +221,13 @@ export default function TourFilter({ initialTours, defaultLimit = 8, hideLoadMor
 
             {/* Show More Button */}
             {hasMore && !hideLoadMore && (
-                <div className="mt-12 text-center">
+                <div className="mt-16 text-center">
                     <button
                         onClick={() => setDisplayLimit(prev => prev + 8)}
-                        className="inline-flex items-center gap-3 px-10 py-4 rounded-full bg-gradient-to-r from-primary/10 to-brand-orange/10 border border-primary/20 text-white font-bold hover:from-primary hover:to-brand-orange transition-all duration-300 shadow-lg hover:shadow-primary/20"
+                        className="inline-flex items-center gap-3 px-12 py-5 rounded-full bg-white/5 border border-white/10 text-white font-black text-xs uppercase tracking-[0.2em] hover:bg-white/10 hover:border-primary/50 transition-premium shadow-xl active:scale-95"
                     >
-                        {$language === 'en' ? 'See More Adventures' : 'Ver Más Aventuras'}
-                        <ChevronRight className="w-5 h-5" />
+                        {$language === 'en' ? 'Explore More Tours' : 'Explorar Más Tours'}
+                        <ChevronRight className="w-4 h-4 text-primary" />
                     </button>
                 </div>
             )}

@@ -78,6 +78,7 @@ export default function BookingSidebar({ tourId, tourTitle, price, durationOptio
     };
 
     const handleDateChange = (date: Date | null) => {
+        console.log('BookingSidebar: Date changed:', date);
         if (date) {
             setBookingDate(date);
         }
@@ -165,7 +166,6 @@ export default function BookingSidebar({ tourId, tourTitle, price, durationOptio
                     </div>
                 </div>
 
-                {/* Date Picker */}
                 <div className="space-y-3">
                     <label className="text-sm text-gray-400 font-medium uppercase tracking-wider flex items-center gap-2">
                         <Calendar className="w-4 h-4" /> <TranslatedText content={{en: "Date", es: "Fecha"}} />
@@ -173,13 +173,24 @@ export default function BookingSidebar({ tourId, tourTitle, price, durationOptio
                     <div className="relative">
                         <DatePicker
                             selected={$booking.date ? new Date($booking.date) : null}
-                            onChange={handleDateChange}
+                            onChange={(date: Date | null) => {
+                                handleDateChange(date);
+                                // Force state sync to parent/store
+                                if (date) setBookingDate(date);
+                            }}
                             minDate={new Date()}
                             placeholderText="Select a date"
                             className="w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors cursor-pointer shadow-inner"
                             wrapperClassName="w-full"
                         />
                     </div>
+                    {/* Visual cue if date is missing */}
+                    {!$booking.date && (
+                        <div className="bg-primary/10 border border-primary/20 rounded-lg p-2 flex items-center gap-2 mt-1">
+                            <Info className="w-3 h-3 text-primary" />
+                            <span className="text-[10px] text-gray-400">Select a date in the calendar above to enable checkout.</span>
+                        </div>
+                    )}
                 </div>
 
                 {/* Guests */}
@@ -294,7 +305,13 @@ export default function BookingSidebar({ tourId, tourTitle, price, durationOptio
 
                     <a
                         href={`/checkout?product_id=${tourId}&variation_id=${packages[selectedDurationIdx]?.variation_id || ''}&date=${$booking.date || ''}&adults=${$booking.adults}&children=${$booking.children}&extra_pax=${$booking.extraPassengers}`}
-                        className={`w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl transition-all shadow-lg hover:shadow-primary/20 ${!$booking.date ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
+                        className={`w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl transition-all shadow-lg hover:shadow-primary/20 ${!$booking.date ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        onClick={(e) => {
+                            if (!$booking.date) {
+                                e.preventDefault();
+                                alert($language === 'en' ? 'Please select a date first!' : '¡Por favor selecciona una fecha primero!');
+                            }
+                        }}
                     >
                         <TranslatedText content={{en: "Proceed to Checkout", es: "Proceder al Pago"}} />
                         <CheckCircle className="w-5 h-5" />

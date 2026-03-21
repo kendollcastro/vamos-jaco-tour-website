@@ -5,7 +5,8 @@ import { MapPin, Clock, ArrowUpRight, Info, CircleCheck } from 'lucide-react';
 import { clsx } from 'clsx';
 
 interface TourCardProps {
-    id?: string;
+    id: string; // The UUID
+    slug: string; // The URL identifier
     title: { en: string; es: string } | string;
     price: number;
     originalPrice?: number;
@@ -18,7 +19,7 @@ interface TourCardProps {
     };
 }
 
-export default function TourCard({ id, title, price, originalPrice, image_url, location, duration, badge }: TourCardProps) {
+export default function TourCard({ id, slug, title, price, originalPrice, image_url, location, duration, badge }: TourCardProps) {
     const $language = useStore(language);
 
     const [mounted, setMounted] = React.useState(false);
@@ -50,15 +51,12 @@ export default function TourCard({ id, title, price, originalPrice, image_url, l
     };
 
     const CardWrapper = ({ children }: { children: React.ReactNode }) => {
-        if (id) {
-            return <a href={`/tours/${id}`} className="block h-full">{children}</a>;
-        }
-        return <>{children}</>;
+        return <a href={`/tours/${slug}`} className="block h-full">{children}</a>;
     };
 
     return (
         <CardWrapper>
-            <div className="group bg-dark-soft rounded-[20px] overflow-hidden shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full flex flex-col border-none ring-1 ring-white/10 hover:ring-primary/30">
+            <div className="group bg-dark-soft rounded-[25px] overflow-hidden shadow-premium hover:shadow-2xl hover:scale-[1.02] transition-premium h-full flex flex-col border border-white/5 hover:border-primary/30 relative">
 
                 {/* Image Container */}
                 <div className="relative h-52 md:h-64 overflow-hidden p-2 md:p-3 pb-0">
@@ -84,9 +82,9 @@ export default function TourCard({ id, title, price, originalPrice, image_url, l
                 </div>
 
                 {/* Content */}
-                <div className="px-5 py-5 flex flex-col flex-grow">
+                <div className="px-6 py-5 flex flex-col flex-grow">
 
-                    <h3 className="text-lg font-bold text-white mb-2 line-clamp-2">
+                    <h3 className="text-xl font-heading font-bold text-white mb-2 line-clamp-2 leading-tight tracking-tight group-hover:text-primary transition-colors">
                         {currentTitle}
                     </h3>
 
@@ -105,20 +103,20 @@ export default function TourCard({ id, title, price, originalPrice, image_url, l
 
                     {/* Price and Action Row */}
                     <div className="flex items-end justify-between mb-4 mt-auto">
-                        <button className="bg-primary hover:bg-red-700 text-white px-4 py-2 rounded-full font-bold text-xs flex items-center gap-1.5 transition-colors shadow-lg shadow-primary/30">
+                        <button className="bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-full font-bold text-xs flex items-center gap-1.5 transition-premium shadow-lg shadow-primary/30 hover:shadow-primary/50 active:scale-95">
                             {bookText}
                             <ArrowUpRight className="w-3.5 h-3.5" />
                         </button>
 
                         <div className="text-right">
-                            <p className="text-[10px] text-gray-500 font-medium mb-0.5">{startingFromText}</p>
+                            <p className="text-[11px] text-gray-500 font-bold uppercase tracking-widest mb-0.5">{startingFromText}</p>
                             <div className="flex items-center justify-end gap-1.5">
                                 {originalPrice && (
                                     <span className="text-xs text-gray-400 line-through decoration-gray-400">
                                         ${originalPrice.toFixed(2)}
                                     </span>
                                 )}
-                                <span className="text-xl font-bold text-white">
+                                <span className="text-2xl font-heading font-black text-white">
                                     ${price.toFixed(2)}
                                 </span>
                             </div>
@@ -126,13 +124,13 @@ export default function TourCard({ id, title, price, originalPrice, image_url, l
                     </div>
 
                     {/* Footer Section */}
-                    <div className="border-t border-white/10 pt-3 flex items-center gap-4">
-                        <button className="flex items-center gap-1 text-[10px] font-semibold text-gray-400 hover:text-primary transition-colors">
-                            <Info className="w-3 h-3" />
+                    <div className="border-t border-white/10 pt-4 mt-2 flex items-center gap-5">
+                        <button className="flex items-center gap-1.5 text-xs font-bold text-gray-400 hover:text-primary transition-premium uppercase tracking-wider">
+                            <Info className="w-3.5 h-3.5" />
                             {experienceText}
                         </button>
-                        <button className="flex items-center gap-1 text-[10px] font-semibold text-gray-400 hover:text-primary transition-colors">
-                            <CircleCheck className="w-3 h-3" />
+                        <button className="flex items-center gap-1.5 text-xs font-bold text-gray-400 hover:text-primary transition-premium uppercase tracking-wider">
+                            <CircleCheck className="w-3.5 h-3.5" />
                             {inclusionText}
                         </button>
                     </div>

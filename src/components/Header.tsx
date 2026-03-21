@@ -36,8 +36,8 @@ export default function Header() {
     return (
         <header
             className={clsx(
-                "fixed w-full top-0 z-50 transition-all duration-300",
-                (isScrolled || isMobileMenuOpen) ? "bg-dark-soft/90 backdrop-blur-md shadow-sm py-2" : "bg-gradient-to-b from-black/50 to-transparent py-4"
+                "fixed w-full top-0 z-50 transition-premium",
+                (isScrolled || isMobileMenuOpen) ? "glass py-2" : "bg-gradient-to-b from-black/60 to-transparent py-4"
             )}
         >
             <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between relative z-50">
@@ -65,11 +65,11 @@ export default function Header() {
 
                 {/* Desktop Navigation — Centered Pill */}
                 <div className={clsx(
-                    "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden lg:flex items-center gap-8 px-8 py-3 rounded-full transition-colors border text-sm font-bold tracking-wide uppercase",
-                    isScrolled ? "bg-white/10 border-white/20 text-white" : "bg-white/10 border-white/30 text-white backdrop-blur-sm"
+                    "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden lg:flex items-center gap-8 px-8 py-3 rounded-full transition-premium border text-xs font-bold tracking-widest uppercase",
+                    isScrolled ? "bg-white/5 border-white/10 text-white/90" : "bg-white/10 border-white/20 text-white backdrop-blur-sm shadow-xl shadow-black/20"
                 )}>
                     {navLinks.map((link) => (
-                        <a key={link.href} href={link.href} className="hover:text-primary transition-colors">{link.label}</a>
+                        <a key={link.href} href={link.href} className="hover:text-primary transition-premium transform hover:scale-105 active:scale-95">{link.label}</a>
                     ))}
                 </div>
 
@@ -78,11 +78,11 @@ export default function Header() {
                     <button
                         onClick={toggleLanguage}
                         className={clsx(
-                            "flex items-center gap-2 px-4 py-2 rounded-full transition-colors border text-sm font-medium",
-                            (isScrolled || isMobileMenuOpen) ? "bg-white/10 hover:bg-white/20 border-white/20 text-white" : "bg-white/10 hover:bg-white/20 border-white/30 text-white backdrop-blur-sm"
+                            "flex items-center gap-2 px-5 py-2.5 rounded-full transition-premium border text-xs font-bold tracking-widest uppercase",
+                            (isScrolled || isMobileMenuOpen) ? "glass hover:bg-white/10 border-white/10 text-white" : "bg-white/10 hover:bg-white/20 border-white/20 text-white backdrop-blur-sm"
                         )}
                     >
-                        <Globe className="w-4 h-4" />
+                        <Globe className="w-3.5 h-3.5 text-primary" />
                         <span>{$language === 'en' ? 'EN' : 'ES'}</span>
                     </button>
 

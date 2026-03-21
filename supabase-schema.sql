@@ -126,3 +126,26 @@ CREATE POLICY "Public read team_members" ON team_members
 
 CREATE POLICY "Admins manage team_members" ON team_members
   FOR ALL USING (auth.role() = 'authenticated');
+
+-- ─── Newsletter Subscribers ───────────────────────────────
+CREATE TABLE IF NOT EXISTS subscribers (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email           TEXT UNIQUE NOT NULL,
+  is_active       BOOLEAN DEFAULT true,
+  created_at      TIMESTAMPTZ DEFAULT now(),
+  updated_at      TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TRIGGER subscribers_updated_at
+  BEFORE UPDATE ON subscribers
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+CREATE INDEX IF NOT EXISTS idx_subscribers_email ON subscribers(email);
+
+ALTER TABLE subscribers ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Public can insert subscribers" ON subscribers
+  FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Admins manage subscribers" ON subscribers
+  FOR ALL USING (auth.role() = 'authenticated');

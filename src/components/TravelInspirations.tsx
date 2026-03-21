@@ -12,13 +12,13 @@ export default function TravelInspirations() {
 
     const t = {
         en: {
-            title: "Travel Inspirations",
-            subtitle: "A curated list of inspiration the most tour & travel based on different destinations.",
+            title: "Fuel Your Wanderlust",
+            subtitle: "Discover experiences that will ignite your spirit. From navigating wild rapids to soaring above the canopy, find your next unforgettable story here.",
             viewAll: "View All Inspiration"
         },
         es: {
-            title: "Inspiraciones de Viaje",
-            subtitle: "Una lista curada de inspiración de los mejores tours y viajes basados en diferentes destinos.",
+            title: "Alimenta tu Espíritu Viajero",
+            subtitle: "Descubre experiencias que encenderán tu espíritu. Desde navegar rápidos salvajes hasta volar sobre el dosel, encuentra tu próxima historia inolvidable aquí.",
             viewAll: "Ver Toda la Inspiración"
         }
     };

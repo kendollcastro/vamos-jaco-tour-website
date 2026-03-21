@@ -11,12 +11,14 @@ export default function NewsletterSection() {
             tagline: 'EXCLUSIVE DEALS',
             title: "Get insider access to extreme adventures.",
             placeholder: "Your email address",
+            alreadySubscribed: "You are already subscribed to our newsletter!",
             subtext: "Join 2,000+ adventure seekers. Get exclusive deals, new experience alerts & local tips.",
         },
         es: {
             tagline: 'OFERTAS EXCLUSIVAS',
             title: "Acceso exclusivo a aventuras extremas.",
             placeholder: "Tu correo electrónico",
+            alreadySubscribed: "Usted ya se ha suscrito a nuestro boletín.",
             subtext: "Únete a 2,000+ buscadores de aventura. Ofertas exclusivas, alertas y tips locales.",
         }
     };
@@ -24,23 +26,54 @@ export default function NewsletterSection() {
     const fallbackContent = $language === 'en' ? t.en : t.es;
 
     const [email, setEmail] = useState('');
-    const [status, setStatus] = useState<'idle' | 'loading' | 'success'>('idle');
+    const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+    const [message, setMessage] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!email) return;
 
         setStatus('loading');
-        // Simulate API call for newsletter subscription
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        setStatus('success');
-        setEmail('');
+        try {
+            const response = await fetch('/api/newsletter/subscribe', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                setStatus('success');
+                if (data.alreadySubscribed) {
+                    setMessage(alreadySubscribedText);
+                } else {
+                    setMessage($language === 'en' ? 'Thanks for subscribing!' : '¡Gracias por suscribirte!');
+                }
+                setEmail('');
+            } else {
+                setStatus('error');
+                setMessage(data.message || (
+                    $language === 'en' 
+                        ? 'Something went wrong. Please try again.' 
+                        : 'Algo salió mal. Por favor intenta de nuevo.'
+                ));
+            }
+        } catch (error) {
+            setStatus('error');
+            setMessage(
+                $language === 'en' 
+                    ? 'Something went wrong. Please try again.' 
+                    : 'Algo salió mal. Por favor intenta de nuevo.'
+            );
+        }
     };
 
     const tagline = fallbackContent.tagline;
     const title = fallbackContent.title;
     const placeholder = fallbackContent.placeholder;
     const subtext = fallbackContent.subtext;
+    const alreadySubscribedText = fallbackContent.alreadySubscribed;
 
     return (
         <section className="py-4">
@@ -76,34 +109,40 @@ export default function NewsletterSection() {
                             <div className="bg-brand-teal/20 border border-brand-teal/30 p-4 rounded-3xl flex items-center justify-center gap-3 max-w-xl mx-auto mb-6 text-brand-teal animate-fade-in-up">
                                 <CheckCircle2 className="w-6 h-6" />
                                 <span className="font-bold text-lg">
-                                    {$language === 'en' ? 'Thanks for subscribing!' : '¡Gracias por suscribirte!'}
+                                    {message || ($language === 'en' ? 'Thanks for subscribing!' : '¡Gracias por suscribirte!')}
                                 </span>
                             </div>
                         ) : (
-                            <form onSubmit={handleSubmit} className="bg-dark/40 backdrop-blur-xl p-2 rounded-full flex items-center ring-1 ring-white/20 max-w-xl mx-auto w-full mb-6 hover:ring-white/30 transition-colors focus-within:ring-primary/50">
-                                <input
-                                    id="newsletter-email"
-                                    type="email"
-                                    required
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    placeholder={placeholder}
-                                    aria-label={placeholder}
-                                    className="flex-grow px-6 py-3 rounded-full bg-transparent text-white focus:outline-none placeholder:text-gray-400 font-medium"
-                                />
-                                <button
-                                    type="submit"
-                                    disabled={status === 'loading'}
-                                    aria-label={$language === 'en' ? 'Subscribe' : 'Suscribirse'}
-                                    className="bg-gradient-to-r from-primary to-brand-orange text-white w-12 h-12 rounded-full flex items-center justify-center hover:scale-105 transition-transform shadow-lg shadow-primary/30 disabled:opacity-50"
-                                >
-                                    {status === 'loading' ? (
-                                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                    ) : (
-                                        <Send className="w-5 h-5 -ml-0.5 translate-x-0.5" />
-                                    )}
-                                </button>
-                            </form>
+                            <>
+                                <form onSubmit={handleSubmit} className="bg-dark/40 backdrop-blur-xl p-2 rounded-full flex items-center ring-1 ring-white/20 max-w-xl mx-auto w-full mb-6 hover:ring-white/30 transition-colors focus-within:ring-primary/50">
+                                    <input
+                                        id="newsletter-email"
+                                        type="email"
+                                        required
+                                        disabled={status === 'loading'}
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        placeholder={placeholder}
+                                        aria-label={placeholder}
+                                        className="flex-grow px-6 py-3 rounded-full bg-transparent text-white focus:outline-none placeholder:text-gray-400 font-medium"
+                                    />
+                                    <button
+                                        type="submit"
+                                        disabled={status === 'loading'}
+                                        aria-label={$language === 'en' ? 'Subscribe' : 'Suscribirse'}
+                                        className="bg-gradient-to-r from-primary to-brand-orange text-white w-12 h-12 rounded-full flex items-center justify-center hover:scale-105 transition-transform shadow-lg shadow-primary/30 disabled:opacity-50"
+                                    >
+                                        {status === 'loading' ? (
+                                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                        ) : (
+                                            <Send className="w-5 h-5 -ml-0.5 translate-x-0.5" />
+                                        )}
+                                    </button>
+                                </form>
+                                {status === 'error' && (
+                                    <p className="text-primary text-sm mb-6 font-bold animate-pulse">{message}</p>
+                                )}
+                            </>
                         )}
 
                         <p className="text-gray-300/80 text-sm md:text-base font-medium">

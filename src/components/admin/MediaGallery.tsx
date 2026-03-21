@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { supabase } from '../../lib/supabase';
 
 interface ImageFile {
     name: string;
@@ -28,7 +29,11 @@ export default function MediaGallery() {
     async function fetchImages() {
         setLoading(true);
         try {
-            const res = await fetch('/api/media');
+            if (!supabase) return;
+            const { data: { session } } = await supabase.auth.getSession();
+            const res = await fetch('/api/media', {
+                headers: { 'Authorization': `Bearer ${session?.access_token}` }
+            });
             const data = await res.json();
             setImages(data.images || []);
         } catch (err) {
@@ -45,7 +50,13 @@ export default function MediaGallery() {
             if (uploadFolder) formData.append('folder', uploadFolder);
 
             try {
-                await fetch('/api/media', { method: 'POST', body: formData });
+                if (!supabase) continue;
+                const { data: { session } } = await supabase.auth.getSession();
+                await fetch('/api/media', { 
+                    method: 'POST', 
+                    headers: { 'Authorization': `Bearer ${session?.access_token}` },
+                    body: formData 
+                });
             } catch (err) {
                 console.error('Upload error:', err);
             }
@@ -63,9 +74,14 @@ export default function MediaGallery() {
         setIsDeleting(true);
 
         try {
+            if (!supabase) return;
+            const { data: { session } } = await supabase.auth.getSession();
             await fetch('/api/media', {
                 method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session?.access_token}`
+                },
                 body: JSON.stringify({ path: imageToDelete.path }),
             });
             // If the deleted image was selected in the drawer, deselect it
@@ -262,7 +278,7 @@ export default function MediaGallery() {
                                             <img src={img.path} alt={img.name} loading="lazy" decoding="async" className="w-10 h-10 rounded-lg object-cover" />
                                         </td>
                                         <td className="px-4 py-2.5 text-gray-900 dark:text-white text-sm">{img.name}</td>
-                                        <td className="px-4 py-2.5 text-gray-500 text-xs hidden md:table-cell">{img.folder}</td>
+                                        <td className="px-4 py-2.5 text-gray-500 dark:text-gray-400 text-xs hidden md:table-cell">{img.folder}</td>
                                         <td className="px-4 py-2.5 text-gray-600 dark:text-gray-400 text-xs">{formatSize(img.size)}</td>
                                         <td className="px-4 py-2.5">
                                             <div className="flex gap-1">

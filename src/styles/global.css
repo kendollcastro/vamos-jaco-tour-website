@@ -1,7 +1,9 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
 
 @theme {
     /* ───────────  Typography  ─────────── */
+    --font-heading: 'Outfit', sans-serif;
     --font-sans: 'Poppins', sans-serif;
     --font-script: 'Inter', sans-serif;
 
@@ -21,7 +23,8 @@
     /* ───────────  Box Shadows  ─────────── */
     --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.05);
     --shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.1);
-    --shadow-neon: 0 0 10px rgba(3, 166, 150, 0.5), 0 0 20px rgba(3, 166, 150, 0.3);
+    --shadow-premium: 0 12px 24px -6px rgba(0, 0, 0, 0.12), 0 8px 16px -4px rgba(0, 0, 0, 0.08);
+    --shadow-neon: 0 0 10px rgba(3, 166, 150, 0.4), 0 0 20px rgba(3, 166, 150, 0.2);
 
     /* ───────────  Animations  ─────────── */
     --animate-fade-in-up: fadeInUp 0.8s ease-out forwards;
@@ -29,6 +32,9 @@
     --animate-float: float 6s ease-in-out infinite;
     --animate-ken-burns: kenBurns 15s ease-out forwards;
 }
+
+/* Enable class-based dark mode for Tailwind v4 utility classes */
+@custom-variant dark (&:where(.dark, .dark *));
 
 /* ───────────  Keyframes  ─────────── */
 @keyframes fadeInUp {
@@ -66,7 +72,6 @@
 }
 
 @keyframes float {
-
     0%,
     100% {
         transform: translateY(0);
@@ -97,9 +102,36 @@
     animation: gradientShift 4s ease-in-out infinite;
 }
 
+/* ───────────  Premium Glassmorphism  ─────────── */
+.glass {
+    background: rgba(255, 255, 255, 0.05); /* Slightly more opaque */
+    backdrop-filter: blur(16px); /* Increased blur */
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.15); /* Stronger border */
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25);
+}
+
+.dark .glass {
+    background: rgba(13, 11, 8, 0.75); /* Darker and more opaque for better contrast */
+    border: 1px solid rgba(255, 255, 255, 0.08); /* Stronger dark border */
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+}
+
+.glass-light {
+    background: rgba(255, 255, 255, 0.85); /* Significantly more opaque */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3); /* Much stronger border for separation */
+    box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* ───────────  Modern Transitions  ─────────── */
+.transition-premium {
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
 /* ───────────  Pulse Glow for CTAs  ─────────── */
 @keyframes pulseGlow {
-
     0%,
     100% {
         box-shadow: 0 0 10px rgba(220, 53, 34, 0.3);
@@ -116,7 +148,6 @@
 
 /* ───────────  Sparkle / Twinkle Particle  ─────────── */
 @keyframes sparkle {
-
     0%,
     100% {
         opacity: 0;
@@ -154,7 +185,6 @@
 
 /* ───────────  Glow Pulse for Dust  ─────────── */
 @keyframes glowPulse {
-
     0%,
     100% {
         opacity: 0.3;
@@ -231,8 +261,19 @@
     transform: scale(1.2);
 }
 
-/* ───────────  Global Dark Mode  ─────────── */
+/* ───────────  Global Theme Support  ─────────── */
+:root {
+    --bg-page: var(--color-light);
+    --text-primary: var(--color-dark);
+}
+
+.dark {
+    --bg-page: var(--color-dark);
+    --text-primary: var(--color-light);
+}
+
 body {
-    background-color: var(--color-dark);
-    color: var(--color-light);
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }

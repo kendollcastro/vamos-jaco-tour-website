@@ -5,7 +5,7 @@ import { language } from '../store';
 export default function TourCategories() {
     const $language = useStore(language);
 
-    const title = $language === 'en' ? 'Browse by Category' : 'Explorar por Categoría';
+    const title = $language === 'en' ? 'Choose Your Element' : 'Elige tu Elemento';
 
     // Placeholder data for categories - simulating what will come from WP later
     const categories = [

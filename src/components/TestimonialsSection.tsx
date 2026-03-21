@@ -13,7 +13,7 @@ const testimonials = [
         id: 1,
         name: "James Bonde",
         role: "Vamos Jacó Traveler",
-        image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=2574&auto=format&fit=crop",
+        image: "/images/testimonials/testimonial-1.webp",
         quote: "The tour was well-organized, and we enjoyed every bit of it. However, I wish we had more free time to explore on our own. Overall, a great experience!",
         rating: 5
     },
@@ -21,7 +21,7 @@ const testimonials = [
         id: 2,
         name: "Michael D Linda",
         role: "Vamos Jacó Traveler",
-        image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=2670&auto=format&fit=crop",
+        image: "/images/testimonials/testimonial-2.webp",
         quote: "An absolute dream come true. The zip-lining tour was exhilarating and safely managed. The team at Vamos Jacó knows exactly how to create unforgettable moments.",
         rating: 5
     },
@@ -29,7 +29,7 @@ const testimonials = [
         id: 3,
         name: "Amber Lashley",
         role: "Vamos Jacó Traveler",
-        image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=2574&auto=format&fit=crop",
+        image: "/images/testimonials/testimonial-3.webp",
         quote: "Traveling with kids can be stressful, but Vamos Jacó made it a breeze. They found family-friendly activities that we all enjoyed. We will definitely be coming back!",
         rating: 5
     },
@@ -37,7 +37,7 @@ const testimonials = [
         id: 4,
         name: "Emily Davis",
         role: "Solo Traveler",
-        image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=2864&auto=format&fit=crop",
+        image: "/images/testimonials/testimonial-4.webp",
         quote: "As a solo traveler, I felt safe and welcomed. The guides were friendly and very knowledgeable. It was the perfect mix of relaxation and adventure.",
         rating: 5
     },
@@ -45,7 +45,7 @@ const testimonials = [
         id: 5,
         name: "David Wilson",
         role: "Nature Lover",
-        image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=2574&auto=format&fit=crop",
+        image: "/images/testimonials/testimonial-5.webp",
         quote: "The wildlife tours were incredible. Seeing monkeys and sloths in their natural habitat was a highlight. Thank you for an amazing value experience.",
         rating: 5
     }
@@ -58,14 +58,14 @@ export default function TestimonialsSection() {
 
     const t = {
         en: {
-            title: "Hear It from Travelers",
-            subtitle: "We go beyond just booking trips—we create unforgettable travel experiences that match your dreams!",
+            title: "Stories of Adrenaline & Wonder",
+            subtitle: "Don't just take our word for it. Read the raw, unfiltered experiences of travelers who discovered their wild side with us.",
             avg: "Average Experience",
             reviews: "Reviews"
         },
         es: {
-            title: "Escúchalo de los Viajeros",
-            subtitle: "Vamos más allá de solo reservar viajes: ¡creamos experiencias de viaje inolvidables que coinciden con tus sueños!",
+            title: "Historias de Adrenalina y Asombro",
+            subtitle: "No confíes solo en nuestra palabra. Lee las experiencias crudas y reales de viajeros que descubrieron su lado salvaje con nosotros.",
             avg: "Experiencia Promedio",
             reviews: "Reseñas"
         }
@@ -130,7 +130,7 @@ export default function TestimonialsSection() {
                                     {/* User Info */}
                                     <div className="flex items-center gap-4 mt-auto">
                                         <div className="w-12 h-12 rounded-full overflow-hidden shrink-0">
-                                            <img src={item.image} alt={item.name} loading="lazy" decoding="async" className="w-full h-full object-cover" />
+                                            <img src={item.image} alt={item.name} width="48" height="48" loading="lazy" decoding="async" className="w-full h-full object-cover" />
                                         </div>
                                         <div>
                                             <h3 className="font-bold text-white">{item.name}</h3>

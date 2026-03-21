@@ -12,16 +12,18 @@ interface Props {
 	robots?: string;
 	jsonLd?: Record<string, any> | Record<string, any>[];
 	preloadImage?: string;
+	hideChrome?: boolean;
 }
 
 const {
 	title = "Vamos Jacó Tours | Costa Rica Adventures",
 	description = "Explore the best adventure tours in Jacó, Costa Rica. ATV rides, jet ski, surfing, flyboard, and more. Book your unforgettable experience today!",
-	image = "/images/contact-hero.png",
+	image = "/og-image.png",
 	keywords = "Costa Rica tours, Jacó tours, ATV tours Jacó, jet ski Costa Rica, surfing Jacó, adventure tours, flyboard, zipline, Vamos Jacó",
 	robots = "index, follow",
 	jsonLd,
     preloadImage,
+	hideChrome = false,
 } = Astro.props;
 
 const canonicalURL = new URL(
@@ -39,11 +41,13 @@ const schemas = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [];
 ---
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="apple-touch-icon" href="/logo-optimized.png" />
+		<meta name="theme-color" content="#dc3522" />
 		<meta name="generator" content={Astro.generator} />
 
 		<!-- SEO -->
@@ -61,6 +65,9 @@ const schemas = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [];
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
 		<meta property="og:image" content={ogImage} />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+		<meta property="og:image:alt" content="Vamos Jacó Tours Adventure Preview" />
 		<meta property="og:url" content={canonicalURL.href} />
 		<meta property="og:site_name" content="Vamos Jacó Tours" />
 		<meta property="og:locale" content="en_US" />
@@ -119,9 +126,9 @@ const schemas = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [];
 	</head>
 	<body class="font-sans antialiased">
 		<div class="relative z-10">
-			<Header client:load />
+			{!hideChrome && <Header client:idle />}
 			<slot />
-			<Footer client:visible />
+			{!hideChrome && <Footer client:visible />}
 		</div>
 		<style is:global>
 			:root {

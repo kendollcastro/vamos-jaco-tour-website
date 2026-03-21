@@ -1,8 +1,8 @@
 export type TourCategory = 'atv' | 'water' | 'nature' | 'extreme' | 'relax' | 'canopy' | 'combos';
 
 export interface Tour {
-    id: string;
-    slug?: string;
+    id: string; // This is the real Supabase UUID
+    slug: string; // This is the URL identifier
     title: { en: string; es: string };
     price: number;
     originalPrice?: number;

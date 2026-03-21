@@ -20,6 +20,7 @@ export const toggleTheme = () => {
     theme.set(newTheme);
     if (typeof window !== 'undefined') {
         localStorage.setItem('theme', newTheme);
+        // Centralized DOM manipulation
         if (newTheme === 'dark') {
             document.documentElement.classList.add('dark');
         } else {
@@ -31,10 +32,10 @@ export const toggleTheme = () => {
 export const initTheme = () => {
     if (typeof window !== 'undefined') {
         const storedTheme = localStorage.getItem('theme') as Theme | null;
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const initialTheme = storedTheme || (prefersDark ? 'dark' : 'light');
-
+        const initialTheme = storedTheme || 'dark';
         theme.set(initialTheme);
+        
+        // Centralized DOM manipulation
         if (initialTheme === 'dark') {
             document.documentElement.classList.add('dark');
         } else {

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
+import AddBookingModal from './AddBookingModal';
 
 interface Booking {
     id: string;
@@ -35,6 +36,7 @@ export default function BookingsTable() {
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState<string>('all');
     const [searchQuery, setSearchQuery] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const isDemo = !supabase;
 
     useEffect(() => {
@@ -134,7 +136,10 @@ export default function BookingsTable() {
                     </div>
 
                     {/* Create Booking Button */}
-                    <button className="hidden sm:flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-6 py-3 rounded-full text-sm font-bold transition-all shadow-lg shadow-primary/25 hover:shadow-primary/40 shrink-0">
+                    <button 
+                        onClick={() => setIsModalOpen(true)}
+                        className="hidden sm:flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-6 py-3 rounded-full text-sm font-bold transition-all shadow-lg shadow-primary/25 hover:shadow-primary/40 shrink-0"
+                    >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
                         </svg>
@@ -142,6 +147,12 @@ export default function BookingsTable() {
                     </button>
                 </div>
             </div>
+
+            <AddBookingModal 
+                isOpen={isModalOpen} 
+                onClose={() => setIsModalOpen(false)} 
+                onSuccess={() => fetchBookings()} 
+            />
 
             {/* Table */}
             <div className="bg-white dark:bg-dark-soft rounded-3xl border border-gray-200 dark:border-white/5 overflow-hidden shadow-sm transition-colors duration-300">
@@ -185,7 +196,7 @@ export default function BookingsTable() {
                                                 </div>
                                                 <div>
                                                     <p className="text-gray-900 dark:text-white font-bold leading-tight">{booking.customer_name}</p>
-                                                    <p className="text-gray-500 text-xs font-medium">{booking.customer_email}</p>
+                                                    <p className="text-gray-500 dark:text-gray-400 text-xs font-medium">{booking.customer_email}</p>
                                                 </div>
                                             </div>
                                         </td>

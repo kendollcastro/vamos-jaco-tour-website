@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { supabase } from '../../lib/supabase';
 
 interface ImageFile {
     name: string;
@@ -34,7 +35,11 @@ export default function ImagePicker({ isOpen, onClose, onSelect, multiple = fals
     async function fetchImages() {
         setLoading(true);
         try {
-            const res = await fetch('/api/media');
+            if (!supabase) return;
+            const { data: { session } } = await supabase.auth.getSession();
+            const res = await fetch('/api/media', {
+                headers: { 'Authorization': `Bearer ${session?.access_token}` }
+            });
             const data = await res.json();
             setImages(data.images || []);
         } catch (err) {
@@ -50,7 +55,13 @@ export default function ImagePicker({ isOpen, onClose, onSelect, multiple = fals
             formData.append('file', file);
             formData.append('folder', 'activities');
             try {
-                await fetch('/api/media', { method: 'POST', body: formData });
+                if (!supabase) continue;
+                const { data: { session } } = await supabase.auth.getSession();
+                await fetch('/api/media', { 
+                    method: 'POST', 
+                    headers: { 'Authorization': `Bearer ${session?.access_token}` },
+                    body: formData 
+                });
             } catch (err) {
                 console.error('Upload error:', err);
             }

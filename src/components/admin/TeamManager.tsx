@@ -186,7 +186,7 @@ export default function TeamManager() {
                                             </div>
                                             <div>
                                                 <div className="text-sm font-bold text-gray-900 dark:text-white">{member.name}</div>
-                                                <div className="text-xs text-gray-500">
+                                                <div className="text-xs text-gray-500 dark:text-gray-400">
                                                     {member.social_instagram && 'IG '}
                                                     {member.social_linkedin && 'IN '}
                                                     {member.social_twitter && 'TW'}
@@ -196,7 +196,7 @@ export default function TeamManager() {
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="text-sm text-gray-700 dark:text-gray-300">{member.position_en || '-'}</div>
-                                        <div className="text-xs text-gray-500">{member.position_es || '-'}</div>
+                                        <div className="text-xs text-gray-500 dark:text-gray-400">{member.position_es || '-'}</div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <span className={`inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${member.is_active ? 'bg-green-500/20 text-green-400 border border-green-500/20' : 'bg-red-500/20 text-red-400 border border-red-500/20'}`}>

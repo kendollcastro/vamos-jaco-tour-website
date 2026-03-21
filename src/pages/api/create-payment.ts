@@ -1,8 +1,7 @@
 import type { APIRoute } from 'astro';
-import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin } from '../../lib/supabase';
 
 const SUPABASE_URL = import.meta.env.PUBLIC_SUPABASE_URL || '';
-const SUPABASE_SERVICE_KEY = import.meta.env.SUPABASE_SERVICE_ROLE_KEY || '';
 const TILOPAY_API_URL = import.meta.env.TILOPAY_API_URL || 'https://app.tilopay.com/api/v1';
 const TILOPAY_API_USER = import.meta.env.TILOPAY_API_USER || '';
 const TILOPAY_API_PASSWORD = import.meta.env.TILOPAY_API_PASSWORD || '';
@@ -41,10 +40,8 @@ export const POST: APIRoute = async ({ request, url }) => {
         // ── 1. Create booking in Supabase ──
         let bookingId: string | null = null;
 
-        if (SUPABASE_URL && SUPABASE_SERVICE_KEY) {
-            const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
-
-            const { data: booking, error: bookingError } = await supabase
+        if (supabaseAdmin) {
+            const { data: booking, error: bookingError } = await supabaseAdmin
                 .from('bookings')
                 .insert({
                     tour_id: null, // Will be linked if tour exists in Supabase
@@ -66,6 +63,19 @@ export const POST: APIRoute = async ({ request, url }) => {
                 console.error('Supabase booking insert error:', bookingError);
             } else {
                 bookingId = booking?.id;
+                
+                // Notify of pending booking (initial attempt)
+                const { sendBookingNotifications } = await import('../../lib/email-service');
+                await sendBookingNotifications({
+                    customerName,
+                    customerEmail,
+                    customerPhone: customerPhone || 'N/A',
+                    tourName: tourName || tourId,
+                    tourDate: date || new Date().toISOString().split('T')[0],
+                    adults,
+                    children,
+                    totalAmount: amount
+                });
             }
         }
 
@@ -142,9 +152,8 @@ export const POST: APIRoute = async ({ request, url }) => {
         const redirectUrl = paymentData.url || paymentData.redirect_url || paymentData.redirectUrl;
 
         // Update booking with Tilopay order ID
-        if (bookingId && SUPABASE_URL && SUPABASE_SERVICE_KEY) {
-            const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
-            await supabase
+        if (bookingId && supabaseAdmin) {
+            await supabaseAdmin
                 .from('bookings')
                 .update({
                     tilopay_order_id: paymentData.order_id || orderRef,

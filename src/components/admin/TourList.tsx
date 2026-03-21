@@ -72,7 +72,7 @@ export default function TourList() {
         <div className="space-y-4">
             {/* Header */}
             <div className="flex items-center justify-between">
-                <p className="text-gray-400 text-sm">{tours.length} tours</p>
+                <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">{tours.length} tours</p>
                 <button
                     onClick={handleAdd}
                     className="px-4 py-2 bg-primary hover:bg-primary-dark text-white text-sm font-semibold rounded-xl transition-colors flex items-center gap-2"
@@ -128,7 +128,7 @@ export default function TourList() {
                                         onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/400x200/1A1816/666?text=No+Image'; }}
                                     />
                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-600 bg-gray-50 dark:bg-white/5">
+                                    <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-600 bg-gray-50 dark:bg-dark-soft">
                                         <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                         </svg>

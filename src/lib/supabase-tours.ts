@@ -36,7 +36,8 @@ function mapRowToTour(row: TourRow): Tour {
         : 'nature';
 
     return {
-        id: row.slug,
+        id: row.id,
+        slug: row.slug,
         title: { en: row.name_en, es: row.name_es },
         price: Number(row.price_base),
         originalPrice: row.original_price ? Number(row.original_price) : undefined,
@@ -60,9 +61,10 @@ function mapRowToTour(row: TourRow): Tour {
 export async function getAllToursFromSupabase(): Promise<Tour[]> {
     if (!supabase) return [];
 
+    // Select only fields needed for tour cards and listings (reduces payload)
     const { data, error } = await supabase
         .from('tours')
-        .select('*')
+        .select('id, slug, name_en, name_es, price_base, original_price, image_url, location, duration, category, badge_text, badge_color, is_active, created_at')
         .eq('is_active', true)
         .order('created_at', { ascending: true });
 
@@ -87,6 +89,24 @@ export async function getTourBySlug(slug: string): Promise<Tour | null> {
         return null;
     }
     return mapRowToTour(data as TourRow);
+}
+
+/* ─── LISTING: Minimal fields for tour cards ─────────────────── */
+
+export async function getTourListingFields(): Promise<Tour[]> {
+    if (!supabase) return [];
+
+    const { data, error } = await supabase
+        .from('tours')
+        .select('id, slug, name_en, name_es, price_base, original_price, image_url, location, duration, category, badge_text, badge_color, is_active')
+        .eq('is_active', true)
+        .order('created_at', { ascending: true });
+
+    if (error) {
+        console.error('Supabase getTourListingFields error:', error.message);
+        return [];
+    }
+    return (data as TourRow[]).map(mapRowToTour);
 }
 
 /* ─── ADMIN: full list (including inactive) ────────────────── */

@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import fs from 'fs';
 import path from 'path';
+import { supabase } from '../../lib/supabase';
 
 const IMAGES_DIR = path.resolve('./public/images');
 const SUPPORTED_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.webp', '.avif', '.svg', '.gif'];
@@ -15,10 +16,30 @@ interface ImageFile {
 }
 
 /**
+ * Helper to verify admin session
+ */
+async function verifyAdmin(request: Request) {
+    if (!supabase) return false;
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader) return false;
+    
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error } = await supabase.auth.getUser(token);
+    
+    if (error || !user) return false;
+    // Check if user is an admin (e.g. by email or a specialized role metadata if available)
+    // For now, any authenticated user is treated as admin if they reached this panel
+    return true;
+}
+
+/**
  * GET /api/media — Lists all images in /public/images recursively
  */
-export const GET: APIRoute = async () => {
+export const GET: APIRoute = async ({ request }) => {
     try {
+        if (!(await verifyAdmin(request))) {
+            return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
+        }
         const images: ImageFile[] = [];
         scanDirectory(IMAGES_DIR, '', images);
 
@@ -63,6 +84,9 @@ function scanDirectory(dir: string, relativePath: string, results: ImageFile[]) 
  */
 export const POST: APIRoute = async ({ request }) => {
     try {
+        if (!(await verifyAdmin(request))) {
+            return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
+        }
         const contentType = request.headers.get('content-type') || '';
 
         let fileName: string;
@@ -158,6 +182,9 @@ export const POST: APIRoute = async ({ request }) => {
  */
 export const DELETE: APIRoute = async ({ request }) => {
     try {
+        if (!(await verifyAdmin(request))) {
+            return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
+        }
         const body = await request.json();
         const imagePath = body.path; // e.g. "/images/activities/atv.png"
 

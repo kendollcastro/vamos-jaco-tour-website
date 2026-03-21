@@ -25,63 +25,56 @@ import AtvRulesFaq from "../components/AtvRulesFaq";
 import NewsletterSection from "../components/NewsletterSection";
 import ScrollReveal from "../components/ScrollReveal";
 
-const tours = await getAllTours();
+// Parallelize all data fetching for faster server response
+const [toursData, membersData, rawFaqsData, trustBarData] = await Promise.all([
+    getAllTours().catch((e) => { console.error("Failed to load Tours:", e); return []; }),
+    getTeamMembers().catch((e) => { console.error("Failed to load Team Members:", e); return null; }),
+    fetchWPAPI("faq").catch((e) => { console.error("Failed to load WP FAQs:", e); return null; }),
+    getWebsiteComponent("trust_bar").catch((e) => { console.error("Failed to load Trust Bar:", e); return null; }),
+]);
 
-// Fetch Team Members from Supabase
+const tours = toursData;
+
+// Process Team Members
 let teamMembers: any[] = [];
-try {
-    const members = await getTeamMembers();
-    if (members && members.length > 0) {
-        teamMembers = members.map((m) => ({
-            id: m.id,
-            name: m.name,
-            position: m.position_en || "Team Member",
-            position_en: m.position_en || undefined,
-            position_es: m.position_es || undefined,
-            image:
-                m.image_url ||
-                "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=2574&auto=format&fit=crop",
-            social: {
-                instagram: m.social_instagram || undefined,
-                linkedin: m.social_linkedin || undefined,
-                twitter: m.social_twitter || undefined,
-            },
-        }));
-    }
-} catch (e) {
-    console.error("Failed to load Team Members:", e);
+if (membersData && membersData.length > 0) {
+    teamMembers = membersData.map((m) => ({
+        id: m.id,
+        name: m.name,
+        position: m.position_en || "Team Member",
+        position_en: m.position_en || undefined,
+        position_es: m.position_es || undefined,
+        image:
+            m.image_url ||
+            "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=2574&auto=format&fit=crop",
+        social: {
+            instagram: m.social_instagram || undefined,
+            linkedin: m.social_linkedin || undefined,
+            twitter: m.social_twitter || undefined,
+        },
+    }));
 }
 
-// Fetch FAQs
+// Process FAQs
 let wpFaqs: any[] = [];
-try {
-    const rawFaqs = await fetchWPAPI("faq");
-    if (rawFaqs && Array.isArray(rawFaqs)) {
-        wpFaqs = rawFaqs.map((f: any) => ({
-            question: f.title.rendered,
-            answer: f.excerpt.rendered.replace(/<\/?p>/g, "").trim(),
-        }));
-    }
-} catch (e) {
-    console.error("Failed to load WP FAQs:", e);
+if (rawFaqsData && Array.isArray(rawFaqsData)) {
+    wpFaqs = rawFaqsData.map((f: any) => ({
+        question: f.title.rendered,
+        answer: f.excerpt.rendered.replace(/<\/?p>/g, "").trim(),
+    }));
 }
 
-// Fetch Trust Bar Items
+// Process Trust Bar Items
 let trustBarItems: any[] = [];
-try {
-    const tb = await getWebsiteComponent("trust_bar");
-    if (tb && tb.data) {
-        trustBarItems = tb.data;
-    }
-} catch (e) {
-    console.error("Failed to load Trust Bar:", e);
+if (trustBarData && trustBarData.data) {
+    trustBarItems = trustBarData.data;
 }
 
 // SEO
 const seo = {
     title: "Vamos Jacó Tours | Best Adventure Tours in Costa Rica",
     description:
-        "Book the best adventure tours in Jacó, Costa Rica — ATV rides, jet ski, side by side buggies, surfing, flyboard, zipline canopy and more. Unforgettable experiences with local guides. Best price guaranteed!",
+        "Book the best adventure tours in Jacó, Costa Rica: ATV, jet ski, surfing, zipline and more. Top-rated local guides and best prices guaranteed. Book your adventure today!",
     keywords:
         "Jacó tours, Costa Rica adventures, ATV Jacó, side by side tour Costa Rica, buggy tour Jaco, jet ski Costa Rica, surfing lessons Jacó, flyboard, zipline canopy, adventure tours Costa Rica, things to do in Jacó, Vamos Jacó Tours",
 };
@@ -99,8 +92,9 @@ const schemas = [
     description={seo.description}
     keywords={seo.keywords}
     jsonLd={schemas}
+    preloadImage="/hero-slider-img-vamos-jaco-tours-optimized.jpg"
 >
-    <HeroSlider client:load />
+    <HeroSlider client:visible />
     {/* Tours Content */}
     <main class="py-20 relative min-h-screen">
         {
