@@ -497,23 +497,26 @@ import Layout from "../layouts/Layout.astro";
                 }
             } else {
                 // TiloPay Flow
-                const res = await fetch("/api/create-payment", {
+                const res = await fetch("/api/bookings/create", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
+                        customerName: `${formData.firstName} ${formData.lastName}`,
+                        customerEmail: formData.email,
+                        customerPhone: formData.phone,
                         tourId: state.tourId,
-                        amount: state.totalPrice,
+                        tourName: state.tourTitle,
                         date: state.date,
+                        totalAmount: state.totalPrice,
                         adults: state.adults,
                         children: state.children,
-                        extraPassengers: state.extraPassengers,
-                        customer: formData
+                        paymentMethod: 'card'
                     }),
                 });
 
                 const data = await res.json();
-                if (data.redirectUrl) {
-                    window.location.href = data.redirectUrl;
+                if (data.success && data.requiresRedirect && data.paymentUrl) {
+                    window.location.href = data.paymentUrl;
                 } else {
                     alert("Payment initialization failed: " + (data.message || "Unknown error"));
                 }
