@@ -142,7 +142,7 @@ export default function TourEditor({ tour, onClose }: Props) {
                                 type="text"
                                 value={item}
                                 onChange={(e) => updateArrayItem(field, i, e.target.value)}
-                                className="flex-1 bg-gray-50 dark:bg-dark border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-primary outline-none transition-colors"
+                                className="flex-1 bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-primary focus:ring-2 focus:ring-primary/50 outline-none transition-all"
                                 placeholder={`Item ${i + 1}`}
                             />
                             <button
@@ -182,7 +182,7 @@ export default function TourEditor({ tour, onClose }: Props) {
                 <button
                     onClick={handleSave}
                     disabled={saving}
-                    className="px-6 py-2.5 bg-primary hover:bg-primary-dark text-white text-sm font-bold rounded-full transition-all disabled:opacity-50 flex items-center gap-2 shadow-lg shadow-primary/25 hover:shadow-primary/40"
+                    className="px-6 py-2.5 bg-primary hover:bg-primary-dark text-white text-sm font-bold rounded-full transition-all disabled:opacity-50 flex items-center gap-2 shadow-lg hover:-translate-y-0.5 shadow-primary/25 hover:shadow-primary/40 active:scale-95"
                 >
                     {saving && (
                         <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
@@ -229,7 +229,7 @@ export default function TourEditor({ tour, onClose }: Props) {
                                 type="text"
                                 value={(form as any)[`name_${langTab}`] || ''}
                                 onChange={(e) => updateField(`name_${langTab}`, e.target.value)}
-                                className="w-full bg-gray-50 dark:bg-dark border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-primary focus:ring-1 focus:ring-primary/50 outline-none transition-colors"
+                                className="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-primary focus:ring-2 focus:ring-primary/50 outline-none transition-all"
                                 placeholder={langTab === 'en' ? 'ATV Mountain Adventure' : 'Aventura en Cuadra'}
                             />
                         </div>
@@ -243,7 +243,7 @@ export default function TourEditor({ tour, onClose }: Props) {
                                 value={(form as any)[`description_${langTab}`] || ''}
                                 onChange={(e) => updateField(`description_${langTab}`, e.target.value)}
                                 rows={4}
-                                className="w-full bg-gray-50 dark:bg-dark border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-primary focus:ring-1 focus:ring-primary/50 outline-none resize-none transition-colors"
+                                className="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-primary focus:ring-2 focus:ring-primary/50 outline-none resize-none transition-all"
                                 placeholder="Describe the tour experience..."
                             />
                         </div>
@@ -387,7 +387,7 @@ export default function TourEditor({ tour, onClose }: Props) {
                                 type="text"
                                 value={form.slug || ''}
                                 onChange={(e) => updateField('slug', e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-'))}
-                                className="w-full bg-gray-50 dark:bg-dark border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-primary outline-none transition-colors"
+                                className="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-primary focus:ring-2 focus:ring-primary/50 outline-none transition-all"
                                 placeholder="atv-mountain-adventure"
                             />
                         </div>

@@ -75,7 +75,7 @@ export default function AddBookingModal({ isOpen, onClose, onSuccess }: Props) {
                                 <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                                 <input
                                     required
-                                    className="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-sm text-gray-900 dark:text-white"
+                                    className="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-sm text-gray-900 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/50 outline-none transition-all"
                                     value={formData.customer_name}
                                     onChange={e => setFormData({ ...formData, customer_name: e.target.value })}
                                 />
@@ -87,7 +87,7 @@ export default function AddBookingModal({ isOpen, onClose, onSuccess }: Props) {
                                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                                 <input
                                     type="email"
-                                    className="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-sm text-gray-900 dark:text-white"
+                                    className="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-sm text-gray-900 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/50 outline-none transition-all"
                                     value={formData.customer_email}
                                     onChange={e => setFormData({ ...formData, customer_email: e.target.value })}
                                 />
@@ -98,7 +98,7 @@ export default function AddBookingModal({ isOpen, onClose, onSuccess }: Props) {
                     <div className="space-y-2">
                         <label className="text-xs font-bold text-gray-500 uppercase">Tour Name</label>
                         <select
-                            className="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white outline-none focus:border-primary"
+                            className="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white outline-none focus:border-primary focus:ring-2 focus:ring-primary/50 transition-all appearance-none"
                             value={formData.tour_name}
                             onChange={e => setFormData({ ...formData, tour_name: e.target.value })}
                         >
@@ -115,7 +115,7 @@ export default function AddBookingModal({ isOpen, onClose, onSuccess }: Props) {
                             <label className="text-xs font-bold text-gray-500 uppercase">Date</label>
                             <input
                                 type="date"
-                                className="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white"
+                                className="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/50 outline-none transition-all"
                                 value={formData.booking_date}
                                 onChange={e => setFormData({ ...formData, booking_date: e.target.value })}
                             />
@@ -124,7 +124,7 @@ export default function AddBookingModal({ isOpen, onClose, onSuccess }: Props) {
                             <label className="text-xs font-bold text-gray-500 uppercase">Amount ($)</label>
                             <input
                                 type="number"
-                                className="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white"
+                                className="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/50 outline-none transition-all"
                                 value={formData.total_amount}
                                 onChange={e => setFormData({ ...formData, total_amount: Number(e.target.value) })}
                             />
@@ -142,7 +142,7 @@ export default function AddBookingModal({ isOpen, onClose, onSuccess }: Props) {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="flex-[2] px-4 py-3 bg-primary text-white rounded-xl text-sm font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-50"
+                            className="flex-[2] px-4 py-3 bg-primary text-white rounded-xl text-sm font-bold shadow-lg shadow-primary/20 hover:bg-primary-dark hover:-translate-y-0.5 hover:shadow-primary/40 active:scale-95 transition-all disabled:opacity-50"
                         >
                             {loading ? 'Adding...' : 'Confirm Booking'}
                         </button>

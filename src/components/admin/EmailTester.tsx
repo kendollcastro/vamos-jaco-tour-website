@@ -3,6 +3,7 @@ import { Mail, Send, AlertCircle, CheckCircle } from 'lucide-react';
 
 export default function EmailTester() {
     const [email, setEmail] = useState('');
+    const [logoUrl, setLogoUrl] = useState('');
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [message, setMessage] = useState('');
 
@@ -15,7 +16,7 @@ export default function EmailTester() {
             const response = await fetch('/api/admin/test-email', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email })
+                body: JSON.stringify({ email, logoOverride: logoUrl || undefined })
             });
 
             const data = await response.json();
@@ -67,7 +68,7 @@ export default function EmailTester() {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="e.g. your-resend-email@gmail.com"
-                            className="flex-1 px-4 py-2 border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-dark text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                            className="flex-1 px-4 py-3 border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-black/20 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all shadow-sm"
                             required
                             disabled={status === 'loading'}
                         />
@@ -86,6 +87,22 @@ export default function EmailTester() {
                             )}
                         </button>
                     </div>
+                </div>
+
+                <div className="pt-2">
+                    <label htmlFor="logoUrl" className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">
+                        Brand Logo Override URL (Optional)
+                    </label>
+                    <input
+                        type="url"
+                        id="logoUrl"
+                        value={logoUrl}
+                        onChange={(e) => setLogoUrl(e.target.value)}
+                        placeholder="https://example.com/custom-logo.png"
+                        className="w-full px-4 py-3 border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-black/20 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all shadow-sm"
+                        disabled={status === 'loading'}
+                    />
+                    <p className="text-xs text-gray-500 mt-2 font-medium">Leave blank to use the default Vamos Jacó Tours brand logo.</p>
                 </div>
                 
                 {status === 'success' && (

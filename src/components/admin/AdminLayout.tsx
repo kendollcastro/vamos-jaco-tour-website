@@ -104,7 +104,7 @@ export default function AdminLayout({ children }: Props) {
                                 : GalleryView;
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-dark flex transition-premium">
+        <div className="min-h-screen font-sans text-gray-900 dark:text-white bg-gray-50 dark:bg-dark flex transition-premium">
             {/* Mobile overlay */}
             {sidebarOpen && (
                 <div
@@ -222,7 +222,7 @@ export default function AdminLayout({ children }: Props) {
                         </div>
                     </div>
                     <div className="flex items-center gap-4">
-                        <button className="hidden sm:flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-7 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-premium shadow-xl shadow-primary/20 hover:shadow-primary/40 active:scale-95 leading-none">
+                        <button className="hidden sm:flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-7 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-premium shadow-xl hover:-translate-y-0.5 shadow-primary/20 hover:shadow-primary/40 active:scale-95 leading-none">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
                             </svg>

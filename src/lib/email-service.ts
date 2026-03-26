@@ -23,10 +23,10 @@ const BRAND_COLOR = '#D92818';
 const ACCENT_COLOR = '#03A696';
 const LOGO_URL = 'https://tu-url-del-logo-aqui.com/logo.png'; // <-- PEGA LA URL EXACTA DE TU LOGO AQUÍ
 
-const emailHeader = `
+const getEmailHeader = (logoOverride?: string) => `
     <div style="background: linear-gradient(135deg, #0B0F19 0%, #151b2b 100%); padding: 60px 20px; text-align: center; border-radius: 16px 16px 0 0; border-bottom: 2px solid ${BRAND_COLOR};">
         <!-- Reemplaza el LOGO_URL en la línea 24 por el link público a tu imagen (.png, .jpg) -->
-        <img src="${LOGO_URL}" alt="Vamos Jacó Tours" style="max-width: 250px; height: auto; display: block; margin: 0 auto; filter: drop-shadow(0 0 10px rgba(217, 40, 24, 0.3));" />
+        <img src="${logoOverride || LOGO_URL}" alt="Vamos Jacó Tours" style="max-width: 250px; height: auto; display: block; margin: 0 auto; filter: drop-shadow(0 0 10px rgba(217, 40, 24, 0.3));" />
     </div>
 `;
 
@@ -45,7 +45,7 @@ const emailFooter = `
 
 // ─── Service Functions ───────────────────────────────────────
 
-export async function sendBookingNotifications(data: BookingEmailData) {
+export async function sendBookingNotifications(data: BookingEmailData, logoOverride?: string) {
     if (!resend) {
         console.warn('Resend API key not configured. Skipping emails.');
         return { success: false, error: 'Resend not configured' };
@@ -62,7 +62,7 @@ export async function sendBookingNotifications(data: BookingEmailData) {
             html: `
                 <div style="font-family: 'Inter', 'Poppins', 'Helvetica Neue', sans-serif; max-width: 650px; margin: 0 auto; color: #1f2937; line-height: 1.6; background-color: #f9fafb; padding: 20px;">
                     <div style="box-shadow: 0 20px 50px rgba(0,0,0,0.1); border-radius: 16px; overflow: hidden;">
-                        ${emailHeader}
+                        ${getEmailHeader(logoOverride)}
                         <div style="padding: 50px 40px; background: white;">
                             <h2 style="color: #111827; margin-top: 0; font-size: 32px; text-align: center; font-weight: 800; letter-spacing: -1px;">Costa Rica is Calling!</h2>
                             <p style="font-size: 18px; text-align: center; color: #4b5563;">Pura Vida, <strong>${customerName}</strong>!</p>
@@ -140,7 +140,7 @@ export async function sendBookingNotifications(data: BookingEmailData) {
     }
 }
 
-export async function sendNewsletterWelcome(email: string) {
+export async function sendNewsletterWelcome(email: string, logoOverride?: string) {
     if (!resend) return { success: false };
 
     try {
@@ -150,7 +150,7 @@ export async function sendNewsletterWelcome(email: string) {
             subject: 'Welcome to the Vamos Jacó Adventures Club! 🌴',
             html: `
                 <div style="font-family: 'Inter', sans-serif; max-width: 600px; margin: 40px auto; border-radius: 20px; overflow: hidden; border: 1px solid #e5e7eb; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
-                    ${emailHeader}
+                    ${getEmailHeader(logoOverride)}
                     <div style="padding: 50px 40px; text-align: center; background: white;">
                         <h2 style="color: #111827; margin-top: 0; font-size: 28px; font-weight: 900;">You're in the Club!</h2>
                         <p style="font-size: 17px; color: #4b5563; line-height: 1.6;">Thanks for joining our exclusive adventures newsletter. You'll be the first to know about hidden spots, new tours, and secret deals.</p>

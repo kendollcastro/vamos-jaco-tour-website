@@ -141,7 +141,7 @@ export default function TeamManager() {
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Team Members</h2>
                 <button
                     onClick={() => handleOpenEditor()}
-                    className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-full text-sm font-bold transition-all shadow-lg shadow-primary/25 hover:shadow-primary/40"
+                    className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-full text-sm font-bold transition-all shadow-lg hover:-translate-y-0.5 shadow-primary/25 hover:shadow-primary/40 active:scale-95"
                 >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
@@ -269,7 +269,7 @@ export default function TeamManager() {
                                             required
                                             value={name}
                                             onChange={e => setName(e.target.value)}
-                                            className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-gray-900 dark:text-white focus:outline-none focus:border-primary transition-colors"
+                                            className="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-gray-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/50 transition-all shadow-sm"
                                             placeholder="e.g., Carlos Rodríguez"
                                         />
                                     </div>
@@ -281,7 +281,7 @@ export default function TeamManager() {
                                                 required
                                                 value={positionEn}
                                                 onChange={e => setPositionEn(e.target.value)}
-                                                className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-gray-900 dark:text-white focus:outline-none focus:border-primary transition-colors"
+                                                className="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-gray-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/50 transition-all shadow-sm"
                                                 placeholder="e.g., Lead Guide"
                                             />
                                         </div>
@@ -292,7 +292,7 @@ export default function TeamManager() {
                                                 required
                                                 value={positionEs}
                                                 onChange={e => setPositionEs(e.target.value)}
-                                                className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-gray-900 dark:text-white focus:outline-none focus:border-primary transition-colors"
+                                                className="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-gray-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/50 transition-all shadow-sm"
                                                 placeholder="e.g., Guía Principal"
                                             />
                                         </div>
@@ -329,7 +329,7 @@ export default function TeamManager() {
                                                     type="text"
                                                     value={imageUrl}
                                                     onChange={e => setImageUrl(e.target.value)}
-                                                    className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-gray-900 dark:text-white focus:outline-none focus:border-primary transition-colors"
+                                                    className="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-gray-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/50 transition-all shadow-sm"
                                                     placeholder="https://..."
                                                 />
                                             </div>
@@ -352,7 +352,7 @@ export default function TeamManager() {
                                                 type="url"
                                                 value={socialInstagram}
                                                 onChange={e => setSocialInstagram(e.target.value)}
-                                                className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2 text-gray-900 dark:text-white focus:outline-none focus:border-primary transition-colors text-sm"
+                                                className="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2 text-gray-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/50 transition-all text-sm shadow-sm"
                                                 placeholder="https://instagram.com/..."
                                             />
                                         </div>
@@ -367,7 +367,7 @@ export default function TeamManager() {
                                                 type="url"
                                                 value={socialLinkedin}
                                                 onChange={e => setSocialLinkedin(e.target.value)}
-                                                className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2 text-gray-900 dark:text-white focus:outline-none focus:border-primary transition-colors text-sm"
+                                                className="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2 text-gray-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/50 transition-all text-sm shadow-sm"
                                                 placeholder="https://linkedin.com/in/..."
                                             />
                                         </div>
@@ -384,7 +384,7 @@ export default function TeamManager() {
                                                 type="number"
                                                 value={displayOrder}
                                                 onChange={e => setDisplayOrder(parseInt(e.target.value) || 0)}
-                                                className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-gray-900 dark:text-white focus:outline-none focus:border-primary transition-colors"
+                                                className="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-gray-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/50 transition-all shadow-sm"
                                             />
                                         </div>
                                         <div className="flex-1 flex items-center mt-6">
@@ -418,7 +418,7 @@ export default function TeamManager() {
                                     <button
                                         type="submit"
                                         disabled={loading}
-                                        className="bg-primary hover:bg-primary-dark text-white px-8 py-2.5 rounded-full text-sm font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary/25 hover:shadow-primary/40"
+                                        className="bg-primary hover:bg-primary-dark text-white px-8 py-2.5 rounded-full text-sm font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:-translate-y-0.5 shadow-primary/25 hover:shadow-primary/40 active:scale-95"
                                     >
                                         {loading ? 'Saving...' : 'Save Member'}
                                     </button>
