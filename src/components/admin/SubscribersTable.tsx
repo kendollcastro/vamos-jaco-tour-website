@@ -122,7 +122,7 @@ export default function SubscribersTable() {
                             </thead>
                             <tbody className="divide-y divide-gray-100 dark:divide-white/5">
                                 {filtered.map((sub) => (
-                                    <tr key={sub.id} className="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors group">
+                                    <tr key={sub.id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
                                         <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">
                                             {sub.email}
                                         </td>
@@ -141,7 +141,7 @@ export default function SubscribersTable() {
                                         <td className="px-6 py-4 text-right">
                                             <button
                                                 onClick={() => toggleActive(sub.id, sub.is_active)}
-                                                className={`p-2 rounded-xl transition-all ${
+                                                className={`p-2 rounded-xl transition-all hover:-translate-y-0.5 active:scale-95 inline-block ${
                                                     sub.is_active 
                                                         ? 'bg-gray-500/10 text-gray-500 hover:bg-gray-500 hover:text-white' 
                                                         : 'bg-primary/10 text-primary hover:bg-primary hover:text-white'

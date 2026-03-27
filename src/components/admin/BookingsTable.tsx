@@ -185,7 +185,7 @@ export default function BookingsTable() {
                             </thead>
                             <tbody className="divide-y divide-gray-100 dark:divide-white/5">
                                 {filtered.map((booking) => (
-                                    <tr key={booking.id} className="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors group">
+                                    <tr key={booking.id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
                                         <td className="px-6 py-4">
                                             <div className="text-gray-900 dark:text-white text-sm font-bold">{new Date(booking.booking_date).toLocaleDateString()}</div>
                                             <div className="text-gray-500 text-xs font-medium">{new Date(booking.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
@@ -227,7 +227,7 @@ export default function BookingsTable() {
                                                     <>
                                                         <button
                                                             onClick={() => updateStatus(booking.id, 'confirmed')}
-                                                            className="p-2 rounded-xl bg-green-500/10 text-green-500 hover:bg-green-500 hover:text-white transition-all shadow-sm"
+                                                            className="p-2 rounded-xl bg-green-500/10 text-green-500 hover:bg-green-500 hover:text-white transition-all shadow-sm hover:-translate-y-0.5 active:scale-95"
                                                             title="Confirm"
                                                         >
                                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -236,7 +236,7 @@ export default function BookingsTable() {
                                                         </button>
                                                         <button
                                                             onClick={() => updateStatus(booking.id, 'cancelled')}
-                                                            className="p-2 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-sm"
+                                                            className="p-2 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-sm hover:-translate-y-0.5 active:scale-95"
                                                             title="Cancel"
                                                         >
                                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

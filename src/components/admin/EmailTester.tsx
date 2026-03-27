@@ -1,11 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Mail, Send, AlertCircle, CheckCircle } from 'lucide-react';
 
 export default function EmailTester() {
     const [email, setEmail] = useState('');
     const [logoUrl, setLogoUrl] = useState('');
+    const [selectedLang, setSelectedLang] = useState<'en' | 'es'>('en');
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [message, setMessage] = useState('');
+
+    // Fetch global logo on mount
+    useEffect(() => {
+        fetch('/api/admin/settings')
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.settings?.email_logo_url) {
+                    setLogoUrl(data.settings.email_logo_url);
+                }
+            })
+            .catch(err => console.error('Error fetching settings:', err));
+    }, []);
+
+    const handleSaveGlobalLogo = async () => {
+        if (!logoUrl) return;
+        setStatus('loading');
+        try {
+            const response = await fetch('/api/admin/settings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ key: 'email_logo_url', value: logoUrl })
+            });
+
+            const data = await response.json();
+            if (response.ok && data.success) {
+                setStatus('success');
+                setMessage('Global email logo updated successfully!');
+                setTimeout(() => setStatus('idle'), 5000);
+            } else {
+                throw new Error(data.message || 'Failed to save setting');
+            }
+        } catch (error: any) {
+            console.error(error);
+            setStatus('error');
+            setMessage(error.message || 'Failed to save global logo. Ensure the settings table exists.');
+        }
+    };
 
     const handleSendTest = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -16,7 +54,11 @@ export default function EmailTester() {
             const response = await fetch('/api/admin/test-email', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, logoOverride: logoUrl || undefined })
+                body: JSON.stringify({ 
+                    email, 
+                    logoOverride: logoUrl || undefined,
+                    language: selectedLang
+                })
             });
 
             const data = await response.json();
@@ -93,16 +135,48 @@ export default function EmailTester() {
                     <label htmlFor="logoUrl" className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">
                         Brand Logo Override URL (Optional)
                     </label>
-                    <input
-                        type="url"
-                        id="logoUrl"
-                        value={logoUrl}
-                        onChange={(e) => setLogoUrl(e.target.value)}
-                        placeholder="https://example.com/custom-logo.png"
-                        className="w-full px-4 py-3 border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-black/20 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all shadow-sm"
-                        disabled={status === 'loading'}
-                    />
+                    <div className="flex gap-3">
+                        <input
+                            type="url"
+                            id="logoUrl"
+                            value={logoUrl}
+                            onChange={(e) => setLogoUrl(e.target.value)}
+                            placeholder="https://example.com/custom-logo.png"
+                            className="flex-1 px-4 py-3 border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-black/20 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all shadow-sm"
+                            disabled={status === 'loading'}
+                        />
+                        <button
+                            type="button"
+                            onClick={handleSaveGlobalLogo}
+                            disabled={status === 'loading' || !logoUrl}
+                            className="bg-white dark:bg-dark-soft border border-gray-200 dark:border-white/10 hover:border-primary/50 text-gray-700 dark:text-gray-300 px-5 py-2 rounded-xl font-bold transition-all disabled:opacity-50 text-xs uppercase tracking-wider"
+                        >
+                            {status === 'loading' ? 'Saving...' : 'Save as Global Default'}
+                        </button>
+                    </div>
                     <p className="text-xs text-gray-500 mt-2 font-medium">Leave blank to use the default Vamos Jacó Tours brand logo.</p>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                        Email Language
+                    </label>
+                    <div className="flex p-1 bg-gray-100 dark:bg-black/20 rounded-xl max-w-fit border border-gray-200 dark:border-white/5">
+                        <button 
+                            type="button"
+                            onClick={() => setSelectedLang('en')}
+                            className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition-all ${selectedLang === 'en' ? 'bg-white dark:bg-dark shadow-sm text-gray-900 dark:text-white' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}
+                        >
+                            English
+                        </button>
+                        <button 
+                            type="button"
+                            onClick={() => setSelectedLang('es')}
+                            className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition-all ${selectedLang === 'es' ? 'bg-white dark:bg-dark shadow-sm text-gray-900 dark:text-white' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}
+                        >
+                            Spanish
+                        </button>
+                    </div>
                 </div>
                 
                 {status === 'success' && (

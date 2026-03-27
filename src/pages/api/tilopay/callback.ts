@@ -69,6 +69,7 @@ export const ALL: APIRoute = async ({ request, redirect }) => {
             if (updateError) throw updateError;
 
             // 4. Send Confirmation Email asynchronously
+            const userLanguage = (data.lang as 'en' | 'es') || 'en';
             sendBookingNotifications({
                 customerName: booking.customer_name,
                 customerEmail: booking.customer_email,
@@ -77,7 +78,8 @@ export const ALL: APIRoute = async ({ request, redirect }) => {
                 tourDate: booking.booking_date,
                 adults: booking.adults,
                 children: booking.children,
-                totalAmount: booking.total_amount
+                totalAmount: booking.total_amount,
+                language: userLanguage
             }).catch(e => console.error("Post-payment email failed:", e));
 
             // 5. Redirect User to premium success page

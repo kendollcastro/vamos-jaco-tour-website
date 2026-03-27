@@ -17,7 +17,7 @@ const DEMO_DATA: DayData[] = [
     { label: 'Tue', revenue: 510, count: 3 },
 ];
 
-export default function SalesChart() {
+export default function SalesChart({ onToast }: { onToast?: (message: string) => void }) {
     const [data, setData] = useState<DayData[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -69,14 +69,20 @@ export default function SalesChart() {
         if (data.length === 0) return '';
         const w = 100;
         const h = 100;
-        const points = data.map((d, i) => {
-            const x = (i / (data.length - 1)) * w;
-            const y = h - (d.revenue / maxRevenue) * h;
-            return `${x},${y}`;
-        });
+        const pts = data.map((d, i) => [
+            (i / (data.length - 1)) * w,
+            h - (d.revenue / maxRevenue) * h
+        ]);
 
-        // Add a point for a smooth curve (catmull-rom or simple polyline)
-        return `M ${points.join(' L ')}`;
+        let path = `M ${pts[0][0]},${pts[0][1]}`;
+        for (let i = 0; i < pts.length - 1; i++) {
+            const cx1 = pts[i][0] + (pts[i+1][0] - pts[i][0]) / 2.5;
+            const cy1 = pts[i][1];
+            const cx2 = pts[i+1][0] - (pts[i+1][0] - pts[i][0]) / 2.5;
+            const cy2 = pts[i+1][1];
+            path += ` C ${cx1},${cy1} ${cx2},${cy2} ${pts[i+1][0]},${pts[i+1][1]}`;
+        }
+        return path;
     };
 
     const getGradientPath = () => {
@@ -111,8 +117,8 @@ export default function SalesChart() {
                 {/* Tabs */}
                 <div className="flex p-1 bg-gray-100 dark:bg-black/20 rounded-xl max-w-fit border border-gray-200 dark:border-white/5">
                     <button className="px-4 py-1.5 text-xs font-semibold rounded-lg bg-white dark:bg-dark shadow-sm text-gray-900 dark:text-white transition-colors">Week</button>
-                    <button className="px-4 py-1.5 text-xs font-medium rounded-lg text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">Month</button>
-                    <button className="px-4 py-1.5 text-xs font-medium rounded-lg text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">Year</button>
+                    <button onClick={() => onToast ? onToast('Monthly charting requires Pro Analytics.') : alert('Pro Add-on Required')} className="px-4 py-1.5 text-xs font-medium rounded-lg text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">Month</button>
+                    <button onClick={() => onToast ? onToast('Yearly charting requires Pro Analytics.') : alert('Pro Add-on Required')} className="px-4 py-1.5 text-xs font-medium rounded-lg text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">Year</button>
                 </div>
             </div>
 

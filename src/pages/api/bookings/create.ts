@@ -16,7 +16,8 @@ export const POST: APIRoute = async ({ request }) => {
             adults,
             children,
             totalAmount,
-            paymentMethod = 'cash' // 'cash' or 'card'
+            paymentMethod = 'cash', // 'cash' or 'card'
+            language = 'en'
         } = body;
 
         // 1. Validation
@@ -87,9 +88,10 @@ export const POST: APIRoute = async ({ request }) => {
             try {
                 paymentUrl = await createPaymentSession({
                     amount: totalAmount,
-                    orderNumber: bookingId, // Use the DB UUID as the unique order reference
+                    orderNumber: generatedBookingId, // Use the DB UUID as the unique order reference
+                    language: language as 'en' | 'es',
                     customer: {
-                        firstName: customerName.split(' ')[0] || customerName,
+                        firstName: customerName.split(' ')[0],
                         lastName: customerName.split(' ').slice(1).join(' ') || 'Customer',
                         email: customerEmail,
                         phone: customerPhone || '00000000'
@@ -124,7 +126,8 @@ export const POST: APIRoute = async ({ request }) => {
                 tourDate: formattedDate,
                 adults: adults || 1,
                 children: children || 0,
-                totalAmount
+                totalAmount,
+                language: language as 'en' | 'es'
             });
             emailSent = !!emailResult?.success;
         } catch (emailError) {

@@ -27,6 +27,12 @@ export default function AdminLayout({ children }: Props) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [userEmail, setUserEmail] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
+    const [toast, setToast] = useState<{message: string, type?: 'info' | 'success'} | null>(null);
+
+    const showToast = (message: string, type: 'info' | 'success' = 'info') => {
+        setToast({ message, type });
+        setTimeout(() => setToast(null), 3000);
+    };
     const $theme = useStore(theme);
 
     useEffect(() => {
@@ -116,7 +122,7 @@ export default function AdminLayout({ children }: Props) {
             {/* Sidebar */}
             <aside className={`
         fixed lg:static inset-y-0 left-0 z-50
-        w-72 glass dark:bg-dark-soft/40 border-r border-gray-200 dark:border-white/5
+        w-72 bg-white dark:bg-[#0A0A0A] border-r border-gray-200 dark:border-white/5
         transform transition-premium
         ${sidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0'}
         flex flex-col
@@ -125,11 +131,11 @@ export default function AdminLayout({ children }: Props) {
                 <div className="px-8 py-8 border-b border-gray-200 dark:border-white/5">
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center shadow-2xl shadow-primary/40 ring-4 ring-primary/10">
-                            <span className="text-white font-black text-lg">VJ</span>
+                            <span className="text-white font-extrabold text-lg">VJ</span>
                         </div>
                         <div>
-                            <h2 className="text-gray-900 dark:text-white font-heading font-black text-lg leading-tight tracking-tight uppercase">Vamos Jacó</h2>
-                            <p className="text-primary font-black text-[10px] uppercase tracking-[0.2em] mt-0.5">Administrator</p>
+                            <h2 className="text-gray-900 dark:text-white font-heading font-extrabold text-lg leading-tight tracking-tight uppercase">Vamos Jacó</h2>
+                            <p className="text-primary font-bold text-[10px] uppercase tracking-[0.2em] mt-0.5">Administrator</p>
                         </div>
                     </div>
                 </div>
@@ -143,10 +149,10 @@ export default function AdminLayout({ children }: Props) {
                             key={item.id}
                             onClick={() => { setCurrentView(item.id); setSidebarOpen(false); }}
                             className={`
-                w-full flex items-center gap-3 px-4 py-3 rounded-[14px] text-sm font-medium transition-all
+                w-full flex items-center gap-3 px-4 py-3 rounded-[14px] text-sm font-medium transition-all duration-300
                 ${currentView === item.id
-                                    ? 'bg-primary text-white shadow-lg shadow-primary/20'
-                                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5'
+                                    ? 'bg-primary/10 text-primary translate-x-1'
+                                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 hover:translate-x-1'
                                 }
               `}
                         >
@@ -175,11 +181,11 @@ export default function AdminLayout({ children }: Props) {
                     </div>
 
                     <div className="flex items-center gap-3 mb-4 px-2">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-orange/20 to-primary/20 flex items-center justify-center text-brand-orange text-sm font-black shadow-sm border border-brand-orange/10">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-orange/20 to-primary/20 flex items-center justify-center text-brand-orange text-sm font-bold shadow-sm border border-brand-orange/10">
                             {userEmail?.charAt(0)?.toUpperCase() || 'A'}
                         </div>
                         <div className="flex flex-col min-w-0">
-                            <span className="text-gray-900 dark:text-white text-sm font-black truncate">{userEmail.split('@')[0] || 'Admin'}</span>
+                            <span className="text-gray-900 dark:text-white text-sm font-bold truncate">{userEmail.split('@')[0] || 'Admin'}</span>
                             <span className="text-gray-500 dark:text-gray-500 text-[10px] truncate font-bold uppercase tracking-widest">Administrator</span>
                         </div>
                     </div>
@@ -196,9 +202,9 @@ export default function AdminLayout({ children }: Props) {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 flex flex-col h-screen overflow-hidden transition-colors duration-300 bg-gray-50 dark:bg-dark">
+            <main className="flex-1 flex flex-col h-screen overflow-hidden transition-colors duration-300 bg-gray-50 dark:bg-[#050505]">
                 {/* Top Bar */}
-                <header className="sticky top-0 z-30 glass-light dark:glass border-b border-gray-200 dark:border-white/5 px-6 lg:px-12 py-5 flex items-center justify-between transition-premium">
+                <header className="sticky top-0 z-30 bg-white/95 dark:bg-[#050505]/95 backdrop-blur-xl border-b border-gray-200 dark:border-white/5 px-6 lg:px-12 py-5 flex items-center justify-between transition-premium">
                     <div className="flex items-center gap-4 flex-1">
                         <button
                             onClick={() => setSidebarOpen(true)}
@@ -210,7 +216,7 @@ export default function AdminLayout({ children }: Props) {
                         </button>
 
                         {/* Search Bar */}
-                        <div className="hidden md:flex items-center bg-gray-50 dark:bg-dark-soft rounded-full px-5 py-2.5 w-80 border border-gray-200 dark:border-white/5 focus-within:border-primary transition-all duration-300 hover:bg-gray-100 dark:hover:bg-white/5 focus-within:w-96 shadow-sm">
+                        <div className="hidden md:flex items-center bg-gray-50 dark:bg-[#111111] rounded-full px-5 py-2.5 w-80 border border-gray-200 dark:border-white/5 focus-within:border-primary transition-all duration-300 hover:bg-gray-100 dark:hover:bg-white/5 focus-within:w-96 shadow-sm">
                             <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                             <input 
                                 type="text" 
@@ -222,7 +228,11 @@ export default function AdminLayout({ children }: Props) {
                         </div>
                     </div>
                     <div className="flex items-center gap-4">
-                        <button className="hidden sm:flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-7 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-premium shadow-xl hover:-translate-y-0.5 shadow-primary/20 hover:shadow-primary/40 active:scale-95 leading-none">
+                        <button onClick={() => showToast('You are all caught up! No recent alerts.')} className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 dark:bg-[#111111] border border-gray-200 dark:border-white/5 text-gray-500 dark:text-gray-400 hover:text-primary transition-all" aria-label="Notifications">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+                        </button>
+                        
+                        <button onClick={() => setCurrentView('tours')} className="hidden sm:flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest transition-premium shadow-xl hover:-translate-y-0.5 shadow-primary/20 hover:shadow-primary/40 active:scale-95 leading-none">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
                             </svg>
@@ -250,7 +260,7 @@ export default function AdminLayout({ children }: Props) {
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg> // Sun for Light mode (current state)
                                 )}
                             </div>
-                            <span className="text-[10px] font-black uppercase tracking-widest translate-y-[0.5px]">
+                            <span className="text-[10px] font-bold uppercase tracking-widest translate-y-[0.5px]">
                                 {$theme === 'dark' ? 'Dark' : 'Light'}
                             </span>
                         </button>
@@ -271,9 +281,33 @@ export default function AdminLayout({ children }: Props) {
 
                 {/* Page Content */}
                 <div className="flex-1 p-4 lg:p-8 overflow-auto">
-                    {ActiveView ? <ActiveView /> : (
+                    {ActiveView ? (
+                        // @ts-ignore: Dynamic views may or may not accept onNavigate/onToast
+                        <ActiveView onNavigate={setCurrentView} onToast={showToast} /> 
+                    ) : (
                         <div className="flex items-center justify-center h-64">
                             <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                        </div>
+                    )}
+                </div>
+                
+                {/* Global Toast Notification */}
+                <div className={`fixed bottom-6 right-6 z-[100] transition-all duration-300 transform ${toast ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0 pointer-events-none'}`}>
+                    {toast && (
+                        <div className="flex items-center gap-3 px-5 py-4 bg-gray-900 dark:bg-[#111111] border border-gray-700 dark:border-white/10 shadow-2xl rounded-2xl">
+                            {toast.type === 'success' ? (
+                                <div className="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center shrink-0">
+                                    <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                                </div>
+                            ) : (
+                                <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center shrink-0">
+                                    <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                </div>
+                            )}
+                            <p className="text-white text-sm font-medium tracking-wide">{toast.message}</p>
+                            <button onClick={() => setToast(null)} className="ml-2 text-gray-500 hover:text-white transition-colors">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                            </button>
                         </div>
                     )}
                 </div>

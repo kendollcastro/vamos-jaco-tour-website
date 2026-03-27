@@ -427,6 +427,7 @@ import Layout from "../layouts/Layout.astro";
     // Payment Logic
     const handlePayment = async () => {
         const state = bookingStore.get();
+        const currentLang = language.get();
         if (!state.tourId) {
             alert("Please select a tour first.");
             return;
@@ -462,7 +463,8 @@ import Layout from "../layouts/Layout.astro";
                             totalAmount: state.totalPrice,
                             adults: state.adults,
                             children: state.children,
-                            status: 'pending' // For cash/whatsapp
+                            status: 'pending', // For cash/whatsapp
+                            language: currentLang
                         }),
                 });
 
@@ -510,7 +512,8 @@ import Layout from "../layouts/Layout.astro";
                         totalAmount: state.totalPrice,
                         adults: state.adults,
                         children: state.children,
-                        paymentMethod: 'card'
+                        paymentMethod: 'card',
+                        language: currentLang
                     }),
                 });
 

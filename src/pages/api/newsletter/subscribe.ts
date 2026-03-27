@@ -3,7 +3,8 @@ import { supabaseAdmin } from '../../../lib/supabase';
 
 export const POST: APIRoute = async ({ request }) => {
     try {
-        const { email } = await request.json();
+        const body = await request.json();
+        const { email, language = 'en' } = body;
 
         if (!email || !email.includes('@')) {
             return new Response(JSON.stringify({
@@ -43,7 +44,7 @@ export const POST: APIRoute = async ({ request }) => {
 
         // 3. Send welcome email (asynchronous, don't block response)
         const { sendNewsletterWelcome } = await import('../../../lib/email-service');
-        sendNewsletterWelcome(email).catch(err => console.error('Error sending welcome email:', err));
+        sendNewsletterWelcome(email, undefined, language).catch(err => console.error('Error sending welcome email:', err));
 
         return new Response(JSON.stringify({
             success: true,

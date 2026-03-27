@@ -114,7 +114,7 @@ export default function TourList() {
                     {tours.map((tour) => (
                         <div
                             key={tour.id}
-                            className="bg-white dark:bg-dark-soft rounded-[24px] border border-gray-200 dark:border-white/5 overflow-hidden group hover:border-gray-300 dark:hover:border-white/10 transition-all shadow-sm flex flex-col"
+                            className="bg-white dark:bg-dark-soft rounded-[24px] border border-gray-200 dark:border-white/5 overflow-hidden group hover:border-gray-300 dark:hover:border-white/10 transition-all duration-300 shadow-sm hover:shadow-xl hover:-translate-y-1 flex flex-col"
                         >
                             {/* Image Container */}
                             <div className="h-48 bg-gray-100 dark:bg-dark relative overflow-hidden">
@@ -179,7 +179,7 @@ export default function TourList() {
                                 <div className="mt-auto pt-4 border-t border-gray-100 dark:border-white/5 flex gap-2 w-full">
                                     <button
                                         onClick={() => handleEdit(tour)}
-                                        className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gray-50 dark:bg-white/5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 font-semibold text-sm transition-colors"
+                                        className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gray-50 dark:bg-white/5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 font-semibold text-sm transition-all hover:-translate-y-0.5 active:scale-95"
                                         title="Edit Tour"
                                     >
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -189,7 +189,7 @@ export default function TourList() {
                                     </button>
                                     <button
                                         onClick={() => handleDelete(tour.id)}
-                                        className="flex items-center justify-center px-4 py-2.5 rounded-xl bg-red-50 dark:bg-red-500/10 text-red-500 hover:bg-red-100 dark:hover:bg-red-500/20 transition-colors"
+                                        className="flex items-center justify-center px-4 py-2.5 rounded-xl bg-red-50 dark:bg-red-500/10 text-red-500 hover:bg-red-100 dark:hover:bg-red-500/20 transition-all hover:-translate-y-0.5 active:scale-95"
                                         title="Delete Tour"
                                     >
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

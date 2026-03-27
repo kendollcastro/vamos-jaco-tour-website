@@ -170,7 +170,7 @@ export default function TeamManager() {
                         </thead>
                         <tbody className="divide-y divide-gray-100 dark:divide-white/5">
                             {members.map(member => (
-                                <tr key={member.id} className="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors">
+                                <tr key={member.id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center gap-4">
                                             <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-dark overflow-hidden ring-2 ring-gray-200 dark:ring-white/10 shrink-0">
@@ -209,13 +209,13 @@ export default function TeamManager() {
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <button
                                             onClick={() => handleOpenEditor(member)}
-                                            className="text-brand-teal hover:text-brand-teal/80 dark:hover:text-white transition-colors mr-3"
+                                            className="text-brand-teal hover:text-brand-teal/80 dark:hover:text-white transition-all mr-3 hover:-translate-y-0.5 inline-block"
                                         >
                                             Edit
                                         </button>
                                         <button
                                             onClick={() => handleDelete(member.id)}
-                                            className="text-red-400 hover:text-white transition-colors"
+                                            className="text-red-400 hover:text-white transition-all hover:-translate-y-0.5 inline-block"
                                         >
                                             Delete
                                         </button>

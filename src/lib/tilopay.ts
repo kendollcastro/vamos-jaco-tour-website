@@ -20,6 +20,7 @@ interface TilopayPaymentParams {
     amount: number;
     orderNumber: string;
     customer: TilopayCustomerInfo;
+    language?: 'en' | 'es';
 }
 
 /**
@@ -72,7 +73,8 @@ export async function createPaymentSession(params: TilopayPaymentParams): Promis
     const token = await getAccessToken();
 
     // Setup redirect URL back to our application upon payment completion/failure
-    const redirectUrl = `${PUBLIC_DOMAIN}/api/tilopay/callback`;
+    const lang = params.language || 'en';
+    const redirectUrl = `${PUBLIC_DOMAIN}/api/tilopay/callback?lang=${lang}`;
 
     // Map internal booking details to Tilopay's expected schema
     const payload = {

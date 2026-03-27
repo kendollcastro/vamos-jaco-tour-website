@@ -4,7 +4,7 @@ import { sendBookingNotifications, sendNewsletterWelcome } from '../../../lib/em
 export const POST: APIRoute = async ({ request }) => {
     try {
         const body = await request.json();
-        const { email, logoOverride } = body;
+        const { email, logoOverride, language = 'en' } = body;
 
         if (!email) {
             return new Response(JSON.stringify({ message: 'Email is required' }), { status: 400 });
@@ -19,11 +19,12 @@ export const POST: APIRoute = async ({ request }) => {
             tourDate: new Date().toISOString().split('T')[0],
             adults: 2,
             children: 0,
-            totalAmount: 140
+            totalAmount: 140,
+            language: language as 'en' | 'es'
         }, logoOverride);
 
         // Test Newsletter Email
-        const newsletterResult = await sendNewsletterWelcome(email, logoOverride);
+        const newsletterResult = await sendNewsletterWelcome(email, logoOverride, language as 'en' | 'es');
 
         return new Response(JSON.stringify({ 
             success: true, 

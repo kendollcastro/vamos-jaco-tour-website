@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { supabaseAdmin } from './supabase';
 
 const resendApiKey = import.meta.env.RESEND_API_KEY || '';
 const resend = resendApiKey ? new Resend(resendApiKey) : null;
@@ -15,18 +16,38 @@ interface BookingEmailData {
     adults: number;
     children: number;
     totalAmount: number;
+    language?: 'en' | 'es';
 }
 
 // ─── High-Fidelity Email Templates ───────────────────────────
 
 const BRAND_COLOR = '#D92818';
 const ACCENT_COLOR = '#03A696';
-const LOGO_URL = 'https://tu-url-del-logo-aqui.com/logo.png'; // <-- PEGA LA URL EXACTA DE TU LOGO AQUÍ
+const LOGO_URL = 'https://vamosjt.com/logo.png'; // Production Logo Fallback
 
-const getEmailHeader = (logoOverride?: string) => `
+/**
+ * Fetches a setting from the database with a local fallback
+ */
+async function getGlobalSetting(key: string, fallback: string): Promise<string> {
+    if (!supabaseAdmin) return fallback;
+    try {
+        const { data, error } = await supabaseAdmin
+            .from('settings')
+            .select('value')
+            .eq('key', key)
+            .single();
+        
+        if (error || !data) return fallback;
+        return data.value;
+    } catch (e) {
+        console.error(`Error fetching setting ${key}:`, e);
+        return fallback;
+    }
+}
+
+const getEmailHeader = (logoUrl: string) => `
     <div style="background: linear-gradient(135deg, #0B0F19 0%, #151b2b 100%); padding: 60px 20px; text-align: center; border-radius: 16px 16px 0 0; border-bottom: 2px solid ${BRAND_COLOR};">
-        <!-- Reemplaza el LOGO_URL en la línea 24 por el link público a tu imagen (.png, .jpg) -->
-        <img src="${logoOverride || LOGO_URL}" alt="Vamos Jacó Tours" style="max-width: 250px; height: auto; display: block; margin: 0 auto; filter: drop-shadow(0 0 10px rgba(217, 40, 24, 0.3));" />
+        <img src="${logoUrl}" alt="Vamos Jacó Tours" style="max-width: 250px; height: auto; display: block; margin: 0 auto; filter: drop-shadow(0 0 10px rgba(217, 40, 24, 0.3));" />
     </div>
 `;
 
@@ -51,30 +72,66 @@ export async function sendBookingNotifications(data: BookingEmailData, logoOverr
         return { success: false, error: 'Resend not configured' };
     }
 
-    try {
-        const { customerName, customerEmail, tourName, tourDate, adults, children, totalAmount } = data;
+    const { customerName, customerEmail, tourName, tourDate, adults, children, totalAmount, language = 'en' } = data;
+    const isEs = language === 'es';
 
+    // Resolve Logo: Priority 1: Manual Override, Priority 2: DB Global Setting, Priority 3: Hardcoded Fallback
+    const resolvedLogo = logoOverride || await getGlobalSetting('email_logo_url', LOGO_URL);
+
+    try {
         // 1. Send Confirmation to Customer
         await resend.emails.send({
             from: FROM_EMAIL,
             to: customerEmail,
-            subject: `Your Adventure Awaits! Confirmation: ${tourName}`,
+            subject: isEs 
+                ? `¡Tu aventura te espera! Confirmación: ${tourName}`
+                : `Your Adventure Awaits! Confirmation: ${tourName}`,
             html: `
                 <div style="font-family: 'Inter', 'Poppins', 'Helvetica Neue', sans-serif; max-width: 650px; margin: 0 auto; color: #1f2937; line-height: 1.6; background-color: #f9fafb; padding: 20px;">
                     <div style="box-shadow: 0 20px 50px rgba(0,0,0,0.1); border-radius: 16px; overflow: hidden;">
-                        ${getEmailHeader(logoOverride)}
+                        ${getEmailHeader(resolvedLogo)}
                         <div style="padding: 50px 40px; background: white;">
-                            <h2 style="color: #111827; margin-top: 0; font-size: 32px; text-align: center; font-weight: 800; letter-spacing: -1px;">Costa Rica is Calling!</h2>
-                            <p style="font-size: 18px; text-align: center; color: #4b5563;">Pura Vida, <strong>${customerName}</strong>!</p>
-                            <p style="font-size: 16px; text-align: center; margin-bottom: 40px;">We've received your booking at <strong>Vamos Jacó Tours</strong>. Prepare yourself for an unforgettable experience in paradise.</p>
+                            <h2 style="color: #111827; margin-top: 0; font-size: 32px; text-align: center; font-weight: 800; letter-spacing: -1px;">
+                                ${isEs ? '¡Costa Rica te espera!' : 'Costa Rica is Calling!'}
+                            </h2>
+                            <p style="font-size: 18px; text-align: center; color: #4b5563;">
+                                ${isEs ? '¡Pura Vida' : 'Pura Vida'}, <strong>${customerName}</strong>!
+                            </p>
+                            <p style="font-size: 16px; text-align: center; margin-bottom: 40px;">
+                                ${isEs 
+                                    ? `Hemos recibido tu reserva en <strong>Vamos Jacó Tours</strong>. Prepárate para una experiencia inolvidable en el paraíso.`
+                                    : `We've received your booking at <strong>Vamos Jacó Tours</strong>. Prepare yourself for an unforgettable experience in paradise.`}
+                            </p>
                             
                             <div style="background: linear-gradient(to bottom right, #ffffff, #fdf2f2); border: 1px solid #fee2e2; padding: 35px; border-radius: 20px; margin: 40px 0; box-shadow: 0 4px 12px rgba(217, 40, 24, 0.05);">
-                                <h3 style="margin-top: 0; color: ${BRAND_COLOR}; font-size: 20px; text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px solid #fee2e2; padding-bottom: 15px; margin-bottom: 20px; text-align: center;">Adventure Summary</h3>
+                                <h3 style="margin-top: 0; color: ${BRAND_COLOR}; font-size: 20px; text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px solid #fee2e2; padding-bottom: 15px; margin-bottom: 20px; text-align: center;">
+                                    ${isEs ? 'Resumen de la Aventura' : 'Adventure Summary'}
+                                </h3>
                                 <table style="width: 100%; font-size: 16px; border-collapse: collapse;">
-                                    <tr><td style="padding: 12px 0; color: #6b7280;">Tour</td><td style="padding: 12px 0; font-weight: 700; text-align: right; color: #111827;">${tourName}</td></tr>
-                                    <tr><td style="padding: 12px 0; color: #6b7280;">Date</td><td style="padding: 12px 0; font-weight: 700; text-align: right; color: #111827;">${new Date(tourDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</td></tr>
-                                    <tr><td style="padding: 12px 0; color: #6b7280;">Guests</td><td style="padding: 12px 0; font-weight: 700; text-align: right; color: #111827;">${adults} Adults ${children > 0 ? `, ${children} Children` : ''}</td></tr>
-                                    <tr style="border-top: 2px solid #fee2e2;"><td style="padding: 20px 0 0 0; font-weight: 800; font-size: 20px; color: ${BRAND_COLOR};">Total Paid</td><td style="padding: 20px 0 0 0; font-weight: 800; font-size: 24px; text-align: right; color: ${BRAND_COLOR};">$${totalAmount.toFixed(2)}</td></tr>
+                                    <tr>
+                                        <td style="padding: 12px 0; color: #6b7280;">${isEs ? 'Tour' : 'Tour'}</td>
+                                        <td style="padding: 12px 0; font-weight: 700; text-align: right; color: #111827;">${tourName}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 12px 0; color: #6b7280;">${isEs ? 'Fecha' : 'Date'}</td>
+                                        <td style="padding: 12px 0; font-weight: 700; text-align: right; color: #111827;">
+                                            ${new Date(tourDate).toLocaleDateString(isEs ? 'es-ES' : 'en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 12px 0; color: #6b7280;">${isEs ? 'Invitados' : 'Guests'}</td>
+                                        <td style="padding: 12px 0; font-weight: 700; text-align: right; color: #111827;">
+                                            ${isEs 
+                                                ? `${adults} Adultos${children > 0 ? `, ${children} Niños` : ''}`
+                                                : `${adults} Adults${children > 0 ? `, ${children} Children` : ''}`}
+                                        </td>
+                                    </tr>
+                                    <tr style="border-top: 2px solid #fee2e2;">
+                                        <td style="padding: 20px 0 0 0; font-weight: 800; font-size: 20px; color: ${BRAND_COLOR};">
+                                            ${isEs ? 'Total Pagado' : 'Total Paid'}
+                                        </td>
+                                        <td style="padding: 20px 0 0 0; font-weight: 800; font-size: 24px; text-align: right; color: ${BRAND_COLOR};">$${totalAmount.toFixed(2)}</td>
+                                    </tr>
                                 </table>
                             </div>
                             
@@ -83,13 +140,17 @@ export async function sendBookingNotifications(data: BookingEmailData, logoOverr
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
                                 </div>
                                 <p style="margin: 0; font-size: 15px; color: #92400e; line-height: 1.5;">
-                                    <strong>What's Next?</strong><br />
-                                    Our concierge team will reach out via WhatsApp to finalize your pickup time and meeting point.
+                                    <strong>${isEs ? '¿Qué sigue?' : "What's Next?"}</strong><br />
+                                    ${isEs 
+                                        ? 'Nuestro equipo de conserjería se pondrá en contacto por WhatsApp para coordinar la hora de recogida y el punto de encuentro.'
+                                        : 'Our concierge team will reach out via WhatsApp to finalize your pickup time and meeting point.'}
                                 </p>
                             </div>
 
                             <div style="text-align: center;">
-                                <a href="https://wa.me/50687747250" style="display: inline-block; background-color: ${ACCENT_COLOR}; color: white; padding: 22px 45px; text-decoration: none; border-radius: 100px; font-weight: 800; font-size: 16px; text-transform: uppercase; letter-spacing: 2px; box-shadow: 0 15px 30px rgba(3, 166, 150, 0.3); transition: all 0.3s ease;">Chat with our Concierge</a>
+                                <a href="https://wa.me/50687747250" style="display: inline-block; background-color: ${ACCENT_COLOR}; color: white; padding: 22px 45px; text-decoration: none; border-radius: 100px; font-weight: 800; font-size: 16px; text-transform: uppercase; letter-spacing: 2px; box-shadow: 0 15px 30px rgba(3, 166, 150, 0.3); transition: all 0.3s ease;">
+                                    ${isEs ? 'Habla con nuestro Concierge' : 'Chat with our Concierge'}
+                                </a>
                             </div>
                         </div>
                         ${emailFooter}
@@ -140,28 +201,51 @@ export async function sendBookingNotifications(data: BookingEmailData, logoOverr
     }
 }
 
-export async function sendNewsletterWelcome(email: string, logoOverride?: string) {
+export async function sendNewsletterWelcome(email: string, logoOverride?: string, language: 'en' | 'es' = 'en') {
     if (!resend) return { success: false };
+
+    const isEs = language === 'es';
+
+    // Resolve Logo
+    const resolvedLogo = logoOverride || await getGlobalSetting('email_logo_url', LOGO_URL);
 
     try {
         await resend.emails.send({
             from: FROM_EMAIL,
             to: email,
-            subject: 'Welcome to the Vamos Jacó Adventures Club! 🌴',
+            subject: isEs
+                ? '¡Bienvenido al Club de Aventuras de Vamos Jacó! 🌴'
+                : 'Welcome to the Vamos Jacó Adventures Club! 🌴',
             html: `
                 <div style="font-family: 'Inter', sans-serif; max-width: 600px; margin: 40px auto; border-radius: 20px; overflow: hidden; border: 1px solid #e5e7eb; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
-                    ${getEmailHeader(logoOverride)}
+                    ${getEmailHeader(resolvedLogo)}
                     <div style="padding: 50px 40px; text-align: center; background: white;">
-                        <h2 style="color: #111827; margin-top: 0; font-size: 28px; font-weight: 900;">You're in the Club!</h2>
-                        <p style="font-size: 17px; color: #4b5563; line-height: 1.6;">Thanks for joining our exclusive adventures newsletter. You'll be the first to know about hidden spots, new tours, and secret deals.</p>
+                        <h2 style="color: #111827; margin-top: 0; font-size: 28px; font-weight: 900;">
+                            ${isEs ? '¡Ya eres parte del Club!' : "You're in the Club!"}
+                        </h2>
+                        <p style="font-size: 17px; color: #4b5563; line-height: 1.6;">
+                            ${isEs 
+                                ? 'Gracias por unirte a nuestro boletín exclusivo de aventuras. Serás el primero en enterarte de lugares ocultos, nuevos tours y ofertas secretas.'
+                                : "Thanks for joining our exclusive adventures newsletter. You'll be the first to know about hidden spots, new tours, and secret deals."}
+                        </p>
                         
                         <div style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border-radius: 20px; padding: 35px; margin: 35px 0; border: 1px solid #fde68a;">
-                            <h4 style="margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 2px; color: #92400e; font-size: 12px;">Member Privilege</h4>
-                            <p style="font-size: 22px; font-weight: 900; margin: 0; color: #111827; letter-spacing: -0.5px;">Unlock a Surprise Upgrade!</p>
-                            <p style="margin: 15px 0 0 0; color: #92400e; font-size: 14px;">Simply mention this email when booking your first adventure via WhatsApp.</p>
+                            <h4 style="margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 2px; color: #92400e; font-size: 12px;">
+                                ${isEs ? 'Privilegio de Miembro' : 'Member Privilege'}
+                            </h4>
+                            <p style="font-size: 22px; font-weight: 900; margin: 0; color: #111827; letter-spacing: -0.5px;">
+                                ${isEs ? '¡Desbloquea una Mejora Sorpresa!' : 'Unlock a Surprise Upgrade!'}
+                            </p>
+                            <p style="margin: 15px 0 0 0; color: #92400e; font-size: 14px;">
+                                ${isEs 
+                                    ? 'Simplemente menciona este correo al reservar tu primera aventura vía WhatsApp.'
+                                    : 'Simply mention this email when booking your first adventure via WhatsApp.'}
+                            </p>
                         </div>
 
-                        <p style="font-size: 14px; color: #9ca3af; font-style: italic;">Next adventure story coming soon to your inbox.</p>
+                        <p style="font-size: 14px; color: #9ca3af; font-style: italic;">
+                            ${isEs ? 'Próxima historia de aventuras pronto en tu bandeja de entrada.' : 'Next adventure story coming soon to your inbox.'}
+                        </p>
                     </div>
                     ${emailFooter}
                 </div>
