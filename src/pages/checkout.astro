@@ -31,50 +31,62 @@ import Layout from "../layouts/Layout.astro";
                             >
                             Your Details
                         </h2>
-                        <form class="space-y-4">
+                        <form id="checkout-form" class="space-y-4" novalidate>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label
                                         class="block text-sm text-gray-400 mb-1"
-                                        >First Name</label
+                                        >First Name <span class="text-primary">*</span></label
                                     >
                                     <input
+                                        id="input-firstName"
                                         type="text"
-                                        class="w-full bg-dark border border-white/10 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none"
+                                        required
+                                        class="w-full bg-dark border border-white/10 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none transition-colors"
                                         placeholder="John"
                                     />
+                                    <p class="text-primary text-xs mt-1 hidden" id="error-firstName">Please enter your first name</p>
                                 </div>
                                 <div>
                                     <label
                                         class="block text-sm text-gray-400 mb-1"
-                                        >Last Name</label
+                                        >Last Name <span class="text-primary">*</span></label
                                     >
                                     <input
+                                        id="input-lastName"
                                         type="text"
-                                        class="w-full bg-dark border border-white/10 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none"
+                                        required
+                                        class="w-full bg-dark border border-white/10 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none transition-colors"
                                         placeholder="Doe"
                                     />
+                                    <p class="text-primary text-xs mt-1 hidden" id="error-lastName">Please enter your last name</p>
                                 </div>
                             </div>
                             <div>
                                 <label class="block text-sm text-gray-400 mb-1"
-                                    >Email Address</label
+                                    >Email Address <span class="text-primary">*</span></label
                                 >
                                 <input
+                                    id="input-email"
                                     type="email"
-                                    class="w-full bg-dark border border-white/10 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none"
+                                    required
+                                    class="w-full bg-dark border border-white/10 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none transition-colors"
                                     placeholder="john@example.com"
                                 />
+                                <p class="text-primary text-xs mt-1 hidden" id="error-email">Please enter a valid email address</p>
                             </div>
                             <div>
                                 <label class="block text-sm text-gray-400 mb-1"
-                                    >Phone Number (WhatsApp)</label
+                                    >Phone Number (WhatsApp) <span class="text-primary">*</span></label
                                 >
                                 <input
+                                    id="input-phone"
                                     type="tel"
-                                    class="w-full bg-dark border border-white/10 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none"
+                                    required
+                                    class="w-full bg-dark border border-white/10 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none transition-colors"
                                     placeholder="+1 (555) 000-0000"
                                 />
+                                <p class="text-primary text-xs mt-1 hidden" id="error-phone">Please enter your phone number</p>
                             </div>
                         </form>
                     </div>
@@ -96,8 +108,7 @@ import Layout from "../layouts/Layout.astro";
                         <div class="space-y-4">
                             <!-- TiloPay -->
                             <div
-                                id="tilopay-option"
-                                class="bg-white/5 rounded-xl p-4 border border-primary/30 flex items-center gap-4 cursor-pointer hover:bg-white/10 transition-all"
+                                class="bg-white/5 rounded-xl p-4 border border-primary/30 flex items-center gap-4"
                             >
                                 <div
                                     class="w-12 h-12 bg-white rounded-lg flex items-center justify-center p-1"
@@ -119,35 +130,7 @@ import Layout from "../layouts/Layout.astro";
                                 </div>
                                 <div class="ml-auto">
                                     <div
-                                        class="w-5 h-5 rounded-full border-4 border-primary bg-white payment-radio shadow-[0_0_10px_rgba(255,87,34,0.3)]"
-                                        data-method="card"
-                                    >
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- WhatsApp/Cash Option -->
-                            <div
-                                id="cash-option"
-                                class="bg-white/5 rounded-xl p-4 border border-white/10 flex items-center gap-4 cursor-pointer hover:bg-white/10 transition-all"
-                            >
-                                <div
-                                    class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center"
-                                >
-                                    <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.067 2.875 1.215 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72 1.031 3.704 1.577 5.72 1.577h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                                </div>
-                                <div>
-                                    <h4 class="text-white font-bold">
-                                        Book with Messenger/WhatsApp
-                                    </h4>
-                                    <p class="text-xs text-gray-400">
-                                        Confirm now, pay on site
-                                    </p>
-                                </div>
-                                <div class="ml-auto">
-                                    <div
-                                        class="w-5 h-5 rounded-full border-2 border-white/20 payment-radio"
-                                        data-method="cash"
+                                        class="w-5 h-5 rounded-full border-4 border-primary bg-white shadow-[0_0_10px_rgba(255,87,34,0.3)]"
                                     >
                                     </div>
                                 </div>
@@ -203,31 +186,9 @@ import Layout from "../layouts/Layout.astro";
                             </div>
                         </div>
 
-                        <div id="mobile-checkout-summary" class="md:hidden sticky bottom-4 left-0 right-0 z-50 px-2 pointer-events-none">
-                            <div class="bg-primary/95 backdrop-blur-md rounded-2xl p-3 shadow-2xl border border-white/20 flex items-center gap-3 pointer-events-auto">
-                                <div class="min-w-[80px]">
-                                    <p class="text-[9px] text-white/70 uppercase font-black tracking-wider leading-none mb-1">Total</p>
-                                    <p class="text-lg font-black text-white leading-none whitespace-nowrap" id="mobile-summary-total">--</p>
-                                </div>
-                                <button
-                                    id="mobile-pay-trigger"
-                                    class="flex-1 bg-white text-primary font-black px-4 py-3 rounded-xl text-xs uppercase tracking-tighter transition-all active:scale-95 shadow-lg truncate"
-                                >
-                                    PAY NOW
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="mt-4 px-2">
-                             <div class="flex items-center gap-2 text-[10px] text-gray-500 justify-center">
-                                <svg class="w-3 h-3 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                                <span>Includes $1000 security hold (refundable)</span>
-                             </div>
-                        </div>
-
                         <button
                             id="pay-button-desktop"
-                            class="hidden md:flex w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-95 items-center justify-center gap-2 mt-6"
+                            class="hidden md:flex w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-95 items-center justify-center gap-2"
                         >
                             Pay Securely
                             <svg
@@ -243,6 +204,21 @@ import Layout from "../layouts/Layout.astro";
                                 ></path>
                             </svg>
                         </button>
+
+                        <div id="mobile-checkout-summary" class="md:hidden sticky bottom-4 left-0 right-0 z-50 px-2 pointer-events-none">
+                            <div class="bg-primary/95 backdrop-blur-md rounded-2xl p-3 shadow-2xl border border-white/20 flex items-center gap-3 pointer-events-auto">
+                                <div class="min-w-[80px]">
+                                    <p class="text-[9px] text-white/70 uppercase font-black tracking-wider leading-none mb-1">Total</p>
+                                    <p class="text-lg font-black text-white leading-none whitespace-nowrap" id="mobile-summary-total">--</p>
+                                </div>
+                                <button
+                                    id="mobile-pay-trigger"
+                                    class="flex-1 bg-white text-primary font-black px-4 py-3 rounded-xl text-xs uppercase tracking-tighter transition-all active:scale-95 shadow-lg truncate"
+                                >
+                                    PAY NOW
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -312,6 +288,7 @@ import Layout from "../layouts/Layout.astro";
 
 <script>
     import { bookingStore } from "../store/booking";
+    import { language } from "../store";
 
     // Selectors
     const summaryContainer = document.getElementById("order-summary-content");
@@ -321,44 +298,65 @@ import Layout from "../layouts/Layout.astro";
     const mobileTotalEl = document.getElementById("mobile-summary-total");
     const desktopPayBtn = document.getElementById("pay-button-desktop") as HTMLButtonElement;
     const mobilePayBtn = document.getElementById("mobile-pay-trigger") as HTMLButtonElement;
-    const tilopayOpt = document.getElementById("tilopay-option");
-    const cashOpt = document.getElementById("cash-option");
-    
-    let selectedMethod = "card";
 
-    // Payment Method Switching
-    const updateMethodUI = () => {
-        const radios = document.querySelectorAll('.payment-radio');
-        radios.forEach(r => {
-            const isSelected = r.getAttribute('data-method') === selectedMethod;
-            if (isSelected) {
-                r.classList.add('border-4', 'border-primary', 'bg-white', 'shadow-[0_0_10px_rgba(255,87,34,0.3)]');
-                r.classList.remove('border-2', 'border-white/20');
+    // Form inputs
+    const inputFirstName = document.getElementById("input-firstName") as HTMLInputElement;
+    const inputLastName = document.getElementById("input-lastName") as HTMLInputElement;
+    const inputEmail = document.getElementById("input-email") as HTMLInputElement;
+    const inputPhone = document.getElementById("input-phone") as HTMLInputElement;
+    const errorFirstName = document.getElementById("error-firstName");
+    const errorLastName = document.getElementById("error-lastName");
+    const errorEmail = document.getElementById("error-email");
+    const errorPhone = document.getElementById("error-phone");
+
+    const formFields = [
+        { input: inputFirstName, error: errorFirstName },
+        { input: inputLastName, error: errorLastName },
+        { input: inputEmail, error: errorEmail },
+        { input: inputPhone, error: errorPhone },
+    ];
+
+    // Clear error state on input
+    formFields.forEach(({ input, error }) => {
+        input?.addEventListener("input", () => {
+            input.classList.remove("border-primary", "bg-primary/5");
+            input.classList.add("border-white/10");
+            error?.classList.add("hidden");
+        });
+    });
+
+    // Validate form and highlight empty fields
+    const validateForm = (): boolean => {
+        let isValid = true;
+
+        formFields.forEach(({ input, error }) => {
+            if (!input) return;
+            const value = input.value.trim();
+            // Email validation
+            const isEmailField = input.type === "email";
+            const isEmpty = !value;
+            const isInvalidEmail = isEmailField && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
+            if (isEmpty || isInvalidEmail) {
+                input.classList.add("border-primary", "bg-primary/5");
+                input.classList.remove("border-white/10");
+                error?.classList.remove("hidden");
+                isValid = false;
             } else {
-                r.classList.remove('border-4', 'border-primary', 'bg-white', 'shadow-[0_0_10px_rgba(255,87,34,0.3)]');
-                r.classList.add('border-2', 'border-white/20');
+                input.classList.remove("border-primary", "bg-primary/5");
+                input.classList.add("border-white/10");
+                error?.classList.add("hidden");
             }
         });
 
-        const options = [tilopayOpt, cashOpt];
-        options.forEach(opt => {
-            if (!opt) return;
-            const isSelected = opt.id === (selectedMethod === 'card' ? 'tilopay-option' : 'cash-option');
-            opt.classList.toggle('border-primary/30', isSelected);
-            opt.classList.toggle('border-white/10', !isSelected);
-        });
+        if (!isValid) {
+            // Scroll to first error
+            const firstError = document.querySelector(".border-primary");
+            firstError?.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
 
-        // Update button text
-        const btns = [desktopPayBtn, mobilePayBtn];
-        btns.forEach(btn => {
-            if (btn) {
-                btn.innerText = selectedMethod === 'card' ? 'Pay Securely' : 'Reserve & Pay on Site';
-            }
-        });
+        return isValid;
     };
-
-    tilopayOpt?.addEventListener('click', () => { selectedMethod = 'card'; updateMethodUI(); });
-    cashOpt?.addEventListener('click', () => { selectedMethod = 'cash'; updateMethodUI(); });
 
     // Helper for updating pay buttons state
     const setPayButtonsLoading = (isLoading: boolean) => {
@@ -366,11 +364,7 @@ import Layout from "../layouts/Layout.astro";
         btns.forEach(btn => {
             if (btn) {
                 btn.disabled = isLoading;
-                if (isLoading) {
-                    btn.innerText = "Processing...";
-                } else {
-                    btn.innerText = selectedMethod === 'card' ? 'Pay Securely' : 'Reserve & Pay on Site';
-                }
+                btn.innerText = isLoading ? "Processing..." : "Pay Securely";
             }
         });
     };
@@ -398,18 +392,6 @@ import Layout from "../layouts/Layout.astro";
                     <span class="text-gray-300">Selection</span>
                     <span class="text-white font-medium">${guestsHtml}</span>
                 </div>
-                
-                ${isVehicleTour ? `
-                <div class="bg-blue-500/10 border border-blue-500/20 rounded-xl p-3 text-[10px] text-gray-400 mt-4 leading-relaxed">
-                    <div class="flex gap-2">
-                        <svg class="w-3.5 h-3.5 text-blue-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        <div>
-                            <p class="font-bold text-blue-400 mb-0.5">Security Deposit Hold</p>
-                            <p>A $1000 security hold will be placed on your credit card and released within 24 hours after the tour.</p>
-                        </div>
-                    </div>
-                </div>
-                ` : ''}
             `;
             
             // Update Prices
@@ -433,96 +415,41 @@ import Layout from "../layouts/Layout.astro";
             return;
         }
 
+        if (!validateForm()) return;
+
         try {
             setPayButtonsLoading(true);
 
             const formData = {
-                firstName: (document.querySelector('input[placeholder="John"]') as HTMLInputElement)?.value,
-                lastName: (document.querySelector('input[placeholder="Doe"]') as HTMLInputElement)?.value,
-                email: (document.querySelector('input[placeholder="john@example.com"]') as HTMLInputElement)?.value,
-                phone: (document.querySelector('input[placeholder="+1 (555) 000-0000"]') as HTMLInputElement)?.value,
+                firstName: inputFirstName.value.trim(),
+                lastName: inputLastName.value.trim(),
+                email: inputEmail.value.trim(),
+                phone: inputPhone.value.trim(),
             };
 
-            if (!formData.firstName || !formData.email) {
-                alert("Please fill in your details.");
-                setPayButtonsLoading(false);
-                return;
-            }
+            const res = await fetch("/api/bookings/create", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    customerName: `${formData.firstName} ${formData.lastName}`,
+                    customerEmail: formData.email,
+                    customerPhone: formData.phone,
+                    tourId: state.tourId,
+                    tourName: state.tourTitle,
+                    date: state.date,
+                    totalAmount: state.totalPrice,
+                    adults: state.adults,
+                    children: state.children,
+                    paymentMethod: 'card',
+                    language: currentLang
+                }),
+            });
 
-            if (selectedMethod === 'cash') {
-                const res = await fetch("/api/bookings/create", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            customerName: `${formData.firstName} ${formData.lastName}`,
-                            customerEmail: formData.email,
-                            customerPhone: formData.phone,
-                            tourId: state.tourId,
-                            tourName: state.tourTitle,
-                            date: state.date,
-                            totalAmount: state.totalPrice,
-                            adults: state.adults,
-                            children: state.children,
-                            status: 'pending', // For cash/whatsapp
-                            language: currentLang
-                        }),
-                });
-
-                const data = await res.json();
-                if (data.success) {
-                    // Start success sequence
-                    const modal = document.getElementById('success-modal');
-                    const btns = [desktopPayBtn, mobilePayBtn];
-                    
-                    btns.forEach(btn => {
-                        if (btn) {
-                            btn.classList.add('success-btn-vibe');
-                            btn.innerHTML = `
-                                <svg class="w-5 h-5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
-                                </svg>
-                                CONFIRMED!
-                            `;
-                        }
-                    });
-
-                    setTimeout(() => {
-                        modal?.classList.add('show');
-                        // Auto-redirect after 6 seconds
-                        setTimeout(() => {
-                            window.location.href = "/";
-                        }, 6000);
-                    }, 1000);
-
-                } else {
-                    alert("Failed to create booking: " + (data.message || "Unknown error"));
-                }
+            const data = await res.json();
+            if (data.success && data.requiresRedirect && data.paymentUrl) {
+                window.location.href = data.paymentUrl;
             } else {
-                // TiloPay Flow
-                const res = await fetch("/api/bookings/create", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        customerName: `${formData.firstName} ${formData.lastName}`,
-                        customerEmail: formData.email,
-                        customerPhone: formData.phone,
-                        tourId: state.tourId,
-                        tourName: state.tourTitle,
-                        date: state.date,
-                        totalAmount: state.totalPrice,
-                        adults: state.adults,
-                        children: state.children,
-                        paymentMethod: 'card',
-                        language: currentLang
-                    }),
-                });
-
-                const data = await res.json();
-                if (data.success && data.requiresRedirect && data.paymentUrl) {
-                    window.location.href = data.paymentUrl;
-                } else {
-                    alert("Payment initialization failed: " + (data.message || "Unknown error"));
-                }
+                alert("Payment initialization failed: " + (data.message || "Unknown error"));
             }
         } catch (e) {
             console.error(e);

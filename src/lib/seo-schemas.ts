@@ -25,7 +25,7 @@ export interface FAQItem {
     answer: string;
 }
 
-const SITE_URL = 'https://vamosjaco.com';
+const SITE_URL = 'https://vamosjacotoursdev.com';
 const BUSINESS_NAME = 'Vamos Jacó Tours';
 const BUSINESS_PHONE = '+506 8774-7250';
 const BUSINESS_EMAIL = 'info@vamosjaco.com';

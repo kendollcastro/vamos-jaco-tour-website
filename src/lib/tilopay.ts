@@ -74,7 +74,7 @@ export async function createPaymentSession(params: TilopayPaymentParams): Promis
 
     // Setup redirect URL back to our application upon payment completion/failure
     const lang = params.language || 'en';
-    const redirectUrl = `${PUBLIC_DOMAIN}/api/tilopay/callback?lang=${lang}`;
+    const redirectUrl = `${PUBLIC_DOMAIN}/api/tilopay/callback?order=${params.orderNumber}&lang=${lang}`;
 
     // Map internal booking details to Tilopay's expected schema
     const payload = {

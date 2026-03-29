@@ -5,11 +5,27 @@ export type Language = 'en' | 'es';
 export const language = atom<Language>('en');
 
 export const toggleLanguage = () => {
-    language.set(language.get() === 'en' ? 'es' : 'en');
+    const newLang = language.get() === 'en' ? 'es' : 'en';
+    language.set(newLang);
+    if (typeof window !== 'undefined') {
+        localStorage.setItem('language', newLang);
+    }
 };
 
 export const setLanguage = (lang: Language) => {
     language.set(lang);
+    if (typeof window !== 'undefined') {
+        localStorage.setItem('language', lang);
+    }
+};
+
+export const initLanguage = () => {
+    if (typeof window !== 'undefined') {
+        const storedLang = localStorage.getItem('language') as Language | null;
+        if (storedLang === 'en' || storedLang === 'es') {
+            language.set(storedLang);
+        }
+    }
 };
 
 export type Theme = 'dark' | 'light';

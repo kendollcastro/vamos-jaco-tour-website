@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useStore } from '@nanostores/react';
-import { language, toggleLanguage } from '../store';
+import { language, toggleLanguage, initLanguage } from '../store';
 import { Globe, Menu, X } from 'lucide-react';
 import { clsx } from 'clsx';
 
@@ -8,6 +8,11 @@ export default function Header() {
     const $language = useStore(language);
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+    // Initialize language from localStorage on mount
+    useEffect(() => {
+        initLanguage();
+    }, []);
 
     useEffect(() => {
         const handleScroll = () => {

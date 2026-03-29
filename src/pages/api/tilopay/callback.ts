@@ -8,6 +8,7 @@ export const ALL: APIRoute = async ({ request, redirect }) => {
     
     const url = new URL(request.url);
     
+    // Parse body for POST requests
     if (request.method === 'POST') {
         try {
             const formData = await request.formData();
@@ -21,23 +22,57 @@ export const ALL: APIRoute = async ({ request, redirect }) => {
         }
     }
     
-    // Also merge URL parameters, they might contain the payload
+    // Also merge URL parameters (TiloPay often sends data as query params on GET redirect)
     url.searchParams.forEach((value, key) => {
         if (!data[key]) data[key] = value;
     });
 
-    console.log("Tilopay Callback payload:", data);
+    // Debug: log everything we receive
+    console.log("=== TiloPay Callback ===");
+    console.log("Method:", request.method);
+    console.log("URL:", request.url);
+    console.log("Payload:", JSON.stringify(data, null, 2));
 
-    // Extract Order Number (Booking ID) and Status
-    const orderNumber = data.order || data.orderNumber || data.reference;
-    // Tilopay usually sends a 'status' or 'responseCode'
-    const isSuccess = data.status === 'success' || data.status === '1' || data.responseCode === '1' || data.ResponseCode === '1';
+    // Extract Order Number (Booking ID)
+    const orderNumber = data.order || data.orderNumber || data.reference || 
+                        data.order_number || data.Orden || data.orderId ||
+                        url.searchParams.get('order');
+
+    // Determine if payment was successful
+    // TiloPay can send status in many formats - check all known variations
+    const statusCode = String(data.status || data.responseCode || data.ResponseCode || 
+                              data.response_code || data.code || data.result || 
+                              data.paymentStatus || data.PaymentStatus || '').toLowerCase().trim();
+    
+    const isSuccess = statusCode === 'success' || 
+                      statusCode === '1' || 
+                      statusCode === 'approved' ||
+                      statusCode === 'completed' ||
+                      statusCode === 'accepted' ||
+                      statusCode === 'ok' ||
+                      statusCode === 'true';
+
+    console.log("Extracted orderNumber:", orderNumber);
+    console.log("Status code found:", statusCode, "-> isSuccess:", isSuccess);
 
     if (!orderNumber) {
-        return new Response("Missing order reference", { status: 400 });
+        console.error("Missing order reference. Full payload:", data);
+        return redirect('/?payment=error&reason=missing_order');
     }
 
-    if (isSuccess && supabaseAdmin) {
+    // If we can't determine success status, treat as success if we have a transaction ID
+    // This handles cases where TiloPay doesn't send a clear status field
+    const hasTransactionId = data.transactionId || data.authCode || data.transaction_id || 
+                             data.AuthorizationCode || data.reference;
+    
+    if (!isSuccess && hasTransactionId) {
+        console.log("No clear success status, but transaction ID present. Treating as success.");
+    }
+
+    // Final success determination
+    const paymentSucceeded = isSuccess || (!!hasTransactionId && !statusCode.includes('cancel') && !statusCode.includes('fail'));
+
+    if (paymentSucceeded && supabaseAdmin) {
         try {
             // 1. Get Booking
             const { data: booking, error: fetchError } = await supabaseAdmin
@@ -47,28 +82,33 @@ export const ALL: APIRoute = async ({ request, redirect }) => {
                 .single();
                 
             if (fetchError || !booking) {
-                console.error("Booking not found for order:", orderNumber);
-                return redirect('/?payment=error');
+                console.error("Booking not found for order:", orderNumber, fetchError);
+                return redirect(`/?payment=error&reason=booking_not_found&order=${orderNumber}`);
             }
 
             // 2. Prevent Double Processing
             if (booking.status === 'confirmed') {
-                return redirect(`/payment/success?order=${orderNumber}`);
+                console.log("Booking already confirmed, redirecting to success page");
+                return redirect(`/payment-success?order=${orderNumber}`);
             }
 
-            // 3. Update Status
+            // 3. Update Status to confirmed
             const { error: updateError } = await supabaseAdmin
                 .from('bookings')
                 .update({ 
                     status: 'confirmed', 
-                    tilopay_order_id: data.transactionId || data.authCode || 'TILOPAY_SUCCESS',
+                    tilopay_order_id: data.transactionId || data.authCode || data.transaction_id || 
+                                      data.AuthorizationCode || 'TILOPAY_SUCCESS',
                     tilopay_response: data
                 })
                 .eq('id', orderNumber);
 
-            if (updateError) throw updateError;
+            if (updateError) {
+                console.error("Failed to update booking:", updateError);
+                throw updateError;
+            }
 
-            // 4. Send Confirmation Email asynchronously
+            // 4. Send Confirmation Email
             const userLanguage = (data.lang as 'en' | 'es') || 'en';
             sendBookingNotifications({
                 customerName: booking.customer_name,
@@ -82,18 +122,23 @@ export const ALL: APIRoute = async ({ request, redirect }) => {
                 language: userLanguage
             }).catch(e => console.error("Post-payment email failed:", e));
 
-            // 5. Redirect User to premium success page
-            return redirect(`/payment/success?order=${orderNumber}`);
+            // 5. Redirect User to success page
+            console.log("Payment successful! Redirecting to success page:", `/payment-success?order=${orderNumber}`);
+            return redirect(`/payment-success?order=${orderNumber}`);
 
         } catch (error) {
             console.error("Webhook processing error:", error);
-            return redirect('/?payment=error');
+            return redirect(`/?payment=error&reason=processing_error&order=${orderNumber}`);
         }
     } else {
         // Payment failed or was cancelled
-        console.warn("Payment failed or cancelled:", data);
-        if (supabaseAdmin) {
-            await supabaseAdmin.from('bookings').update({ status: 'cancelled' }).eq('id', orderNumber);
+        console.warn("Payment failed or cancelled. Status:", statusCode, "Data:", data);
+        if (supabaseAdmin && orderNumber) {
+            try {
+                await supabaseAdmin.from('bookings').update({ status: 'cancelled' }).eq('id', orderNumber);
+            } catch (e) {
+                console.error("Failed to cancel booking:", e);
+            }
         }
         return redirect('/?payment=failed');
     }

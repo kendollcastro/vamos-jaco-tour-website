@@ -42,39 +42,44 @@ import Layout from "../layouts/Layout.astro";
                 </div>
 
                 <h1
+                    id="success-title"
                     class="text-3xl font-black text-white italic uppercase tracking-tight mb-4"
                 >
-                    Booking <span
+                    Payment <span
                         class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-brand-orange"
-                        >Confirmed!</span
+                        >Successful!</span
                     >
                 </h1>
 
-                <p class="text-gray-400 mb-8">
-                    Thank you for booking with Vamos Jacó Tours. We have sent a
-                    confirmation email with all the details.
+                <p id="success-message-1" class="text-gray-400 mb-2">
+                    Your booking has been confirmed!
+                </p>
+                <p id="success-message-2" class="text-gray-400 mb-8">
+                    A confirmation email with all the details of your adventure has been sent to your inbox. Please check your spam folder if you don't see it.
                 </p>
 
                 <div class="space-y-4">
                     <a
-                        href="/"
-                        class="block w-full bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold py-3 rounded-xl transition-colors"
-                    >
-                        Return Home
-                    </a>
-                    <a
                         href="/tours"
+                        id="btn-another"
                         class="block w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-primary/20"
                     >
                         Book Another Adventure
+                    </a>
+                    <a
+                        href="/"
+                        id="btn-home"
+                        class="block w-full bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold py-3 rounded-xl transition-colors"
+                    >
+                        Return Home
                     </a>
                 </div>
             </div>
 
             <p class="mt-8 text-xs text-gray-500">
-                Order Reference: <span
+                <span id="order-label">Order Reference:</span> <span
                     id="order-ref"
-                    class="font-mono text-gray-400">Loading...</span
+                    class="font-mono text-gray-400">--</span
                 >
             </p>
         </div>
@@ -82,14 +87,58 @@ import Layout from "../layouts/Layout.astro";
 </Layout>
 
 <script>
-    // Simple script to show a mock order ref
+    import { language, initLanguage } from "../store";
+
+    // Initialize language from localStorage
+    initLanguage();
+
+    const content = {
+        en: {
+            title: 'Payment <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-brand-orange">Successful!</span>',
+            message1: 'Your booking has been confirmed!',
+            message2: 'A confirmation email with all the details of your adventure has been sent to your inbox. Please check your spam folder if you don\'t see it.',
+            btnAnother: 'Book Another Adventure',
+            btnHome: 'Return Home',
+            orderLabel: 'Order Reference:',
+        },
+        es: {
+            title: 'Pago <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-brand-orange">Exitoso!</span>',
+            message1: 'Tu reservación ha sido confirmada!',
+            message2: 'Un correo de confirmación con todos los detalles de tu aventura ha sido enviado a tu bandeja de entrada. Revisa tu carpeta de spam si no lo ves.',
+            btnAnother: 'Reservar Otra Aventura',
+            btnHome: 'Volver al Inicio',
+            orderLabel: 'Referencia de Orden:',
+        }
+    };
+
+    const updateContent = (lang: 'en' | 'es') => {
+        const c = content[lang];
+        const titleEl = document.getElementById("success-title");
+        const msg1El = document.getElementById("success-message-1");
+        const msg2El = document.getElementById("success-message-2");
+        const btnAnotherEl = document.getElementById("btn-another");
+        const btnHomeEl = document.getElementById("btn-home");
+        const orderLabelEl = document.getElementById("order-label");
+
+        if (titleEl) titleEl.innerHTML = c.title;
+        if (msg1El) msg1El.textContent = c.message1;
+        if (msg2El) msg2El.textContent = c.message2;
+        if (btnAnotherEl) btnAnotherEl.textContent = c.btnAnother;
+        if (btnHomeEl) btnHomeEl.textContent = c.btnHome;
+        if (orderLabelEl) orderLabelEl.textContent = c.orderLabel;
+    };
+
+    // Subscribe to language changes
+    language.subscribe((lang) => {
+        updateContent(lang);
+    });
+
+    // Get order ID from URL parameter
     const urlParams = new URLSearchParams(window.location.search);
-    const tourId = urlParams.get("tourId");
+    const orderId = urlParams.get("order");
     const orderRefEl = document.getElementById("order-ref");
     if (orderRefEl) {
-        orderRefEl.textContent = `ORD-${Math.floor(
-            Math.random() * 10000
-        )}-${tourId}`;
+        orderRefEl.textContent = orderId || '--';
     }
 
     // Clear the cart on success
@@ -105,5 +154,7 @@ import Layout from "../layouts/Layout.astro";
         pricePerAdult: 0,
         pricePerChild: 0,
         totalPrice: 0,
+        ivaAmount: 0,
+        extraPassengers: 0,
     });
 </script>

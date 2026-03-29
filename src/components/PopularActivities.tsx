@@ -2,8 +2,82 @@ import React, { useEffect, useRef } from 'react';
 import { useStore } from '@nanostores/react';
 import { language } from '../store';
 import { Flame } from 'lucide-react';
+import type { Tour } from '../data/tours';
 
-export default function PopularActivities() {
+interface PopularActivitiesProps {
+    tours?: Tour[];
+}
+
+const FALLBACK_ACTIVITIES = [
+    {
+        nameEn: 'ATV Tours',
+        nameEs: 'Tours ATV',
+        badge: 'EXTREME',
+        image: '/images/activities/atv-activity-optimized.jpg',
+        rotation: '-rotate-6',
+        link: '/tours',
+        width: 800,
+        height: 1422,
+        ringColor: 'hover:ring-primary/50',
+        shadowColor: 'hover:shadow-[0_0_30px_rgba(220,53,34,0.2)]',
+        badgeColor: 'bg-primary/90'
+    },
+    {
+        nameEn: 'Zipline',
+        nameEs: 'Tirolesa',
+        badge: 'THRILL',
+        image: '/images/Zipline/zipline-vamos-jaco-tours-001.jpg',
+        rotation: '-rotate-3',
+        link: '/tours',
+        width: 800,
+        height: 769,
+        ringColor: 'hover:ring-brand-orange/50',
+        shadowColor: 'hover:shadow-[0_0_30px_rgba(255,152,0,0.2)]',
+        badgeColor: 'bg-brand-orange/90'
+    },
+    {
+        nameEn: 'Surfing',
+        nameEs: 'Surf',
+        badge: 'WATER SPORT',
+        image: 'https://images.unsplash.com/photo-1502680390469-be75c86b636f?q=80&w=2070&auto=format&fit=crop',
+        rotation: 'rotate-3',
+        link: '/tours',
+        width: undefined,
+        height: undefined,
+        ringColor: 'hover:ring-brand-teal/50',
+        shadowColor: 'hover:shadow-[0_0_30px_rgba(0,150,136,0.2)]',
+        badgeColor: 'bg-brand-teal/90'
+    },
+    {
+        nameEn: 'Sport Fishing',
+        nameEs: 'Pesca Deportiva',
+        badge: 'OCEAN',
+        image: '/images/activities/sport-fishing.png',
+        rotation: 'rotate-6',
+        link: '/tours',
+        width: undefined,
+        height: undefined,
+        ringColor: 'hover:ring-brand-yellow/50',
+        shadowColor: 'hover:shadow-[0_0_30px_rgba(255,193,7,0.2)]',
+        badgeColor: 'bg-brand-yellow/90',
+        badgeTextDark: true
+    }
+];
+
+function findTourByCategory(tours: Tour[], category: string, titleKeywords?: string[]): Tour | undefined {
+    const categoryTours = tours.filter(t => t.category === category);
+    if (titleKeywords && titleKeywords.length > 0) {
+        return categoryTours.find(t =>
+            titleKeywords.some(kw =>
+                t.title.en.toLowerCase().includes(kw.toLowerCase()) ||
+                t.title.es.toLowerCase().includes(kw.toLowerCase())
+            )
+        );
+    }
+    return categoryTours[0];
+}
+
+export default function PopularActivities({ tours = [] }: PopularActivitiesProps) {
     const $language = useStore(language);
 
     const content = {
@@ -25,40 +99,40 @@ export default function PopularActivities() {
     const titleText = fallbackContent.title;
     const titleAccent = fallbackContent.titleAccent;
 
-    const activities = [
-        {
-            name: $language === 'en' ? 'ATV Tours' : 'Tours ATV',
-            badge: 'EXTREME',
-            image: '/images/activities/atv-activity-optimized.jpg',
-            rotation: '-rotate-6',
-            link: '/tours/jaco-atv-adventure',
-            width: 800,
-            height: 1422
-        },
-        {
-            name: $language === 'en' ? 'Zipline' : 'Tirolesa',
-            badge: 'THRILL',
-            image: '/images/Zipline/zipline-vamos-jaco-tours-001.jpg',
-            rotation: '-rotate-3',
-            link: '/tours/zipline-canopy',
-            width: 800,
-            height: 769
-        },
-        {
-            name: $language === 'en' ? 'Surfing' : 'Surf',
-            badge: 'WATER SPORT',
-            image: 'https://images.unsplash.com/photo-1502680390469-be75c86b636f?q=80&w=2070&auto=format&fit=crop',
-            rotation: 'rotate-3',
-            link: '/tours/surf-class'
-        },
-        {
-            name: $language === 'en' ? 'Sport Fishing' : 'Pesca Deportiva',
-            badge: 'OCEAN',
-            image: '/images/activities/sport-fishing.png',
-            rotation: 'rotate-6',
-            link: '/tours/costa-cat-cruise' // Defaulting to Costa Cat as there isn't a direct sport-fishing slug in recent DB
+    const activities = FALLBACK_ACTIVITIES.map((fallback, i) => {
+        let tour: Tour | undefined;
+
+        switch (i) {
+            case 0: // ATV
+                tour = findTourByCategory(tours, 'atv') || tours.find(t => t.slug.includes('atv'));
+                break;
+            case 1: // Zipline
+                tour = findTourByCategory(tours, 'canopy') || tours.find(t => t.slug.includes('zipline') || t.slug.includes('canopy'));
+                break;
+            case 2: // Surfing
+                tour = tours.find(t => t.slug.includes('surf')) || findTourByCategory(tours, 'water');
+                break;
+            case 3: // Sport Fishing
+                tour = tours.find(t => t.slug.includes('fish') || t.slug.includes('fishing')) ||
+                       tours.find(t => t.title.en.toLowerCase().includes('fish'));
+                break;
         }
-    ];
+
+        return {
+            name: $language === 'en' ? fallback.nameEn : fallback.nameEs,
+            badge: fallback.badge,
+            image: tour?.image_url || fallback.image,
+            rotation: fallback.rotation,
+            link: tour ? `/tours/${tour.slug}` : fallback.link,
+            width: fallback.width,
+            height: fallback.height,
+            ringColor: fallback.ringColor,
+            shadowColor: fallback.shadowColor,
+            badgeColor: fallback.badgeColor,
+            badgeTextDark: fallback.badgeTextDark
+        };
+    });
+
     const gridRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -104,7 +178,7 @@ export default function PopularActivities() {
                 <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-4 gap-4 h-auto md:h-[600px] stagger-children">
 
                     {/* First Column - Tall */}
-                    <a href={activities[0].link} className="md:col-span-1 relative h-[350px] md:h-full rounded-[2rem] overflow-hidden group cursor-pointer ring-1 ring-white/10 hover:ring-primary/50 transition-all duration-500 hover:shadow-[0_0_30px_rgba(220,53,34,0.2)] block">
+                    <a href={activities[0].link} className={`md:col-span-1 relative h-[350px] md:h-full rounded-[2rem] overflow-hidden group cursor-pointer ring-1 ring-white/10 ${activities[0].ringColor} transition-all duration-500 ${activities[0].shadowColor} block`}>
                         <img
                             src={activities[0].image}
                             alt={activities[0].name}
@@ -117,7 +191,7 @@ export default function PopularActivities() {
                         <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/40 to-transparent"></div>
                         {/* Badge */}
                         <div className="absolute top-4 left-4">
-                            <span className="px-3 py-1 rounded-full bg-primary/90 text-white text-[10px] font-bold tracking-wider uppercase backdrop-blur-sm">
+                            <span className={`px-3 py-1 rounded-full ${activities[0].badgeColor} text-white text-[10px] font-bold tracking-wider uppercase backdrop-blur-sm`}>
                                 {activities[0].badge}
                             </span>
                         </div>
@@ -130,7 +204,7 @@ export default function PopularActivities() {
 
                     {/* Middle Column - Two Stacked */}
                     <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 h-full md:h-full">
-                        <a href={activities[1].link} className="relative h-[350px] md:h-full rounded-[2rem] overflow-hidden group cursor-pointer ring-1 ring-white/10 hover:ring-brand-orange/50 transition-all duration-500 hover:shadow-[0_0_30px_rgba(255,152,0,0.2)] block">
+                        <a href={activities[1].link} className={`relative h-[350px] md:h-full rounded-[2rem] overflow-hidden group cursor-pointer ring-1 ring-white/10 ${activities[1].ringColor} transition-all duration-500 ${activities[1].shadowColor} block`}>
                             <img
                                 src={activities[1].image}
                                 alt={activities[1].name}
@@ -142,7 +216,7 @@ export default function PopularActivities() {
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/30 to-transparent"></div>
                             <div className="absolute top-4 left-4">
-                                <span className="px-3 py-1 rounded-full bg-brand-orange/90 text-white text-[10px] font-bold tracking-wider uppercase backdrop-blur-sm">
+                                <span className={`px-3 py-1 rounded-full ${activities[1].badgeColor} text-white text-[10px] font-bold tracking-wider uppercase backdrop-blur-sm`}>
                                     {activities[1].badge}
                                 </span>
                             </div>
@@ -153,7 +227,7 @@ export default function PopularActivities() {
                             </div>
                         </a>
 
-                        <a href={activities[2].link} className="relative h-[350px] md:h-full rounded-[2rem] overflow-hidden group cursor-pointer ring-1 ring-white/10 hover:ring-brand-teal/50 transition-all duration-500 hover:shadow-[0_0_30px_rgba(0,150,136,0.2)] block">
+                        <a href={activities[2].link} className={`relative h-[350px] md:h-full rounded-[2rem] overflow-hidden group cursor-pointer ring-1 ring-white/10 ${activities[2].ringColor} transition-all duration-500 ${activities[2].shadowColor} block`}>
                             <img
                                 src={activities[2].image}
                                 alt={activities[2].name}
@@ -163,7 +237,7 @@ export default function PopularActivities() {
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/30 to-transparent"></div>
                             <div className="absolute top-4 left-4">
-                                <span className="px-3 py-1 rounded-full bg-brand-teal/90 text-white text-[10px] font-bold tracking-wider uppercase backdrop-blur-sm">
+                                <span className={`px-3 py-1 rounded-full ${activities[2].badgeColor} text-white text-[10px] font-bold tracking-wider uppercase backdrop-blur-sm`}>
                                     {activities[2].badge}
                                 </span>
                             </div>
@@ -176,7 +250,7 @@ export default function PopularActivities() {
                     </div>
 
                     {/* Last Column - Tall */}
-                    <a href={activities[3].link} className="md:col-span-1 relative h-[350px] md:h-full rounded-[2rem] overflow-hidden group cursor-pointer ring-1 ring-white/10 hover:ring-brand-yellow/50 transition-all duration-500 hover:shadow-[0_0_30px_rgba(255,193,7,0.2)] block">
+                    <a href={activities[3].link} className={`md:col-span-1 relative h-[350px] md:h-full rounded-[2rem] overflow-hidden group cursor-pointer ring-1 ring-white/10 ${activities[3].ringColor} transition-all duration-500 ${activities[3].shadowColor} block`}>
                         <img
                             src={activities[3].image}
                             alt={activities[3].name}
@@ -186,7 +260,7 @@ export default function PopularActivities() {
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/40 to-transparent"></div>
                         <div className="absolute top-4 left-4">
-                            <span className="px-3 py-1 rounded-full bg-brand-yellow/90 text-dark text-[10px] font-bold tracking-wider uppercase backdrop-blur-sm">
+                            <span className={`px-3 py-1 rounded-full ${activities[3].badgeColor} ${activities[3].badgeTextDark ? 'text-dark' : 'text-white'} text-[10px] font-bold tracking-wider uppercase backdrop-blur-sm`}>
                                 {activities[3].badge}
                             </span>
                         </div>

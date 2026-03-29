@@ -1,7 +1,20 @@
 import type { APIRoute } from 'astro';
+import { verifyAdmin } from '../../../lib/auth';
 import { sendBookingNotifications, sendNewsletterWelcome } from '../../../lib/email-service';
 
 export const POST: APIRoute = async ({ request }) => {
+    // Verify admin authentication
+    const authResult = await verifyAdmin(request);
+    if (!authResult.authorized) {
+        return new Response(JSON.stringify({ 
+            success: false, 
+            message: 'Unauthorized' 
+        }), { 
+            status: 401,
+            headers: { 'Content-Type': 'application/json' }
+        });
+    }
+
     try {
         const body = await request.json();
         const { email, logoOverride, language = 'en' } = body;
@@ -37,6 +50,9 @@ export const POST: APIRoute = async ({ request }) => {
 
     } catch (error: any) {
         console.error('Test email error:', error);
-        return new Response(JSON.stringify({ message: 'Test email failed', error: error.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+        return new Response(JSON.stringify({ message: 'Test email failed' }), { 
+            status: 500, 
+            headers: { 'Content-Type': 'application/json' } 
+        });
     }
 }

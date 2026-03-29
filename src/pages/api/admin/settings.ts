@@ -1,7 +1,20 @@
 import type { APIRoute } from 'astro';
 import { supabaseAdmin } from '../../../lib/supabase';
+import { verifyAdmin } from '../../../lib/auth';
 
-export const GET: APIRoute = async () => {
+export const GET: APIRoute = async ({ request }) => {
+    // Verify admin authentication
+    const authResult = await verifyAdmin(request);
+    if (!authResult.authorized) {
+        return new Response(JSON.stringify({ 
+            success: false, 
+            message: 'Unauthorized' 
+        }), { 
+            status: 401,
+            headers: { 'Content-Type': 'application/json' }
+        });
+    }
+
     if (!supabaseAdmin) return new Response(JSON.stringify({ message: 'Supabase not configured' }), { status: 500 });
 
     try {
@@ -22,11 +35,26 @@ export const GET: APIRoute = async () => {
         });
     } catch (error: any) {
         console.error('Settings GET error:', error);
-        return new Response(JSON.stringify({ success: false, message: error.message }), { status: 500 });
+        return new Response(JSON.stringify({ success: false, message: 'Failed to fetch settings' }), { 
+            status: 500,
+            headers: { 'Content-Type': 'application/json' }
+        });
     }
 }
 
 export const POST: APIRoute = async ({ request }) => {
+    // Verify admin authentication
+    const authResult = await verifyAdmin(request);
+    if (!authResult.authorized) {
+        return new Response(JSON.stringify({ 
+            success: false, 
+            message: 'Unauthorized' 
+        }), { 
+            status: 401,
+            headers: { 'Content-Type': 'application/json' }
+        });
+    }
+
     if (!supabaseAdmin) return new Response(JSON.stringify({ message: 'Supabase not configured' }), { status: 500 });
 
     try {
@@ -34,6 +62,15 @@ export const POST: APIRoute = async ({ request }) => {
 
         if (!key || value === undefined) {
             return new Response(JSON.stringify({ message: 'Key and Value are required' }), { status: 400 });
+        }
+
+        // Whitelist of allowed setting keys
+        const allowedKeys = ['site_name', 'contact_email', 'whatsapp_number', 'currency', 'tax_rate'];
+        if (!allowedKeys.includes(key)) {
+            return new Response(JSON.stringify({ message: 'Invalid setting key' }), { 
+                status: 400,
+                headers: { 'Content-Type': 'application/json' }
+            });
         }
 
         const { error } = await supabaseAdmin
@@ -48,6 +85,9 @@ export const POST: APIRoute = async ({ request }) => {
         });
     } catch (error: any) {
         console.error('Settings POST error:', error);
-        return new Response(JSON.stringify({ success: false, message: error.message }), { status: 500 });
+        return new Response(JSON.stringify({ success: false, message: 'Failed to update setting' }), { 
+            status: 500,
+            headers: { 'Content-Type': 'application/json' }
+        });
     }
 }
