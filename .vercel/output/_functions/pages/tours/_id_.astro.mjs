@@ -513,22 +513,20 @@ function TourInfoList({ type, data }) {
 }
 
 const $$Astro = createAstro("https://vamosjacotoursdev.com");
-async function getStaticPaths() {
-  const tours = await getAllTours();
-  return tours.map((tour) => ({
-    params: { id: tour.slug },
-    props: { tour }
-  }));
-}
 const $$id = createComponent(async ($$result, $$props, $$slots) => {
   const Astro2 = $$result.createAstro($$Astro, $$props, $$slots);
   Astro2.self = $$id;
   const { id } = Astro2.params;
-  const tour = Astro2.props.tour || (id ? await getTourById(id) : null);
+  const tour = id ? await getTourById(id) : null;
   if (!tour) {
     return Astro2.redirect("/404");
   }
-  const allTours = await getAllTours();
+  let allTours = [];
+  try {
+    allTours = await getAllTours();
+  } catch (e) {
+    console.error("Failed to fetch all tours:", e);
+  }
   const relatedTours = allTours.filter((t) => t.category === tour.category && t.id !== tour.id).slice(0, 3);
   const tourSchema = getTourSchema({
     name: tour.title.en,
@@ -577,7 +575,6 @@ const _page = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
     __proto__: null,
     default: $$id,
     file: $$file,
-    getStaticPaths,
     url: $$url
 }, Symbol.toStringTag, { value: 'Module' }));
 

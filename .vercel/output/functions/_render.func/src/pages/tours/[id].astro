@@ -12,29 +12,22 @@ import TranslatedMarkdown from "../../components/TranslatedMarkdown";
 import TourInfoList from "../../components/TourInfoList";
 import { marked } from "marked";
 
-export async function getStaticPaths() {
-    const tours = await getAllTours();
-    return tours.map((tour) => ({
-        params: { id: tour.slug },
-        props: { tour },
-    }));
-}
-
-interface Props {
-    tour?: Tour;
-}
-
-// In SSR mode without `prerender=true`, getStaticPaths props might be ignored.
-// We should fetch the tour from the URL param if Astro.props.tour is missing.
+// In SSR mode, getStaticPaths is not used.
+// We fetch the tour directly from the URL param.
 const { id } = Astro.params;
-const tour = Astro.props.tour || (id ? await getTourById(id) : null);
+const tour = id ? await getTourById(id) : null;
 
 if (!tour) {
     return Astro.redirect("/404");
 }
 
-// Fetch all tours for related tours filtering (Astro props from getStaticPaths are mostly for static building)
-const allTours = await getAllTours();
+// Fetch all tours for related tours filtering
+let allTours: Tour[] = [];
+try {
+    allTours = await getAllTours();
+} catch (e) {
+    console.error("Failed to fetch all tours:", e);
+}
 
 // Related tours: same category, excluding current
 const relatedTours = allTours
