@@ -1,0 +1,465 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout
+    title="Checkout | Vamos Jacó Tours"
+    description="Complete your booking with Vamos Jacó Tours. Secure payment processing."
+    robots="noindex, nofollow"
+>
+    <div class="min-h-screen bg-dark pt-32 pb-20">
+        <div class="max-w-4xl mx-auto px-6">
+            <h1
+                class="text-4xl md:text-5xl font-black text-white mb-8 border-b border-white/10 pb-6"
+            >
+                Checkout
+            </h1>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Left: Booking Summary -->
+                <div class="md:col-span-2 space-y-8">
+                    <!-- Guest Details Form -->
+                    <div
+                        class="bg-dark-soft rounded-2xl border border-white/10 p-6 md:p-8"
+                    >
+                        <h2
+                            class="text-xl font-bold text-white mb-6 flex items-center gap-3"
+                        >
+                            <span
+                                class="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center text-sm font-bold"
+                                >1</span
+                            >
+                            Your Details
+                        </h2>
+                        <form id="checkout-form" class="space-y-4" novalidate>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label
+                                        class="block text-sm text-gray-400 mb-1"
+                                        >First Name <span class="text-primary">*</span></label
+                                    >
+                                    <input
+                                        id="input-firstName"
+                                        type="text"
+                                        required
+                                        class="w-full bg-dark border border-white/10 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none transition-colors"
+                                        placeholder="John"
+                                    />
+                                    <p class="text-primary text-xs mt-1 hidden" id="error-firstName">Please enter your first name</p>
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-sm text-gray-400 mb-1"
+                                        >Last Name <span class="text-primary">*</span></label
+                                    >
+                                    <input
+                                        id="input-lastName"
+                                        type="text"
+                                        required
+                                        class="w-full bg-dark border border-white/10 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none transition-colors"
+                                        placeholder="Doe"
+                                    />
+                                    <p class="text-primary text-xs mt-1 hidden" id="error-lastName">Please enter your last name</p>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-1"
+                                    >Email Address <span class="text-primary">*</span></label
+                                >
+                                <input
+                                    id="input-email"
+                                    type="email"
+                                    required
+                                    class="w-full bg-dark border border-white/10 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none transition-colors"
+                                    placeholder="john@example.com"
+                                />
+                                <p class="text-primary text-xs mt-1 hidden" id="error-email">Please enter a valid email address</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-1"
+                                    >Phone Number (WhatsApp) <span class="text-primary">*</span></label
+                                >
+                                <input
+                                    id="input-phone"
+                                    type="tel"
+                                    required
+                                    class="w-full bg-dark border border-white/10 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none transition-colors"
+                                    placeholder="+1 (555) 000-0000"
+                                />
+                                <p class="text-primary text-xs mt-1 hidden" id="error-phone">Please enter your phone number</p>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Payment Method -->
+                    <div
+                        class="bg-dark-soft rounded-2xl border border-white/10 p-6 md:p-8"
+                    >
+                        <h2
+                            class="text-xl font-bold text-white mb-6 flex items-center gap-3"
+                        >
+                            <span
+                                class="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center text-sm font-bold"
+                                >2</span
+                            >
+                            Payment Method
+                        </h2>
+
+                        <div class="space-y-4">
+                            <!-- TiloPay -->
+                            <div
+                                class="bg-white/5 rounded-xl p-4 border border-primary/30 flex items-center gap-4"
+                            >
+                                <div
+                                    class="w-12 h-12 bg-white rounded-lg flex items-center justify-center p-1"
+                                >
+                                    <img
+                                        src="/images/tilopay-logo-placeholder.png"
+                                        alt="TiloPay"
+                                        class="object-contain"
+                                        onerror="this.src='https://placehold.co/100x100/white/black?text=TiloPay'"
+                                    />
+                                </div>
+                                <div>
+                                    <h4 class="text-white font-bold">
+                                        Credit / Debit Card
+                                    </h4>
+                                    <p class="text-xs text-gray-400">
+                                        Secure payment via TiloPay
+                                    </p>
+                                </div>
+                                <div class="ml-auto">
+                                    <div
+                                        class="w-5 h-5 rounded-full border-4 border-primary bg-white shadow-[0_0_10px_rgba(255,87,34,0.3)]"
+                                    >
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Order Summary -->
+                <div class="md:col-span-1">
+                    <div
+                        class="bg-dark-soft rounded-2xl border border-white/10 p-6 sticky top-28"
+                    >
+                        <h3 class="text-lg font-bold text-white mb-4">
+                            Order Summary
+                        </h3>
+
+                        <!-- Dynamic Content Placeholder (Client-side populated) -->
+                        <div id="order-summary-content" class="space-y-4 mb-6">
+                            <div
+                                class="skeleton h-4 w-3/4 bg-white/10 rounded animate-pulse"
+                            >
+                            </div>
+                            <div
+                                class="skeleton h-4 w-1/2 bg-white/10 rounded animate-pulse"
+                            >
+                            </div>
+                        </div>
+
+                        <div class="border-t border-white/10 pt-4 mb-6">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-gray-400">Subtotal</span>
+                                <span
+                                    class="text-white font-medium"
+                                    id="summary-subtotal">--</span
+                                >
+                            </div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-gray-400">Taxes</span>
+                                <span class="text-white font-medium">$0.00</span
+                                >
+                            </div>
+                            <div
+                                class="flex justify-between items-center pt-2 border-t border-white/10 mt-2"
+                            >
+                                <span class="text-white font-bold text-lg"
+                                    >Total</span
+                                >
+                                <span
+                                    class="text-brand-orange font-black text-2xl"
+                                    id="summary-total">--</span
+                                >
+                            </div>
+                        </div>
+
+                        <button
+                            id="pay-button-desktop"
+                            class="hidden md:flex w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-95 items-center justify-center gap-2"
+                        >
+                            Pay Securely
+                            <svg
+                                class="w-5 h-5"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                ><path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                                ></path>
+                            </svg>
+                        </button>
+
+                        <div id="mobile-checkout-summary" class="md:hidden sticky bottom-4 left-0 right-0 z-50 px-2 pointer-events-none">
+                            <div class="bg-primary/95 backdrop-blur-md rounded-2xl p-3 shadow-2xl border border-white/20 flex items-center gap-3 pointer-events-auto">
+                                <div class="min-w-[80px]">
+                                    <p class="text-[9px] text-white/70 uppercase font-black tracking-wider leading-none mb-1">Total</p>
+                                    <p class="text-lg font-black text-white leading-none whitespace-nowrap" id="mobile-summary-total">--</p>
+                                </div>
+                                <button
+                                    id="mobile-pay-trigger"
+                                    class="flex-1 bg-white text-primary font-black px-4 py-3 rounded-xl text-xs uppercase tracking-tighter transition-all active:scale-95 shadow-lg truncate"
+                                >
+                                    PAY NOW
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="fixed inset-0 z-[100] flex items-center justify-center px-6 hidden opacity-0 transition-opacity duration-500">
+        <div class="absolute inset-0 bg-dark/80 backdrop-blur-sm"></div>
+        <div class="relative bg-dark-soft border border-white/10 rounded-[32px] p-8 md:p-12 max-w-lg w-full shadow-2xl scale-95 transition-transform duration-500 overflow-hidden group">
+            <!-- Animated Background Glow -->
+            <div class="absolute -top-24 -right-24 w-48 h-48 bg-primary/20 blur-[80px] rounded-full"></div>
+            <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-green-500/10 blur-[80px] rounded-full"></div>
+
+            <div class="text-center relative z-10">
+                <!-- Premium Checkmark Animation -->
+                <div class="mb-8 flex justify-center">
+                    <div class="w-24 h-24 bg-green-500/10 rounded-full flex items-center justify-center border border-green-500/20 relative">
+                        <div class="absolute inset-0 bg-green-500/20 blur-2xl rounded-full scale-0 group-hover:scale-100 transition-transform duration-1000"></div>
+                        <svg class="w-12 h-12 text-green-500 success-checkmark" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" class="checkmark-path"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <h2 class="text-4xl font-black text-white mb-4 tracking-tighter uppercase">Booking Received!</h2>
+                <p class="text-gray-400 font-medium mb-8 leading-relaxed">
+                    Thank you for choosing Vamos Jacó. Our team will contact you via <span class="text-green-500 font-bold">WhatsApp</span> shortly to confirm your adventure and finalize the details.
+                </p>
+
+                <div class="space-y-4">
+                    <a href="/" class="block w-full bg-white text-dark font-black py-4 rounded-2xl hover:bg-gray-100 transition-all active:scale-95 text-sm uppercase tracking-widest shadow-xl">
+                        Return Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .checkmark-path {
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+            animation: dash 0.8s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+            animation-delay: 0.5s;
+        }
+
+        @keyframes dash {
+            from { stroke-dashoffset: 100; }
+            to { stroke-dashoffset: 0; }
+        }
+
+        .success-btn-vibe {
+            background-color: #22c55e !important;
+            box-shadow: 0 10px 30px -5px rgba(34, 197, 94, 0.4) !important;
+        }
+        
+        #success-modal.show {
+            display: flex !important;
+            opacity: 1;
+        }
+        #success-modal.show > div:last-child {
+            transform: scale(1);
+        }
+    </style>
+</Layout>
+
+<script>
+    import { bookingStore } from "../store/booking";
+    import { language } from "../store";
+
+    // Selectors
+    const summaryContainer = document.getElementById("order-summary-content");
+    const totalEl = document.getElementById("summary-total");
+    const subtotalEl = document.getElementById("summary-subtotal");
+    const taxesEl = document.querySelector("#summary-total")?.parentElement?.previousElementSibling?.querySelector("span:last-child");
+    const mobileTotalEl = document.getElementById("mobile-summary-total");
+    const desktopPayBtn = document.getElementById("pay-button-desktop") as HTMLButtonElement;
+    const mobilePayBtn = document.getElementById("mobile-pay-trigger") as HTMLButtonElement;
+
+    // Form inputs
+    const inputFirstName = document.getElementById("input-firstName") as HTMLInputElement;
+    const inputLastName = document.getElementById("input-lastName") as HTMLInputElement;
+    const inputEmail = document.getElementById("input-email") as HTMLInputElement;
+    const inputPhone = document.getElementById("input-phone") as HTMLInputElement;
+    const errorFirstName = document.getElementById("error-firstName");
+    const errorLastName = document.getElementById("error-lastName");
+    const errorEmail = document.getElementById("error-email");
+    const errorPhone = document.getElementById("error-phone");
+
+    const formFields = [
+        { input: inputFirstName, error: errorFirstName },
+        { input: inputLastName, error: errorLastName },
+        { input: inputEmail, error: errorEmail },
+        { input: inputPhone, error: errorPhone },
+    ];
+
+    // Clear error state on input
+    formFields.forEach(({ input, error }) => {
+        input?.addEventListener("input", () => {
+            input.classList.remove("border-primary", "bg-primary/5");
+            input.classList.add("border-white/10");
+            error?.classList.add("hidden");
+        });
+    });
+
+    // Validate form and highlight empty fields
+    const validateForm = (): boolean => {
+        let isValid = true;
+
+        formFields.forEach(({ input, error }) => {
+            if (!input) return;
+            const value = input.value.trim();
+            // Email validation
+            const isEmailField = input.type === "email";
+            const isEmpty = !value;
+            const isInvalidEmail = isEmailField && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
+            if (isEmpty || isInvalidEmail) {
+                input.classList.add("border-primary", "bg-primary/5");
+                input.classList.remove("border-white/10");
+                error?.classList.remove("hidden");
+                isValid = false;
+            } else {
+                input.classList.remove("border-primary", "bg-primary/5");
+                input.classList.add("border-white/10");
+                error?.classList.add("hidden");
+            }
+        });
+
+        if (!isValid) {
+            // Scroll to first error
+            const firstError = document.querySelector(".border-primary");
+            firstError?.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+
+        return isValid;
+    };
+
+    // Helper for updating pay buttons state
+    const setPayButtonsLoading = (isLoading: boolean) => {
+        const btns = [desktopPayBtn, mobilePayBtn];
+        btns.forEach(btn => {
+            if (btn) {
+                btn.disabled = isLoading;
+                btn.innerText = isLoading ? "Processing..." : "Pay Securely";
+            }
+        });
+    };
+
+    // Subscribe to store
+    bookingStore.subscribe((state) => {
+        if (summaryContainer && state.tourId) {
+            const isVehicleTour = state.tourId === 'side-by-side-tour' || state.tourId === 'jet-ski-tour' || state.tourId === 'jaco-atv-adventure';
+            
+            let guestsHtml = `${state.adults} Adults, ${state.children} Kids`;
+            if (isVehicleTour) {
+                const vehicleName = state.tourId === 'side-by-side-tour' ? 'Buggies' : (state.tourId === 'jet-ski-tour' ? 'Jet Skis' : 'ATVs');
+                guestsHtml = `${state.adults} ${vehicleName}, ${state.extraPassengers} Extra Pax`;
+            }
+
+            // Update Main Summary List
+            summaryContainer.innerHTML = `
+                <div class="flex gap-3 mb-4">
+                    <div class="flex-1">
+                        <h4 class="text-white font-bold leading-tight mb-1">${state.tourTitle || "Selected Tour"}</h4>
+                        <p class="text-xs text-gray-400">Date: ${state.date ? new Date(state.date).toLocaleDateString() : "Not selected"}</p>
+                    </div>
+                </div>
+                <div class="flex justify-between text-sm mb-4">
+                    <span class="text-gray-300">Selection</span>
+                    <span class="text-white font-medium">${guestsHtml}</span>
+                </div>
+            `;
+            
+            // Update Prices
+            const subtotal = state.totalPrice - state.ivaAmount;
+            if (subtotalEl) subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
+            if (taxesEl) taxesEl.textContent = `$${state.ivaAmount.toFixed(2)}`;
+            if (totalEl) totalEl.textContent = `$${state.totalPrice.toFixed(2)}`;
+            if (mobileTotalEl) mobileTotalEl.textContent = `$${state.totalPrice.toFixed(2)}`;
+
+        } else if (summaryContainer) {
+            summaryContainer.innerHTML = `<p class="text-gray-500 text-sm">No tour selected.</p>`;
+        }
+    });
+
+    // Payment Logic
+    const handlePayment = async () => {
+        const state = bookingStore.get();
+        const currentLang = language.get();
+        if (!state.tourId) {
+            alert("Please select a tour first.");
+            return;
+        }
+
+        if (!validateForm()) return;
+
+        try {
+            setPayButtonsLoading(true);
+
+            const formData = {
+                firstName: inputFirstName.value.trim(),
+                lastName: inputLastName.value.trim(),
+                email: inputEmail.value.trim(),
+                phone: inputPhone.value.trim(),
+            };
+
+            const res = await fetch("/api/bookings/create", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    customerName: `${formData.firstName} ${formData.lastName}`,
+                    customerEmail: formData.email,
+                    customerPhone: formData.phone,
+                    tourId: state.tourId,
+                    tourName: state.tourTitle,
+                    date: state.date,
+                    totalAmount: state.totalPrice,
+                    adults: state.adults,
+                    children: state.children,
+                    paymentMethod: 'card',
+                    language: currentLang
+                }),
+            });
+
+            const data = await res.json();
+            if (data.success && data.requiresRedirect && data.paymentUrl) {
+                window.location.href = data.paymentUrl;
+            } else {
+                alert("Payment initialization failed: " + (data.message || "Unknown error"));
+            }
+        } catch (e) {
+            console.error(e);
+            alert("An error occurred. Please try again.");
+        } finally {
+            setPayButtonsLoading(false);
+        }
+    };
+
+    [desktopPayBtn, mobilePayBtn].forEach(btn => {
+        if (btn) btn.addEventListener("click", handlePayment);
+    });
+</script>

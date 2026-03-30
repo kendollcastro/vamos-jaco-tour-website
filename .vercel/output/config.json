@@ -1,0 +1,104 @@
+{
+	"version": 3,
+	"routes": [
+		{
+			"handle": "filesystem"
+		},
+		{
+			"src": "^/_astro/(.*)$",
+			"headers": {
+				"cache-control": "public, max-age=31536000, immutable"
+			},
+			"continue": true
+		},
+		{
+			"src": "^/_server-islands/([^/]+?)/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/_image/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/404/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/about/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/admin/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/admin/settings/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/admin/test-email/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/bookings/create/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/media/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/newsletter/subscribe/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/tilopay/callback/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/tilopay-webhook/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/brief/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/checkout/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/contact/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/design-system/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/payment-failure/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/payment-success/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/tours/([^/]+?)/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/tours/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/.*$",
+			"dest": "_render",
+			"status": 404
+		}
+	]
+}
