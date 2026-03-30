@@ -30,7 +30,7 @@ export interface TourRow {
 
 /* ─── Row → Tour mapper ───────────────────────────────────── */
 function mapRowToTour(row: TourRow): Tour {
-    const validCategories: TourCategory[] = ['atv', 'water', 'nature', 'extreme', 'relax'];
+    const validCategories: TourCategory[] = ['atv', 'water', 'nature', 'extreme', 'relax', 'canopy', 'combos'];
     const category = validCategories.includes(row.category as TourCategory)
         ? (row.category as TourCategory)
         : 'nature';

@@ -1,7 +1,7 @@
 import { f as createComponent, l as renderComponent, r as renderTemplate, m as maybeRenderHead, h as addAttribute } from '../chunks/astro/server_DYRfXif5.mjs';
 import 'piccolore';
 import { l as language, $ as $$Layout } from '../chunks/Layout_DxykCy69.mjs';
-import { f as fetchWPAPI, A as AboutSection, T as TeamSection, a as TrustBar, F as FaqSection } from '../chunks/wp_D1iCmXQ6.mjs';
+import { f as fetchWPAPI, A as AboutSection, T as TeamSection, a as TrustBar, F as FaqSection } from '../chunks/wp_DJMzJKTt.mjs';
 import { jsx, jsxs } from 'react/jsx-runtime';
 import { useState, useEffect } from 'react';
 import { useStore } from '@nanostores/react';
