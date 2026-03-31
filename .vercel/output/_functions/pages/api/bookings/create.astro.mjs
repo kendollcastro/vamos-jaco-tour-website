@@ -103,10 +103,15 @@ async function calculateServerPrice(params) {
   let childPrice = 0;
   if (supabaseAdmin) {
     try {
-      const { data: tour, error } = await supabaseAdmin.from("tours").select("price, child_price").eq("slug", tourId).single();
+      const { data: tour, error } = await supabaseAdmin.from("tours").select("price_base, pricing_options").eq("slug", tourId).single();
       if (!error && tour) {
-        adultPrice = tour.price || 0;
-        childPrice = tour.child_price || 0;
+        adultPrice = tour.price_base || 0;
+        if (Array.isArray(tour.pricing_options)) {
+          const childOpt = tour.pricing_options.find(
+            (o) => o.duration?.toLowerCase().includes("child") || o.duration?.toLowerCase().includes("niño")
+          );
+          if (childOpt) childPrice = childOpt.price;
+        }
       }
     } catch (err) {
       console.error("Failed to fetch tour price from DB:", err);

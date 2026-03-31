@@ -1,13 +1,11 @@
 import { e as createAstro, f as createComponent, l as renderComponent, n as renderScript, r as renderTemplate, m as maybeRenderHead, h as addAttribute } from '../../chunks/astro/server_DYRfXif5.mjs';
 import 'piccolore';
-import { l as language, $ as $$Layout } from '../../chunks/Layout_DxykCy69.mjs';
-import { g as getTourById, a as getAllTours, T as TourCard } from '../../chunks/TourCard_COpSl_xu.mjs';
+import { l as language, $ as $$Layout } from '../../chunks/Layout_DvTG7lIH.mjs';
+import { g as getTourById, a as getAllTours, T as TourCard } from '../../chunks/TourCard_Dh4UBp2G.mjs';
 import { d as getTourSchema, a as getBreadcrumbSchema } from '../../chunks/seo-schemas_BZJstb5R.mjs';
-import { N as NewsletterSection } from '../../chunks/NewsletterSection_srBEqa-A.mjs';
+import { N as NewsletterSection } from '../../chunks/NewsletterSection_CPB_P4DH.mjs';
 import { jsx, Fragment, jsxs } from 'react/jsx-runtime';
-import React, { useState, useMemo, useEffect } from 'react';
-import DatePicker from 'react-datepicker';
-/* empty css                                   */
+import React, { lazy, useState, useEffect, useMemo, Suspense } from 'react';
 import { useStore } from '@nanostores/react';
 import { persistentAtom } from '@nanostores/persistent';
 import { Calendar, Clock, ChevronUp, ChevronDown, CheckCircle, Info, Users, Minus, Plus, Flag, ShieldCheck } from 'lucide-react';
@@ -105,11 +103,19 @@ function TranslatedText({ content, fallback = "", className, as: Component = "sp
   return React.createElement(Component, { className }, text);
 }
 
+const DatePicker = lazy(() => import('react-datepicker').then((mod) => {
+  Promise.resolve({                              });
+  return mod;
+}));
 function BookingSidebar({ tourId, tourTitle, price, durationOptions }) {
   const $booking = useStore(bookingStore);
   const $language = useStore(language);
   const [selectedDurationIdx, setSelectedDurationIdx] = useState(0);
   const [durationOpen, setDurationOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const rawOptions = durationOptions && durationOptions.length > 0 ? durationOptions : [{ duration: "Standard Tour", price: price || 0 }];
   const packages = useMemo(() => {
     const pkgMap = /* @__PURE__ */ new Map();
@@ -147,7 +153,6 @@ function BookingSidebar({ tourId, tourTitle, price, durationOptions }) {
     setBookingTour(tourId, tourTitle, packages[index].adultPrice, packages[index].childPrice);
   };
   const handleDateChange = (date) => {
-    console.log("BookingSidebar: Date changed:", date);
     if (date) {
       setBookingDate(date);
     }
@@ -238,7 +243,15 @@ function BookingSidebar({ tourId, tourTitle, price, durationOptions }) {
           " ",
           /* @__PURE__ */ jsx(TranslatedText, { content: { en: "Date", es: "Fecha" } })
         ] }),
-        /* @__PURE__ */ jsx("div", { className: "relative", children: /* @__PURE__ */ jsx(
+        /* @__PURE__ */ jsx("div", { className: "relative", children: mounted ? /* @__PURE__ */ jsx(Suspense, { fallback: /* @__PURE__ */ jsx(
+          "input",
+          {
+            type: "date",
+            readOnly: true,
+            placeholder: "Loading calendar...",
+            className: "w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 cursor-wait shadow-inner"
+          }
+        ), children: /* @__PURE__ */ jsx(
           DatePicker,
           {
             selected: $booking.date ? new Date($booking.date) : null,
@@ -250,6 +263,14 @@ function BookingSidebar({ tourId, tourTitle, price, durationOptions }) {
             placeholderText: "Select a date",
             className: "w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors cursor-pointer shadow-inner",
             wrapperClassName: "w-full"
+          }
+        ) }) : /* @__PURE__ */ jsx(
+          "input",
+          {
+            type: "text",
+            readOnly: true,
+            placeholder: "Select a date",
+            className: "w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 cursor-pointer shadow-inner"
           }
         ) }),
         !$booking.date && /* @__PURE__ */ jsxs("div", { className: "bg-primary/10 border border-primary/20 rounded-lg p-2 flex items-center gap-2 mt-1", children: [
@@ -263,55 +284,49 @@ function BookingSidebar({ tourId, tourTitle, price, durationOptions }) {
           " ",
           /* @__PURE__ */ jsx(TranslatedText, { content: { en: "Guests", es: "Huéspedes" } })
         ] }),
-        tourId === "side-by-side-tour" || tourId === "jet-ski-tour" || tourId === "jaco-atv-adventure" ? (
-          /* Machine-Based Selection */
-          /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
-            /* @__PURE__ */ jsx(
-              Stepper,
-              {
-                label: tourId === "side-by-side-tour" ? $language === "en" ? "Buggies (up to 2pax)" : "Buggies (hasta 2p)" : tourId === "jet-ski-tour" ? $language === "en" ? "Jet Skis (Solo)" : "Jet Skis (Solo)" : $language === "en" ? "ATVs (Solo)" : "ATVs (Solo)",
-                value: $booking.adults,
-                min: 1,
-                max: 10,
-                onChange: (val) => setGuests(val, 0)
-              }
-            ),
-            /* @__PURE__ */ jsx(
-              Stepper,
-              {
-                label: tourId === "side-by-side-tour" ? $language === "en" ? "Extra Pax (3rd/4th)" : "Pax Extra (3ro/4to)" : $language === "en" ? "Shared Pax (2nd)" : "Acompañante (2do)",
-                value: $booking.extraPassengers,
-                min: 0,
-                max: tourId === "side-by-side-tour" ? $booking.adults * 2 : $booking.adults,
-                onChange: (val) => setExtraPassengers(val)
-              }
-            )
-          ] })
-        ) : (
-          /* Standard Selection */
-          /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
-            /* @__PURE__ */ jsx(
-              Stepper,
-              {
-                label: $language === "en" ? "Adults" : "Adultos",
-                value: $booking.adults,
-                min: 1,
-                max: 20,
-                onChange: (val) => setGuests(val, $booking.children)
-              }
-            ),
-            packages[selectedDurationIdx]?.childPrice > 0 && /* @__PURE__ */ jsx(
-              Stepper,
-              {
-                label: $language === "en" ? "Children" : "Niños",
-                value: $booking.children,
-                min: 0,
-                max: 20,
-                onChange: (val) => setGuests($booking.adults, val)
-              }
-            )
-          ] })
-        )
+        tourId === "side-by-side-tour" || tourId === "jet-ski-tour" || tourId === "jaco-atv-adventure" ? /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
+          /* @__PURE__ */ jsx(
+            Stepper,
+            {
+              label: tourId === "side-by-side-tour" ? $language === "en" ? "Buggies (up to 2pax)" : "Buggies (hasta 2p)" : tourId === "jet-ski-tour" ? $language === "en" ? "Jet Skis (Solo)" : "Jet Skis (Solo)" : $language === "en" ? "ATVs (Solo)" : "ATVs (Solo)",
+              value: $booking.adults,
+              min: 1,
+              max: 10,
+              onChange: (val) => setGuests(val, 0)
+            }
+          ),
+          /* @__PURE__ */ jsx(
+            Stepper,
+            {
+              label: tourId === "side-by-side-tour" ? $language === "en" ? "Extra Pax (3rd/4th)" : "Pax Extra (3ro/4to)" : $language === "en" ? "Shared Pax (2nd)" : "Acompañante (2do)",
+              value: $booking.extraPassengers,
+              min: 0,
+              max: tourId === "side-by-side-tour" ? $booking.adults * 2 : $booking.adults,
+              onChange: (val) => setExtraPassengers(val)
+            }
+          )
+        ] }) : /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
+          /* @__PURE__ */ jsx(
+            Stepper,
+            {
+              label: $language === "en" ? "Adults" : "Adultos",
+              value: $booking.adults,
+              min: 1,
+              max: 20,
+              onChange: (val) => setGuests(val, $booking.children)
+            }
+          ),
+          packages[selectedDurationIdx]?.childPrice > 0 && /* @__PURE__ */ jsx(
+            Stepper,
+            {
+              label: $language === "en" ? "Children" : "Niños",
+              value: $booking.children,
+              min: 0,
+              max: 20,
+              onChange: (val) => setGuests($booking.adults, val)
+            }
+          )
+        ] })
       ] }),
       (tourId === "side-by-side-tour" || tourId === "jet-ski-tour" || tourId === "jaco-atv-adventure") && /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-2", children: [
         /* @__PURE__ */ jsx("div", { className: "bg-primary/5 border border-primary/20 rounded-xl p-3 text-[10px] text-gray-400", children: /* @__PURE__ */ jsxs("div", { className: "flex gap-2", children: [

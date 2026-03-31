@@ -76,19 +76,33 @@ export async function getAllToursFromSupabase(): Promise<Tour[]> {
 }
 
 export async function getTourBySlug(slug: string): Promise<Tour | null> {
-    if (!supabase) return null;
+    try {
+        if (!supabase) {
+            console.warn('Supabase client not initialized');
+            return null;
+        }
 
-    const { data, error } = await supabase
-        .from('tours')
-        .select('*')
-        .eq('slug', slug)
-        .single();
+        const { data, error } = await supabase
+            .from('tours')
+            .select('*')
+            .eq('slug', slug)
+            .single();
 
-    if (error || !data) {
-        console.error('Supabase getTourBySlug error:', error?.message);
+        if (error) {
+            console.error('Supabase getTourBySlug error:', error.message, error.code);
+            return null;
+        }
+
+        if (!data) {
+            console.warn('No tour found for slug:', slug);
+            return null;
+        }
+
+        return mapRowToTour(data as TourRow);
+    } catch (err) {
+        console.error('getTourBySlug exception:', err);
         return null;
     }
-    return mapRowToTour(data as TourRow);
 }
 
 /* ─── LISTING: Minimal fields for tour cards ─────────────────── */

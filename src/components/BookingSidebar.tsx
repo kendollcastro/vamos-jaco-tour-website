@@ -1,11 +1,14 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import DatePicker from 'react-datepicker';
-import "react-datepicker/dist/react-datepicker.css";
+import React, { useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import { useStore } from '@nanostores/react';
 import { bookingStore, setBookingDate, setBookingTime, setGuests, setBookingTour, setExtraPassengers } from '../store/booking';
 import { Calendar, Users, Clock, CheckCircle, Info, Minus, Plus, ChevronDown, ChevronUp } from 'lucide-react';
 import { language } from '../store';
 import TranslatedText from './TranslatedText';
+
+const DatePicker = lazy(() => import('react-datepicker').then(mod => {
+    import('react-datepicker/dist/react-datepicker.css');
+    return mod;
+}));
 
 interface PricingOption {
     duration: string;
@@ -25,6 +28,9 @@ export default function BookingSidebar({ tourId, tourTitle, price, durationOptio
     const $language = useStore(language);
     const [selectedDurationIdx, setSelectedDurationIdx] = useState(0);
     const [durationOpen, setDurationOpen] = useState(false);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => { setMounted(true); }, []);
 
     const rawOptions = durationOptions && durationOptions.length > 0
         ? durationOptions
@@ -45,7 +51,6 @@ export default function BookingSidebar({ tourId, tourTitle, price, durationOptio
                 baseName = baseName.replace(/\s*-\s*adult.*$/i, '').replace(/\s*-\s*adulto.*/i, '').trim();
             }
 
-            // Cleanup trailing hyphens/spaces
             baseName = baseName.replace(/[-\s]+$/, '');
 
             if (!pkgMap.has(baseName)) {
@@ -64,7 +69,6 @@ export default function BookingSidebar({ tourId, tourTitle, price, durationOptio
         return Array.from(pkgMap.values());
     }, [rawOptions]);
 
-    // Initialize store with tour details on mount
     useEffect(() => {
         if (packages && packages.length > 0) {
             setBookingTour(tourId, tourTitle, packages[0].adultPrice, packages[0].childPrice);
@@ -73,20 +77,13 @@ export default function BookingSidebar({ tourId, tourTitle, price, durationOptio
 
     const handleDurationChange = (index: number) => {
         setSelectedDurationIdx(index);
-        // Update store with new price
         setBookingTour(tourId, tourTitle, packages[index].adultPrice, packages[index].childPrice);
     };
 
     const handleDateChange = (date: Date | null) => {
-        console.log('BookingSidebar: Date changed:', date);
         if (date) {
             setBookingDate(date);
         }
-    };
-
-    const handleGuestsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const val = parseInt(e.target.value) || 1;
-        setGuests(val, $booking.children);
     };
 
     const totalPrice = $booking.totalPrice;
@@ -116,7 +113,6 @@ export default function BookingSidebar({ tourId, tourTitle, price, durationOptio
 
     return (
         <div className="bg-dark/60 backdrop-blur-2xl rounded-2xl border border-white/10 overflow-hidden sticky top-28 shadow-2xl">
-            {/* Header */}
             <div className="bg-gradient-to-r from-primary/20 to-brand-orange/20 px-6 py-4 border-b border-white/10">
                 <h3 className="text-lg font-bold text-white flex items-center gap-2">
                     <Calendar className="w-5 h-5 text-primary" />
@@ -125,7 +121,6 @@ export default function BookingSidebar({ tourId, tourTitle, price, durationOptio
             </div>
 
             <div className="p-6 space-y-5">
-                {/* Duration Selection (Dropdown) */}
                 <div className="space-y-3">
                     <label className="text-sm text-gray-400 font-medium uppercase tracking-wider flex items-center gap-2">
                         <Clock className="w-4 h-4" /> <TranslatedText content={{en: "Select Duration", es: "Seleccionar Duración"}} />
@@ -171,20 +166,36 @@ export default function BookingSidebar({ tourId, tourTitle, price, durationOptio
                         <Calendar className="w-4 h-4" /> <TranslatedText content={{en: "Date", es: "Fecha"}} />
                     </label>
                     <div className="relative">
-                        <DatePicker
-                            selected={$booking.date ? new Date($booking.date) : null}
-                            onChange={(date: Date | null) => {
-                                handleDateChange(date);
-                                // Force state sync to parent/store
-                                if (date) setBookingDate(date);
-                            }}
-                            minDate={new Date()}
-                            placeholderText="Select a date"
-                            className="w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors cursor-pointer shadow-inner"
-                            wrapperClassName="w-full"
-                        />
+                        {mounted ? (
+                            <Suspense fallback={
+                                <input
+                                    type="date"
+                                    readOnly
+                                    placeholder="Loading calendar..."
+                                    className="w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 cursor-wait shadow-inner"
+                                />
+                            }>
+                                <DatePicker
+                                    selected={$booking.date ? new Date($booking.date) : null}
+                                    onChange={(date: Date | null) => {
+                                        handleDateChange(date);
+                                        if (date) setBookingDate(date);
+                                    }}
+                                    minDate={new Date()}
+                                    placeholderText="Select a date"
+                                    className="w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors cursor-pointer shadow-inner"
+                                    wrapperClassName="w-full"
+                                />
+                            </Suspense>
+                        ) : (
+                            <input
+                                type="text"
+                                readOnly
+                                placeholder="Select a date"
+                                className="w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 cursor-pointer shadow-inner"
+                            />
+                        )}
                     </div>
-                    {/* Visual cue if date is missing */}
                     {!$booking.date && (
                         <div className="bg-primary/10 border border-primary/20 rounded-lg p-2 flex items-center gap-2 mt-1">
                             <Info className="w-3 h-3 text-primary" />
@@ -193,14 +204,12 @@ export default function BookingSidebar({ tourId, tourTitle, price, durationOptio
                     )}
                 </div>
 
-                {/* Guests */}
                 <div className="space-y-3">
                     <label className="text-sm text-gray-400 font-medium uppercase tracking-wider flex items-center gap-2">
                         <Users className="w-4 h-4" /> <TranslatedText content={{en: "Guests", es: "Huéspedes"}} />
                     </label>
                     
                     {(tourId === 'side-by-side-tour' || tourId === 'jet-ski-tour' || tourId === 'jaco-atv-adventure') ? (
-                        /* Machine-Based Selection */
                         <div className="grid grid-cols-2 gap-4">
                             <Stepper 
                                 label={tourId === 'side-by-side-tour' 
@@ -227,7 +236,6 @@ export default function BookingSidebar({ tourId, tourTitle, price, durationOptio
                             />
                         </div>
                     ) : (
-                        /* Standard Selection */
                         <div className="grid grid-cols-2 gap-4">
                             <Stepper 
                                 label={$language === 'en' ? "Adults" : "Adultos"}
@@ -250,10 +258,8 @@ export default function BookingSidebar({ tourId, tourTitle, price, durationOptio
                     )}
                 </div>
                 
-                {/* Security Deposit & Occupancy Note */}
                 {(tourId === 'side-by-side-tour' || tourId === 'jet-ski-tour' || tourId === 'jaco-atv-adventure') && (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-2">
-                        {/* Occupancy Note */}
                         <div className="bg-primary/5 border border-primary/20 rounded-xl p-3 text-[10px] text-gray-400">
                             <div className="flex gap-2">
                                 <Info className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
@@ -271,7 +277,6 @@ export default function BookingSidebar({ tourId, tourTitle, price, durationOptio
                             </div>
                         </div>
 
-                        {/* Security Hold Note */}
                         <div className="bg-blue-500/5 border border-blue-500/20 rounded-xl p-3 text-[10px] text-gray-400">
                             <div className="flex gap-2">
                                 <Info className="w-3.5 h-3.5 text-blue-400 shrink-0 mt-0.5" />
@@ -291,7 +296,6 @@ export default function BookingSidebar({ tourId, tourTitle, price, durationOptio
                     </div>
                 )}
 
-                {/* Total & CTA */}
                 <div className="pt-6 border-t border-white/10 space-y-4">
                     <div className="flex justify-between items-end">
                         <span className="text-gray-400 text-sm"><TranslatedText content={{en: "Total Price", es: "Precio Total"}} /></span>

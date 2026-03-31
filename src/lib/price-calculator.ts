@@ -43,13 +43,20 @@ export async function calculateServerPrice(params: CalculatePriceParams): Promis
         try {
             const { data: tour, error } = await supabaseAdmin
                 .from('tours')
-                .select('price, child_price')
+                .select('price_base, pricing_options')
                 .eq('slug', tourId)
                 .single();
             
             if (!error && tour) {
-                adultPrice = tour.price || 0;
-                childPrice = tour.child_price || 0;
+                adultPrice = tour.price_base || 0;
+
+                // Extract child price from pricing_options if available
+                if (Array.isArray(tour.pricing_options)) {
+                    const childOpt = tour.pricing_options.find((o: any) =>
+                        o.duration?.toLowerCase().includes('child') || o.duration?.toLowerCase().includes('niño')
+                    );
+                    if (childOpt) childPrice = childOpt.price;
+                }
             }
         } catch (err) {
             console.error('Failed to fetch tour price from DB:', err);
