@@ -40,6 +40,7 @@ export const POST: APIRoute = async ({ request }) => {
             language = 'en'
         } = body;
 
+
         // 1. Validation
         if (!customerName || !customerEmail || !tourId || !date) {
             return new Response(JSON.stringify({ message: 'Missing required fields' }), { 

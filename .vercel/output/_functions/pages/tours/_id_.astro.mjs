@@ -1,11 +1,11 @@
 import { e as createAstro, f as createComponent, l as renderComponent, n as renderScript, r as renderTemplate, m as maybeRenderHead, h as addAttribute } from '../../chunks/astro/server_DYRfXif5.mjs';
 import 'piccolore';
-import { l as language, $ as $$Layout } from '../../chunks/Layout_DvTG7lIH.mjs';
-import { g as getTourById, a as getAllTours, T as TourCard } from '../../chunks/TourCard_Dh4UBp2G.mjs';
+import { l as language, $ as $$Layout } from '../../chunks/Layout_DxykCy69.mjs';
+import { g as getTourById, a as getAllTours, T as TourCard } from '../../chunks/TourCard_-8PE7gJ-.mjs';
 import { d as getTourSchema, a as getBreadcrumbSchema } from '../../chunks/seo-schemas_BZJstb5R.mjs';
-import { N as NewsletterSection } from '../../chunks/NewsletterSection_CPB_P4DH.mjs';
+import { N as NewsletterSection } from '../../chunks/NewsletterSection_srBEqa-A.mjs';
 import { jsx, Fragment, jsxs } from 'react/jsx-runtime';
-import React, { lazy, useState, useEffect, useMemo, Suspense } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useStore } from '@nanostores/react';
 import { persistentAtom } from '@nanostores/persistent';
 import { Calendar, Clock, ChevronUp, ChevronDown, CheckCircle, Info, Users, Minus, Plus, Flag, ShieldCheck } from 'lucide-react';
@@ -103,18 +103,18 @@ function TranslatedText({ content, fallback = "", className, as: Component = "sp
   return React.createElement(Component, { className }, text);
 }
 
-const DatePicker = lazy(() => import('react-datepicker').then((mod) => {
-  Promise.resolve({                              });
-  return mod;
-}));
 function BookingSidebar({ tourId, tourTitle, price, durationOptions }) {
   const $booking = useStore(bookingStore);
   const $language = useStore(language);
   const [selectedDurationIdx, setSelectedDurationIdx] = useState(0);
   const [durationOpen, setDurationOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const [DatePickerComp, setDatePickerComp] = useState(null);
   useEffect(() => {
-    setMounted(true);
+    import('react-datepicker').then((mod) => {
+      Promise.resolve({                              });
+      setDatePickerComp(() => mod.default);
+    }).catch(() => {
+    });
   }, []);
   const rawOptions = durationOptions && durationOptions.length > 0 ? durationOptions : [{ duration: "Standard Tour", price: price || 0 }];
   const packages = useMemo(() => {
@@ -243,16 +243,8 @@ function BookingSidebar({ tourId, tourTitle, price, durationOptions }) {
           " ",
           /* @__PURE__ */ jsx(TranslatedText, { content: { en: "Date", es: "Fecha" } })
         ] }),
-        /* @__PURE__ */ jsx("div", { className: "relative", children: mounted ? /* @__PURE__ */ jsx(Suspense, { fallback: /* @__PURE__ */ jsx(
-          "input",
-          {
-            type: "date",
-            readOnly: true,
-            placeholder: "Loading calendar...",
-            className: "w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 cursor-wait shadow-inner"
-          }
-        ), children: /* @__PURE__ */ jsx(
-          DatePicker,
+        /* @__PURE__ */ jsx("div", { className: "relative", children: DatePickerComp ? /* @__PURE__ */ jsx(
+          DatePickerComp,
           {
             selected: $booking.date ? new Date($booking.date) : null,
             onChange: (date) => {
@@ -264,7 +256,7 @@ function BookingSidebar({ tourId, tourTitle, price, durationOptions }) {
             className: "w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors cursor-pointer shadow-inner",
             wrapperClassName: "w-full"
           }
-        ) }) : /* @__PURE__ */ jsx(
+        ) : /* @__PURE__ */ jsx(
           "input",
           {
             type: "text",

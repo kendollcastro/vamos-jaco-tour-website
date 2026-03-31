@@ -1,14 +1,9 @@
-import React, { useState, useEffect, useMemo, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useStore } from '@nanostores/react';
 import { bookingStore, setBookingDate, setBookingTime, setGuests, setBookingTour, setExtraPassengers } from '../store/booking';
 import { Calendar, Users, Clock, CheckCircle, Info, Minus, Plus, ChevronDown, ChevronUp } from 'lucide-react';
 import { language } from '../store';
 import TranslatedText from './TranslatedText';
-
-const DatePicker = lazy(() => import('react-datepicker').then(mod => {
-    import('react-datepicker/dist/react-datepicker.css');
-    return mod;
-}));
 
 interface PricingOption {
     duration: string;
@@ -28,9 +23,14 @@ export default function BookingSidebar({ tourId, tourTitle, price, durationOptio
     const $language = useStore(language);
     const [selectedDurationIdx, setSelectedDurationIdx] = useState(0);
     const [durationOpen, setDurationOpen] = useState(false);
-    const [mounted, setMounted] = useState(false);
+    const [DatePickerComp, setDatePickerComp] = useState<any>(null);
 
-    useEffect(() => { setMounted(true); }, []);
+    useEffect(() => {
+        import('react-datepicker').then(mod => {
+            import('react-datepicker/dist/react-datepicker.css');
+            setDatePickerComp(() => mod.default);
+        }).catch(() => {});
+    }, []);
 
     const rawOptions = durationOptions && durationOptions.length > 0
         ? durationOptions
@@ -166,27 +166,18 @@ export default function BookingSidebar({ tourId, tourTitle, price, durationOptio
                         <Calendar className="w-4 h-4" /> <TranslatedText content={{en: "Date", es: "Fecha"}} />
                     </label>
                     <div className="relative">
-                        {mounted ? (
-                            <Suspense fallback={
-                                <input
-                                    type="date"
-                                    readOnly
-                                    placeholder="Loading calendar..."
-                                    className="w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 cursor-wait shadow-inner"
-                                />
-                            }>
-                                <DatePicker
-                                    selected={$booking.date ? new Date($booking.date) : null}
-                                    onChange={(date: Date | null) => {
-                                        handleDateChange(date);
-                                        if (date) setBookingDate(date);
-                                    }}
-                                    minDate={new Date()}
-                                    placeholderText="Select a date"
-                                    className="w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors cursor-pointer shadow-inner"
-                                    wrapperClassName="w-full"
-                                />
-                            </Suspense>
+                        {DatePickerComp ? (
+                            <DatePickerComp
+                                selected={$booking.date ? new Date($booking.date) : null}
+                                onChange={(date: Date | null) => {
+                                    handleDateChange(date);
+                                    if (date) setBookingDate(date);
+                                }}
+                                minDate={new Date()}
+                                placeholderText="Select a date"
+                                className="w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors cursor-pointer shadow-inner"
+                                wrapperClassName="w-full"
+                            />
                         ) : (
                             <input
                                 type="text"
