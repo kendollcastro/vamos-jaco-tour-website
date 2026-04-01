@@ -410,7 +410,6 @@ import Layout from "../layouts/Layout.astro";
     const handlePayment = async () => {
         const state = bookingStore.get();
         const currentLang = language.get();
-        console.log('BOOKING_STORE_STATE:', JSON.stringify(state));
         if (!state.tourId) {
             alert("Please select a tour first.");
             return;
@@ -428,7 +427,10 @@ import Layout from "../layouts/Layout.astro";
                 phone: inputPhone.value.trim(),
             };
 
-            const requestBody = {
+            const res = await fetch("/api/bookings/create", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
                     customerName: `${formData.firstName} ${formData.lastName}`,
                     customerEmail: formData.email,
                     customerPhone: formData.phone,
@@ -440,20 +442,14 @@ import Layout from "../layouts/Layout.astro";
                     children: state.children,
                     paymentMethod: 'card',
                     language: currentLang
-                };
-            console.log('BOOKING_REQUEST:', requestBody);
-            const res = await fetch("/api/bookings/create", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(requestBody),
+                }),
             });
 
             const data = await res.json();
-            console.log('BOOKING_RESPONSE:', JSON.stringify(data));
             if (data.success && data.requiresRedirect && data.paymentUrl) {
                 window.location.href = data.paymentUrl;
             } else {
-                alert("Error: " + (data.message || "Unknown") + "\n\nReceived: " + JSON.stringify(data.received || {}));
+                alert("Payment initialization failed: " + (data.message || "Unknown error"));
             }
         } catch (e) {
             console.error(e);

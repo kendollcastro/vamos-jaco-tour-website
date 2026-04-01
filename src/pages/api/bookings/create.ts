@@ -25,7 +25,6 @@ export const POST: APIRoute = async ({ request }) => {
 
     try {
         const body = await request.json();
-        console.log('BOOKING_DEBUG:', JSON.stringify(body));
         const {
             customerName,
             customerEmail,
@@ -73,10 +72,10 @@ export const POST: APIRoute = async ({ request }) => {
         });
 
         if (!priceResult.isValid) {
+            console.warn(`Price validation failed for tour: ${tourId}`);
             return new Response(JSON.stringify({ 
                 success: false,
-                message: `Tour not found: "${tourId}"`,
-                received: { tourId, adults, children, totalAmount }
+                message: 'Unable to verify tour pricing' 
             }), { 
                 status: 400,
                 headers: { 'Content-Type': 'application/json' }

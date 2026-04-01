@@ -103,8 +103,12 @@ async function calculateServerPrice(params) {
   let childPrice = 0;
   if (supabaseAdmin) {
     try {
-      const { data: tour, error } = await supabaseAdmin.from("tours").select("price_base, pricing_options").eq("slug", tourId).single();
-      if (!error && tour) {
+      let { data: tour, error } = await supabaseAdmin.from("tours").select("price_base, pricing_options").eq("slug", tourId).single();
+      if (error || !tour) {
+        const result = await supabaseAdmin.from("tours").select("price_base, pricing_options").eq("id", tourId).single();
+        tour = result.data;
+      }
+      if (tour) {
         adultPrice = tour.price_base || 0;
         if (Array.isArray(tour.pricing_options)) {
           const childOpt = tour.pricing_options.find(
@@ -159,7 +163,6 @@ const POST = async ({ request }) => {
   }
   try {
     const body = await request.json();
-    console.log("BOOKING_DEBUG:", JSON.stringify(body));
     const {
       customerName,
       customerEmail,
@@ -197,10 +200,10 @@ const POST = async ({ request }) => {
       extraPassengers: extraPassengers || 0
     });
     if (!priceResult.isValid) {
+      console.warn(`Price validation failed for tour: ${tourId}`);
       return new Response(JSON.stringify({
         success: false,
-        message: `Tour not found: "${tourId}"`,
-        received: { tourId, adults, children, totalAmount }
+        message: "Unable to verify tour pricing"
       }), {
         status: 400,
         headers: { "Content-Type": "application/json" }

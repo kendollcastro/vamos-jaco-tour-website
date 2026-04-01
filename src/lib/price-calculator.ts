@@ -41,13 +41,24 @@ export async function calculateServerPrice(params: CalculatePriceParams): Promis
     // Try to get prices from Supabase first
     if (supabaseAdmin) {
         try {
-            const { data: tour, error } = await supabaseAdmin
+            // Try by slug first, then by UUID
+            let { data: tour, error } = await supabaseAdmin
                 .from('tours')
                 .select('price_base, pricing_options')
                 .eq('slug', tourId)
                 .single();
             
-            if (!error && tour) {
+            if (error || !tour) {
+                // Fallback: try by UUID
+                const result = await supabaseAdmin
+                    .from('tours')
+                    .select('price_base, pricing_options')
+                    .eq('id', tourId)
+                    .single();
+                tour = result.data;
+            }
+            
+            if (tour) {
                 adultPrice = tour.price_base || 0;
 
                 // Extract child price from pricing_options if available
