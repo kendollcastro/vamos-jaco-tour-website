@@ -1,8 +1,8 @@
 import { f as createComponent, l as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_DYRfXif5.mjs';
 import 'piccolore';
-import { l as language, $ as $$Layout } from '../chunks/Layout_CYIdTRJl.mjs';
-import { a as getAllTours } from '../chunks/TourCard_CeAYqu14.mjs';
-import { f as fetchWPAPI, a as TrustBar, A as AboutSection, T as TeamSection, F as FaqSection } from '../chunks/wp_DOMtdMoc.mjs';
+import { l as language, $ as $$Layout } from '../chunks/Layout_BWPnv4y3.mjs';
+import { a as getAllTours } from '../chunks/TourCard_C2_vFDrm.mjs';
+import { f as fetchWPAPI, a as TrustBar, A as AboutSection, T as TeamSection, F as FaqSection } from '../chunks/wp_Bm5V8hYr.mjs';
 import { g as getTeamMembers } from '../chunks/supabase-team_Dc6PVDSG.mjs';
 import { g as getWebsiteComponent } from '../chunks/supabase-components_CFZRylM8.mjs';
 import { g as getOrganizationSchema, e as getWebsiteSchema, b as getFAQSchema } from '../chunks/seo-schemas_BZJstb5R.mjs';
@@ -10,11 +10,11 @@ import { jsx, jsxs } from 'react/jsx-runtime';
 import { useState, useRef, useEffect } from 'react';
 import { useStore } from '@nanostores/react';
 import { MapPin, Calendar, Users, Search, Play, ChevronDown, Flame, Mountain, Shield, Zap, ArrowRight, Star, ChevronLeft, ChevronRight, ShieldAlert, Route, AlertTriangle, Hand, FileText } from 'lucide-react';
-import { T as TourFilter } from '../chunks/TourFilter_BJRZ89E0.mjs';
+import { T as TourFilter } from '../chunks/TourFilter_C1EiTlM5.mjs';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Autoplay } from 'swiper/modules';
 /* empty css                                 */
-import { N as NewsletterSection } from '../chunks/NewsletterSection_Cm2GYHmU.mjs';
+import { N as NewsletterSection } from '../chunks/NewsletterSection_DNFTLzwv.mjs';
 import { S as ScrollReveal } from '../chunks/ScrollReveal_CEJ16IzC.mjs';
 export { renderers } from '../renderers.mjs';
 

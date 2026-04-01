@@ -29,10 +29,10 @@ try {
     console.error("Failed to fetch all tours:", e);
 }
 
-// Related tours: same category, excluding current
-const relatedTours = allTours
-    .filter((t) => t.category === tour.category && t.id !== tour.id)
-    .slice(0, 3);
+// Related tours: same category first, then fill with others, exclude current
+const sameTours = allTours.filter((t) => t.category === tour.category && t.id !== tour.id);
+const otherTours = allTours.filter((t) => t.category !== tour.category && t.id !== tour.id);
+const relatedTours = [...sameTours, ...otherTours].slice(0, 3);
 
 // SEO schemas
 const tourSchema = getTourSchema({
@@ -358,23 +358,18 @@ const remainingDescription = {
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {relatedTours.map((t) => (
-                                <a
-                                    href={`/tours/${t.slug}`}
-                                    class="block hover:scale-[1.02] transition-all duration-300 hover:shadow-[0_0_30px_rgba(242,127,27,0.15)] rounded-[25px]"
-                                >
-                                    <TourCard
-                                        client:visible
-                                        id={t.id}
-                                        slug={t.slug}
-                                        title={t.title}
-                                        price={t.price}
-                                        originalPrice={t.originalPrice}
-                                        image_url={t.image_url}
-                                        location={t.location}
-                                        duration={t.duration}
-                                        badge={t.badge}
-                                    />
-                                </a>
+                                <TourCard
+                                    client:visible
+                                    id={t.id}
+                                    slug={t.slug}
+                                    title={t.title}
+                                    price={t.price}
+                                    originalPrice={t.originalPrice}
+                                    image_url={t.image_url}
+                                    location={t.location}
+                                    duration={t.duration}
+                                    badge={t.badge}
+                                />
                             ))}
                         </div>
                     </div>
