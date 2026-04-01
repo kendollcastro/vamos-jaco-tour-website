@@ -1,5 +1,5 @@
 import { a as supabaseAdmin } from '../../../chunks/supabase_oFwH5q6M.mjs';
-import '../../../chunks/email-service_B0pUzxu9.mjs';
+import { sendBookingNotifications } from '../../../chunks/email-service_B0pUzxu9.mjs';
 import { g as getClientIP, c as checkRateLimit } from '../../../chunks/rate-limit_Cb_sQvs7.mjs';
 export { renderers } from '../../../renderers.mjs';
 
@@ -7,7 +7,7 @@ const TILOPAY_API_URL = "https://app.tilopay.com/api/v1";
 const TILOPAY_API_USER = "x3JXvq";
 const TILOPAY_API_PASSWORD = "xLYTyw";
 const TILOPAY_API_KEY = "2984-1437-7314-8673-3325";
-const PUBLIC_DOMAIN = "http://localhost:4321";
+const PUBLIC_DOMAIN = "https://vamos-jaco-tour-website.vercel.app";
 async function getAccessToken() {
   try {
     const response = await fetch(`${TILOPAY_API_URL}/login`, {
@@ -265,6 +265,17 @@ const POST = async ({ request }) => {
             phone: sanitizedPhone || "00000000"
           }
         });
+        sendBookingNotifications({
+          customerName: sanitizedName,
+          customerEmail: sanitizedEmail,
+          customerPhone: sanitizedPhone || "N/A",
+          tourName: tourName || tourId,
+          tourDate: formattedDate,
+          adults: adults || 1,
+          children: children || 0,
+          totalAmount: priceResult.total,
+          language
+        }).catch((e) => console.error("Booking email failed:", e));
         return new Response(JSON.stringify({
           success: true,
           bookingId: generatedBookingId,

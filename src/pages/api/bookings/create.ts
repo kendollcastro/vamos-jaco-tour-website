@@ -156,6 +156,19 @@ export const POST: APIRoute = async ({ request }) => {
                     }
                 });
                 
+                // Send booking confirmation email (fire-and-forget)
+                sendBookingNotifications({
+                    customerName: sanitizedName,
+                    customerEmail: sanitizedEmail,
+                    customerPhone: sanitizedPhone || 'N/A',
+                    tourName: tourName || tourId,
+                    tourDate: formattedDate,
+                    adults: adults || 1,
+                    children: children || 0,
+                    totalAmount: priceResult.total,
+                    language: language as 'en' | 'es'
+                }).catch(e => console.error('Booking email failed:', e));
+
                 return new Response(JSON.stringify({
                     success: true,
                     bookingId: generatedBookingId,
