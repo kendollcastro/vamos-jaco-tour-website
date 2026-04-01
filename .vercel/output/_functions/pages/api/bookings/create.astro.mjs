@@ -159,6 +159,7 @@ const POST = async ({ request }) => {
   }
   try {
     const body = await request.json();
+    console.log("BOOKING_DEBUG:", JSON.stringify(body));
     const {
       customerName,
       customerEmail,
@@ -196,10 +197,13 @@ const POST = async ({ request }) => {
       extraPassengers: extraPassengers || 0
     });
     if (!priceResult.isValid) {
-      console.warn(`Price validation failed for tour: ${tourId}`);
+      console.error(`PRICE_FAIL: tourId="${tourId}" adults=${adults} children=${children}`);
       return new Response(JSON.stringify({
         success: false,
-        message: "Unable to verify tour pricing"
+        message: "Unable to verify tour pricing",
+        tourId,
+        adults,
+        children
       }), {
         status: 400,
         headers: { "Content-Type": "application/json" }

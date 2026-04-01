@@ -427,10 +427,7 @@ import Layout from "../layouts/Layout.astro";
                 phone: inputPhone.value.trim(),
             };
 
-            const res = await fetch("/api/bookings/create", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
+            const requestBody = {
                     customerName: `${formData.firstName} ${formData.lastName}`,
                     customerEmail: formData.email,
                     customerPhone: formData.phone,
@@ -442,14 +439,20 @@ import Layout from "../layouts/Layout.astro";
                     children: state.children,
                     paymentMethod: 'card',
                     language: currentLang
-                }),
+                };
+            console.log('BOOKING_REQUEST:', requestBody);
+            const res = await fetch("/api/bookings/create", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(requestBody),
             });
 
             const data = await res.json();
+            console.log('BOOKING_RESPONSE:', data);
             if (data.success && data.requiresRedirect && data.paymentUrl) {
                 window.location.href = data.paymentUrl;
             } else {
-                alert("Payment initialization failed: " + (data.message || "Unknown error"));
+                alert("Payment initialization failed: " + (data.message || "Unknown error") + "\ntourId=" + state.tourId + "\ntotalAmount=" + state.totalPrice);
             }
         } catch (e) {
             console.error(e);
