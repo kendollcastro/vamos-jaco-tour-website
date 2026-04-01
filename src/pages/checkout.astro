@@ -410,6 +410,7 @@ import Layout from "../layouts/Layout.astro";
     const handlePayment = async () => {
         const state = bookingStore.get();
         const currentLang = language.get();
+        console.log('BOOKING_STORE_STATE:', JSON.stringify(state));
         if (!state.tourId) {
             alert("Please select a tour first.");
             return;
@@ -448,11 +449,11 @@ import Layout from "../layouts/Layout.astro";
             });
 
             const data = await res.json();
-            console.log('BOOKING_RESPONSE:', data);
+            console.log('BOOKING_RESPONSE:', JSON.stringify(data));
             if (data.success && data.requiresRedirect && data.paymentUrl) {
                 window.location.href = data.paymentUrl;
             } else {
-                alert("Payment initialization failed: " + (data.message || "Unknown error") + "\ntourId=" + state.tourId + "\ntotalAmount=" + state.totalPrice);
+                alert("Error: " + (data.message || "Unknown") + "\n\nReceived: " + JSON.stringify(data.received || {}));
             }
         } catch (e) {
             console.error(e);

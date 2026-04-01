@@ -73,11 +73,10 @@ export const POST: APIRoute = async ({ request }) => {
         });
 
         if (!priceResult.isValid) {
-            console.error(`PRICE_FAIL: tourId="${tourId}" adults=${adults} children=${children}`);
             return new Response(JSON.stringify({ 
                 success: false,
-                message: 'Unable to verify tour pricing',
-                tourId, adults, children
+                message: `Tour not found: "${tourId}"`,
+                received: { tourId, adults, children, totalAmount }
             }), { 
                 status: 400,
                 headers: { 'Content-Type': 'application/json' }
