@@ -1,6 +1,6 @@
 import { f as createComponent, l as renderComponent, r as renderTemplate } from '../chunks/astro/server_DYRfXif5.mjs';
 import 'piccolore';
-import { t as theme, i as initTheme, a as toggleTheme, $ as $$Layout } from '../chunks/Layout_DxykCy69.mjs';
+import { t as theme, i as initTheme, a as toggleTheme, $ as $$Layout } from '../chunks/Layout_USHaZkbm.mjs';
 import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
 import { useState, useEffect } from 'react';
 import { s as supabase } from '../chunks/supabase_oFwH5q6M.mjs';
@@ -12,6 +12,9 @@ function AdminLogin({ onAuth }) {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [view, setView] = useState("login");
+  const [resetSent, setResetSent] = useState(false);
   async function handleLogin(e) {
     e.preventDefault();
     setLoading(true);
@@ -32,85 +35,179 @@ function AdminLogin({ onAuth }) {
       onAuth();
     }
   }
+  async function handleForgotPassword(e) {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    if (!supabase) {
+      setError("Supabase not configured.");
+      setLoading(false);
+      return;
+    }
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/admin`
+    });
+    if (resetError) {
+      setError(resetError.message);
+    } else {
+      setResetSent(true);
+    }
+    setLoading(false);
+  }
   const isDemo = !supabase;
   return /* @__PURE__ */ jsx("div", { className: "min-h-screen flex items-center justify-center bg-gray-50 dark:bg-dark px-4 transition-colors duration-300", children: /* @__PURE__ */ jsxs("div", { className: "w-full max-w-md", children: [
     /* @__PURE__ */ jsxs("div", { className: "text-center mb-8", children: [
-      /* @__PURE__ */ jsx("div", { className: "inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/20 mb-4", children: /* @__PURE__ */ jsx("svg", { className: "w-8 h-8 text-primary", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", children: /* @__PURE__ */ jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" }) }) }),
-      /* @__PURE__ */ jsx("h1", { className: "text-2xl font-bold text-gray-900 dark:text-white", children: "Vamos Jacó Admin" }),
+      /* @__PURE__ */ jsx("a", { href: "/", className: "inline-block mb-6", children: /* @__PURE__ */ jsx(
+        "img",
+        {
+          src: "/logo-optimized.png",
+          alt: "Vamos Jacó Tours",
+          className: "h-16 w-auto mx-auto object-contain",
+          onError: (e) => {
+            e.currentTarget.style.display = "none";
+          }
+        }
+      ) }),
+      /* @__PURE__ */ jsx("h1", { className: "text-2xl font-bold text-gray-900 dark:text-white", children: "Admin Panel" }),
       /* @__PURE__ */ jsx("p", { className: "text-gray-500 dark:text-gray-400 text-sm mt-1", children: "Sign in to manage your tours" })
     ] }),
-    /* @__PURE__ */ jsxs(
-      "form",
-      {
-        onSubmit: handleLogin,
-        className: "bg-white dark:bg-dark-soft rounded-[20px] border border-gray-200 dark:border-white/10 p-8 space-y-5 shadow-xl transition-colors duration-300",
-        children: [
-          isDemo && /* @__PURE__ */ jsxs("div", { className: "bg-brand-teal/10 border border-brand-teal/30 rounded-xl px-4 py-3 text-brand-teal text-sm flex items-start gap-2", children: [
-            /* @__PURE__ */ jsx("svg", { className: "w-5 h-5 shrink-0 mt-0.5", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", children: /* @__PURE__ */ jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" }) }),
-            /* @__PURE__ */ jsxs("div", { children: [
-              /* @__PURE__ */ jsx("p", { className: "font-semibold", children: "Demo Mode" }),
-              /* @__PURE__ */ jsx("p", { className: "text-xs text-brand-teal/70 mt-0.5", children: 'Supabase not configured. Click "Enter Demo" to explore the admin panel with sample data.' })
-            ] })
-          ] }),
-          error && /* @__PURE__ */ jsxs("div", { className: "bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 text-red-400 text-sm flex items-center gap-2", children: [
-            /* @__PURE__ */ jsx("svg", { className: "w-4 h-4 shrink-0", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", children: /* @__PURE__ */ jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" }) }),
-            error
-          ] }),
-          !isDemo && /* @__PURE__ */ jsxs(Fragment, { children: [
-            /* @__PURE__ */ jsxs("div", { children: [
-              /* @__PURE__ */ jsx("label", { className: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5", children: "Email" }),
-              /* @__PURE__ */ jsx(
-                "input",
-                {
-                  type: "email",
-                  value: email,
-                  onChange: (e) => setEmail(e.target.value),
-                  required: true,
-                  placeholder: "admin@vamosjaco.com",
-                  className: "w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-primary focus:ring-1 focus:ring-primary/50 outline-none transition-colors"
-                }
-              )
-            ] }),
-            /* @__PURE__ */ jsxs("div", { children: [
-              /* @__PURE__ */ jsx("label", { className: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5", children: "Password" }),
-              /* @__PURE__ */ jsx(
-                "input",
-                {
-                  type: "password",
-                  value: password,
-                  onChange: (e) => setPassword(e.target.value),
-                  required: true,
-                  placeholder: "••••••••",
-                  className: "w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-primary focus:ring-1 focus:ring-primary/50 outline-none transition-colors"
-                }
-              )
-            ] })
-          ] }),
+    /* @__PURE__ */ jsxs("div", { className: "bg-white dark:bg-dark-soft rounded-[20px] border border-gray-200 dark:border-white/10 p-8 space-y-5 shadow-xl transition-colors duration-300", children: [
+      isDemo && /* @__PURE__ */ jsxs("div", { className: "bg-brand-teal/10 border border-brand-teal/30 rounded-xl px-4 py-3 text-brand-teal text-sm flex items-start gap-2", children: [
+        /* @__PURE__ */ jsx("svg", { className: "w-5 h-5 shrink-0 mt-0.5", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", children: /* @__PURE__ */ jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" }) }),
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsx("p", { className: "font-semibold", children: "Demo Mode" }),
+          /* @__PURE__ */ jsx("p", { className: "text-xs text-brand-teal/70 mt-0.5", children: 'Supabase not configured. Click "Enter Demo" to explore with sample data.' })
+        ] })
+      ] }),
+      error && /* @__PURE__ */ jsxs("div", { className: "bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 text-red-400 text-sm flex items-center gap-2", children: [
+        /* @__PURE__ */ jsx("svg", { className: "w-4 h-4 shrink-0", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", children: /* @__PURE__ */ jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" }) }),
+        error
+      ] }),
+      resetSent ? /* @__PURE__ */ jsxs("div", { className: "text-center py-4", children: [
+        /* @__PURE__ */ jsx("div", { className: "w-16 h-16 rounded-full bg-green-500/10 flex items-center justify-center mx-auto mb-4", children: /* @__PURE__ */ jsx("svg", { className: "w-8 h-8 text-green-500", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", children: /* @__PURE__ */ jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" }) }) }),
+        /* @__PURE__ */ jsx("h3", { className: "text-lg font-bold text-gray-900 dark:text-white mb-2", children: "Check your email" }),
+        /* @__PURE__ */ jsxs("p", { className: "text-gray-500 text-sm mb-4", children: [
+          "We sent a password reset link to ",
+          /* @__PURE__ */ jsx("strong", { className: "text-gray-700 dark:text-gray-300", children: email })
+        ] }),
+        /* @__PURE__ */ jsx("button", { onClick: () => {
+          setView("login");
+          setResetSent(false);
+          setError("");
+        }, className: "text-primary text-sm font-bold hover:underline", children: "Back to Sign In" })
+      ] }) : view === "forgot" ? /* @__PURE__ */ jsxs("form", { onSubmit: handleForgotPassword, className: "space-y-5", children: [
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsx("label", { className: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5", children: "Email" }),
           /* @__PURE__ */ jsx(
-            "button",
+            "input",
             {
-              type: isDemo ? "button" : "submit",
-              disabled: loading,
-              onClick: isDemo ? () => onAuth() : void 0,
-              className: "w-full bg-primary hover:bg-primary-dark text-white font-bold py-3.5 rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2",
-              children: loading ? /* @__PURE__ */ jsxs(Fragment, { children: [
-                /* @__PURE__ */ jsxs("svg", { className: "w-5 h-5 animate-spin", viewBox: "0 0 24 24", fill: "none", children: [
-                  /* @__PURE__ */ jsx("circle", { className: "opacity-25", cx: "12", cy: "12", r: "10", stroke: "currentColor", strokeWidth: "4" }),
-                  /* @__PURE__ */ jsx("path", { className: "opacity-75", fill: "currentColor", d: "M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" })
-                ] }),
-                "Signing in..."
-              ] }) : isDemo ? /* @__PURE__ */ jsxs(Fragment, { children: [
-                /* @__PURE__ */ jsxs("svg", { className: "w-5 h-5", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", children: [
-                  /* @__PURE__ */ jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" }),
-                  /* @__PURE__ */ jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M21 12a9 9 0 11-18 0 9 9 0 0118 0z" })
-                ] }),
-                "Enter Demo"
-              ] }) : "Sign In"
+              type: "email",
+              value: email,
+              onChange: (e) => setEmail(e.target.value),
+              required: true,
+              placeholder: "admin@vamosjaco.com",
+              className: "w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-primary focus:ring-1 focus:ring-primary/50 outline-none transition-colors"
             }
           )
-        ]
-      }
-    ),
+        ] }),
+        /* @__PURE__ */ jsx(
+          "button",
+          {
+            type: "submit",
+            disabled: loading,
+            className: "w-full bg-primary hover:bg-primary-dark text-white font-bold py-3.5 rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2",
+            children: loading ? /* @__PURE__ */ jsxs(Fragment, { children: [
+              /* @__PURE__ */ jsxs("svg", { className: "w-5 h-5 animate-spin", viewBox: "0 0 24 24", fill: "none", children: [
+                /* @__PURE__ */ jsx("circle", { className: "opacity-25", cx: "12", cy: "12", r: "10", stroke: "currentColor", strokeWidth: "4" }),
+                /* @__PURE__ */ jsx("path", { className: "opacity-75", fill: "currentColor", d: "M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" })
+              ] }),
+              "Sending..."
+            ] }) : "Send Reset Link"
+          }
+        ),
+        /* @__PURE__ */ jsx("button", { type: "button", onClick: () => {
+          setView("login");
+          setError("");
+        }, className: "w-full text-center text-gray-500 text-sm hover:text-gray-700 dark:hover:text-gray-300 transition-colors", children: "Back to Sign In" })
+      ] }) : !isDemo ? /* @__PURE__ */ jsxs("form", { onSubmit: handleLogin, className: "space-y-5", children: [
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsx("label", { className: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5", children: "Email" }),
+          /* @__PURE__ */ jsx(
+            "input",
+            {
+              type: "email",
+              value: email,
+              onChange: (e) => setEmail(e.target.value),
+              required: true,
+              placeholder: "admin@vamosjaco.com",
+              className: "w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-primary focus:ring-1 focus:ring-primary/50 outline-none transition-colors"
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between mb-1.5", children: [
+            /* @__PURE__ */ jsx("label", { className: "text-sm font-medium text-gray-700 dark:text-gray-300", children: "Password" }),
+            /* @__PURE__ */ jsx("button", { type: "button", onClick: () => {
+              setView("forgot");
+              setError("");
+            }, className: "text-xs text-primary font-bold hover:underline", children: "Forgot password?" })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: "relative", children: [
+            /* @__PURE__ */ jsx(
+              "input",
+              {
+                type: showPassword ? "text" : "password",
+                value: password,
+                onChange: (e) => setPassword(e.target.value),
+                required: true,
+                placeholder: "••••••••",
+                className: "w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 pr-12 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-primary focus:ring-1 focus:ring-primary/50 outline-none transition-colors"
+              }
+            ),
+            /* @__PURE__ */ jsx(
+              "button",
+              {
+                type: "button",
+                onClick: () => setShowPassword(!showPassword),
+                className: "absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors p-1",
+                children: showPassword ? /* @__PURE__ */ jsx("svg", { className: "w-5 h-5", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", children: /* @__PURE__ */ jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" }) }) : /* @__PURE__ */ jsxs("svg", { className: "w-5 h-5", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", children: [
+                  /* @__PURE__ */ jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M15 12a3 3 0 11-6 0 3 3 0 016 0z" }),
+                  /* @__PURE__ */ jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" })
+                ] })
+              }
+            )
+          ] })
+        ] }),
+        /* @__PURE__ */ jsx(
+          "button",
+          {
+            type: "submit",
+            disabled: loading,
+            className: "w-full bg-primary hover:bg-primary-dark text-white font-bold py-3.5 rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2",
+            children: loading ? /* @__PURE__ */ jsxs(Fragment, { children: [
+              /* @__PURE__ */ jsxs("svg", { className: "w-5 h-5 animate-spin", viewBox: "0 0 24 24", fill: "none", children: [
+                /* @__PURE__ */ jsx("circle", { className: "opacity-25", cx: "12", cy: "12", r: "10", stroke: "currentColor", strokeWidth: "4" }),
+                /* @__PURE__ */ jsx("path", { className: "opacity-75", fill: "currentColor", d: "M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" })
+              ] }),
+              "Signing in..."
+            ] }) : "Sign In"
+          }
+        )
+      ] }) : /* @__PURE__ */ jsxs(
+        "button",
+        {
+          onClick: () => onAuth(),
+          className: "w-full bg-primary hover:bg-primary-dark text-white font-bold py-3.5 rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2",
+          children: [
+            /* @__PURE__ */ jsxs("svg", { className: "w-5 h-5", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", children: [
+              /* @__PURE__ */ jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" }),
+              /* @__PURE__ */ jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M21 12a9 9 0 11-18 0 9 9 0 0118 0z" })
+            ] }),
+            "Enter Demo"
+          ]
+        }
+      )
+    ] }),
     /* @__PURE__ */ jsxs("p", { className: "text-center text-gray-500 dark:text-gray-600 text-xs mt-6", children: [
       "Protected area · Vamos Jacó Tours © ",
       (/* @__PURE__ */ new Date()).getFullYear()
@@ -130,7 +227,15 @@ const NAV_ITEMS = [
 ];
 function AdminLayout({ children }) {
   const [authenticated, setAuthenticated] = useState(null);
-  const [currentView, setCurrentView] = useState("dashboard");
+  const [currentView, setCurrentView] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("admin_view");
+      if (saved && ["dashboard", "tours", "bookings", "subscribers", "gallery", "team", "website", "emails"].includes(saved)) {
+        return saved;
+      }
+    }
+    return "dashboard";
+  });
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userEmail, setUserEmail] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -169,7 +274,7 @@ function AdminLayout({ children }) {
   useEffect(() => {
     import('../chunks/DashboardStats_bR-OXGIn.mjs').then((m) => setDashboardView(() => m.default));
     import('../chunks/TourList_DU9-lxwT.mjs').then((m) => setToursView(() => m.default));
-    import('../chunks/BookingsTable_DaaLJj3E.mjs').then((m) => setBookingsView(() => m.default));
+    import('../chunks/BookingsTable_DQ2Mxtwf.mjs').then((m) => setBookingsView(() => m.default));
     import('../chunks/SubscribersTable_DY1p5PL9.mjs').then((m) => setSubscribersView(() => m.default));
     import('../chunks/MediaGallery_DvG0GM69.mjs').then((m) => setGalleryView(() => m.default));
     import('../chunks/TeamManager_LeIMGsxg.mjs').then((m) => setTeamView(() => m.default));
@@ -220,6 +325,7 @@ function AdminLayout({ children }) {
             onClick: () => {
               setCurrentView(item.id);
               setSidebarOpen(false);
+              localStorage.setItem("admin_view", item.id);
             },
             className: `
                 w-full flex items-center gap-3 px-4 py-3 rounded-[14px] text-sm font-medium transition-all duration-300

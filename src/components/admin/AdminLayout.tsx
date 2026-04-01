@@ -23,7 +23,15 @@ const NAV_ITEMS: { id: AdminView; label: string; icon: string }[] = [
 
 export default function AdminLayout({ children }: Props) {
     const [authenticated, setAuthenticated] = useState<boolean | null>(null);
-    const [currentView, setCurrentView] = useState<AdminView>('dashboard');
+    const [currentView, setCurrentView] = useState<AdminView>(() => {
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('admin_view');
+            if (saved && ['dashboard', 'tours', 'bookings', 'subscribers', 'gallery', 'team', 'website', 'emails'].includes(saved)) {
+                return saved as AdminView;
+            }
+        }
+        return 'dashboard';
+    });
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [userEmail, setUserEmail] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
@@ -147,7 +155,7 @@ export default function AdminLayout({ children }: Props) {
                     ).map((item) => (
                         <button
                             key={item.id}
-                            onClick={() => { setCurrentView(item.id); setSidebarOpen(false); }}
+                            onClick={() => { setCurrentView(item.id); setSidebarOpen(false); localStorage.setItem('admin_view', item.id); }}
                             className={`
                 w-full flex items-center gap-3 px-4 py-3 rounded-[14px] text-sm font-medium transition-all duration-300
                 ${currentView === item.id
