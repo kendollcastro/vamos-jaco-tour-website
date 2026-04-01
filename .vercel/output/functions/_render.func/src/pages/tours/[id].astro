@@ -112,7 +112,7 @@ const remainingDescription = {
             </div>
 
             <!-- Hero Content -->
-            <div class="relative z-10 w-full max-w-7xl mx-auto px-6 pb-12">
+            <div class="relative z-10 w-full max-w-7xl mx-auto px-6 pb-12 pt-24 md:pt-12">
                 <div class="flex flex-wrap items-end justify-between gap-6">
                     <div>
                         <!-- Back Link -->
@@ -356,15 +356,16 @@ const remainingDescription = {
                                 </span>
                             </h2>
                         </div>
-                        <div class="flex flex-wrap justify-center gap-8">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {relatedTours.map((t) => (
                                 <a
                                     href={`/tours/${t.slug}`}
-                                    class="block hover:scale-[1.03] transition-all duration-300 hover:shadow-[0_0_30px_rgba(242,127,27,0.15)] rounded-[25px]"
+                                    class="block hover:scale-[1.02] transition-all duration-300 hover:shadow-[0_0_30px_rgba(242,127,27,0.15)] rounded-[25px]"
                                 >
                                     <TourCard
                                         client:visible
                                         id={t.id}
+                                        slug={t.slug}
                                         title={t.title}
                                         price={t.price}
                                         originalPrice={t.originalPrice}

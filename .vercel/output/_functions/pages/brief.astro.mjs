@@ -1,6 +1,6 @@
 import { f as createComponent, l as renderComponent, r as renderTemplate, m as maybeRenderHead, h as addAttribute } from '../chunks/astro/server_DYRfXif5.mjs';
 import 'piccolore';
-import { $ as $$Layout } from '../chunks/Layout_Bcn6R5AW.mjs';
+import { $ as $$Layout } from '../chunks/Layout_CYIdTRJl.mjs';
 import { S as ScrollReveal } from '../chunks/ScrollReveal_CEJ16IzC.mjs';
 /* empty css                                 */
 export { renderers } from '../renderers.mjs';
