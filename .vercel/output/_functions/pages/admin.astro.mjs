@@ -1,6 +1,6 @@
 import { f as createComponent, l as renderComponent, r as renderTemplate } from '../chunks/astro/server_DYRfXif5.mjs';
 import 'piccolore';
-import { t as theme, i as initTheme, a as toggleTheme, $ as $$Layout } from '../chunks/Layout_USHaZkbm.mjs';
+import { t as theme, i as initTheme, a as toggleTheme, $ as $$Layout } from '../chunks/Layout_Bcn6R5AW.mjs';
 import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
 import { useState, useEffect } from 'react';
 import { s as supabase } from '../chunks/supabase_oFwH5q6M.mjs';

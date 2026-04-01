@@ -79,13 +79,33 @@ import Layout from "../layouts/Layout.astro";
                                 <label class="block text-sm text-gray-400 mb-1"
                                     >Phone Number (WhatsApp) <span class="text-primary">*</span></label
                                 >
-                                <input
-                                    id="input-phone"
-                                    type="tel"
-                                    required
-                                    class="w-full bg-dark border border-white/10 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none transition-colors"
-                                    placeholder="+1 (555) 000-0000"
-                                />
+                                <div class="flex gap-2">
+                                    <div class="relative" id="country-selector">
+                                        <button
+                                            type="button"
+                                            id="country-btn"
+                                            class="bg-dark border border-white/10 rounded-lg px-3 py-3 text-white flex items-center gap-2 hover:border-primary/50 transition-colors min-w-[110px] whitespace-nowrap"
+                                        >
+                                            <span id="country-flag">🇺🇸</span>
+                                            <span id="country-code" class="text-sm font-medium">+1</span>
+                                            <svg class="w-3 h-3 text-gray-500 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                        </button>
+                                        <div id="country-dropdown" class="hidden absolute bottom-full left-0 mb-2 w-72 max-h-64 overflow-y-auto bg-[#1A1A1A] border border-white/10 rounded-xl shadow-2xl z-50">
+                                            <div class="p-2 sticky top-0 bg-[#1A1A1A]">
+                                                <input type="text" id="country-search" placeholder="Search country..." class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-primary"/>
+                                            </div>
+                                            <div id="country-list" class="p-1"></div>
+                                        </div>
+                                    </div>
+                                    <input
+                                        id="input-phone"
+                                        type="tel"
+                                        required
+                                        class="flex-1 bg-dark border border-white/10 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none transition-colors"
+                                        placeholder="555 000 0000"
+                                    />
+                                </div>
+                                <input type="hidden" id="input-full-phone" />
                                 <p class="text-primary text-xs mt-1 hidden" id="error-phone">Please enter your phone number</p>
                             </div>
                         </form>
@@ -290,6 +310,127 @@ import Layout from "../layouts/Layout.astro";
     import { bookingStore } from "../store/booking";
     import { language } from "../store";
 
+    // Form inputs (declared early so country selector can reference inputPhone)
+    const inputPhone = document.getElementById("input-phone") as HTMLInputElement;
+
+    // Country codes data
+    const COUNTRIES = [
+        { flag: "🇺🇸", code: "+1", name: "United States", dial: "1" },
+        { flag: "🇨🇦", code: "+1", name: "Canada", dial: "1" },
+        { flag: "🇨🇷", code: "+506", name: "Costa Rica", dial: "506" },
+        { flag: "🇲🇽", code: "+52", name: "Mexico", dial: "52" },
+        { flag: "🇬🇹", code: "+502", name: "Guatemala", dial: "502" },
+        { flag: "🇸🇻", code: "+503", name: "El Salvador", dial: "503" },
+        { flag: "🇭🇳", code: "+504", name: "Honduras", dial: "504" },
+        { flag: "🇳🇮", code: "+505", name: "Nicaragua", dial: "505" },
+        { flag: "🇵🇦", code: "+507", name: "Panama", dial: "507" },
+        { flag: "🇨🇴", code: "+57", name: "Colombia", dial: "57" },
+        { flag: "🇪🇨", code: "+593", name: "Ecuador", dial: "593" },
+        { flag: "🇵🇪", code: "+51", name: "Peru", dial: "51" },
+        { flag: "🇨🇱", code: "+56", name: "Chile", dial: "56" },
+        { flag: "🇦🇷", code: "+54", name: "Argentina", dial: "54" },
+        { flag: "🇧🇷", code: "+55", name: "Brazil", dial: "55" },
+        { flag: "🇻🇪", code: "+58", name: "Venezuela", dial: "58" },
+        { flag: "🇩🇴", code: "+1", name: "Dominican Republic", dial: "1809" },
+        { flag: "🇵🇷", code: "+1", name: "Puerto Rico", dial: "1" },
+        { flag: "🇨🇺", code: "+53", name: "Cuba", dial: "53" },
+        { flag: "🇯🇲", code: "+1", name: "Jamaica", dial: "1" },
+        { flag: "🇬🇧", code: "+44", name: "United Kingdom", dial: "44" },
+        { flag: "🇩🇪", code: "+49", name: "Germany", dial: "49" },
+        { flag: "🇫🇷", code: "+33", name: "France", dial: "33" },
+        { flag: "🇪🇸", code: "+34", name: "Spain", dial: "34" },
+        { flag: "🇮🇹", code: "+39", name: "Italy", dial: "39" },
+        { flag: "🇳🇱", code: "+31", name: "Netherlands", dial: "31" },
+        { flag: "🇧🇪", code: "+32", name: "Belgium", dial: "32" },
+        { flag: "🇨🇭", code: "+41", name: "Switzerland", dial: "41" },
+        { flag: "🇦🇹", code: "+43", name: "Austria", dial: "43" },
+        { flag: "🇸🇪", code: "+46", name: "Sweden", dial: "46" },
+        { flag: "🇳🇴", code: "+47", name: "Norway", dial: "47" },
+        { flag: "🇩🇰", code: "+45", name: "Denmark", dial: "45" },
+        { flag: "🇫🇮", code: "+358", name: "Finland", dial: "358" },
+        { flag: "🇮🇪", code: "+353", name: "Ireland", dial: "353" },
+        { flag: "🇵🇹", code: "+351", name: "Portugal", dial: "351" },
+        { flag: "🇦🇺", code: "+61", name: "Australia", dial: "61" },
+        { flag: "🇳🇿", code: "+64", name: "New Zealand", dial: "64" },
+        { flag: "🇯🇵", code: "+81", name: "Japan", dial: "81" },
+        { flag: "🇰🇷", code: "+82", name: "South Korea", dial: "82" },
+        { flag: "🇨🇳", code: "+86", name: "China", dial: "86" },
+        { flag: "🇮🇳", code: "+91", name: "India", dial: "91" },
+        { flag: "🇷🇺", code: "+7", name: "Russia", dial: "7" },
+        { flag: "🇮🇱", code: "+972", name: "Israel", dial: "972" },
+        { flag: "🇦🇪", code: "+971", name: "UAE", dial: "971" },
+        { flag: "🇿🇦", code: "+27", name: "South Africa", dial: "27" },
+        { flag: "🇳🇬", code: "+234", name: "Nigeria", dial: "234" },
+        { flag: "🇰🇪", code: "+254", name: "Kenya", dial: "254" },
+        { flag: "🇪🇬", code: "+20", name: "Egypt", dial: "20" },
+        { flag: "🇹🇷", code: "+90", name: "Turkey", dial: "90" },
+        { flag: "🇵🇭", code: "+63", name: "Philippines", dial: "63" },
+    ];
+
+    // Country selector
+    let selectedCountry = COUNTRIES[0]; // Default to US
+    const countryBtn = document.getElementById("country-btn") as HTMLButtonElement;
+    const countryDropdown = document.getElementById("country-dropdown") as HTMLDivElement;
+    const countryList = document.getElementById("country-list") as HTMLDivElement;
+    const countrySearch = document.getElementById("country-search") as HTMLInputElement;
+    const countryFlag = document.getElementById("country-flag") as HTMLSpanElement;
+    const countryCode = document.getElementById("country-code") as HTMLSpanElement;
+    const fullPhoneInput = document.getElementById("input-full-phone") as HTMLInputElement;
+
+    function renderCountries(filter: string = "") {
+        const filtered = COUNTRIES.filter(c =>
+            c.name.toLowerCase().includes(filter.toLowerCase()) ||
+            c.code.includes(filter) ||
+            c.dial.includes(filter)
+        );
+        countryList.innerHTML = filtered.map((c, i) => `
+            <button type="button" data-idx="${COUNTRIES.indexOf(c)}" class="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors text-left ${selectedCountry === c ? 'bg-primary/10' : ''}">
+                <span class="text-lg">${c.flag}</span>
+                <span class="text-white text-sm font-medium">${c.name}</span>
+                <span class="text-gray-500 text-sm ml-auto">${c.code}</span>
+            </button>
+        `).join("");
+
+        countryList.querySelectorAll("button").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const idx = parseInt(btn.getAttribute("data-idx") || "0");
+                selectedCountry = COUNTRIES[idx];
+                countryFlag.textContent = selectedCountry.flag;
+                countryCode.textContent = selectedCountry.code;
+                countryDropdown.classList.add("hidden");
+                updateFullPhone();
+            });
+        });
+    }
+
+    function updateFullPhone() {
+        const raw = inputPhone.value.replace(/\D/g, "");
+        fullPhoneInput.value = raw ? `${selectedCountry.dial}${raw}` : "";
+    }
+
+    countryBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        countryDropdown.classList.toggle("hidden");
+        if (!countryDropdown.classList.contains("hidden")) {
+            countrySearch.value = "";
+            renderCountries();
+            countrySearch.focus();
+        }
+    });
+
+    countrySearch.addEventListener("input", () => renderCountries(countrySearch.value));
+
+    document.addEventListener("click", (e) => {
+        if (!document.getElementById("country-selector")?.contains(e.target as Node)) {
+            countryDropdown.classList.add("hidden");
+        }
+    });
+
+    inputPhone.addEventListener("input", updateFullPhone);
+
+    // Initial render
+    renderCountries();
+
     // Selectors
     const summaryContainer = document.getElementById("order-summary-content");
     const totalEl = document.getElementById("summary-total");
@@ -303,7 +444,6 @@ import Layout from "../layouts/Layout.astro";
     const inputFirstName = document.getElementById("input-firstName") as HTMLInputElement;
     const inputLastName = document.getElementById("input-lastName") as HTMLInputElement;
     const inputEmail = document.getElementById("input-email") as HTMLInputElement;
-    const inputPhone = document.getElementById("input-phone") as HTMLInputElement;
     const errorFirstName = document.getElementById("error-firstName");
     const errorLastName = document.getElementById("error-lastName");
     const errorEmail = document.getElementById("error-email");
@@ -424,7 +564,7 @@ import Layout from "../layouts/Layout.astro";
                 firstName: inputFirstName.value.trim(),
                 lastName: inputLastName.value.trim(),
                 email: inputEmail.value.trim(),
-                phone: inputPhone.value.trim(),
+                phone: fullPhoneInput.value || inputPhone.value.trim(),
             };
 
             const res = await fetch("/api/bookings/create", {

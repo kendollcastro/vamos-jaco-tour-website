@@ -1,11 +1,11 @@
 import { f as createComponent, l as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_DYRfXif5.mjs';
 import 'piccolore';
-import { l as language, $ as $$Layout } from '../chunks/Layout_USHaZkbm.mjs';
+import { l as language, $ as $$Layout } from '../chunks/Layout_Bcn6R5AW.mjs';
 import { jsxs, jsx, Fragment } from 'react/jsx-runtime';
 import { useState, useEffect } from 'react';
 import { useStore } from '@nanostores/react';
 import { Phone, MapPin, ChevronDown, Mail, MessageSquare, Send } from 'lucide-react';
-import { N as NewsletterSection } from '../chunks/NewsletterSection_6Glf63fP.mjs';
+import { N as NewsletterSection } from '../chunks/NewsletterSection_zqh9rP30.mjs';
 import { c as getLocalBusinessSchema, a as getBreadcrumbSchema } from '../chunks/seo-schemas_BZJstb5R.mjs';
 export { renderers } from '../renderers.mjs';
 

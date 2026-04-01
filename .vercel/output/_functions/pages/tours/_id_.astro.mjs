@@ -1,9 +1,9 @@
 import { e as createAstro, f as createComponent, l as renderComponent, n as renderScript, r as renderTemplate, m as maybeRenderHead, h as addAttribute } from '../../chunks/astro/server_DYRfXif5.mjs';
 import 'piccolore';
-import { l as language, $ as $$Layout } from '../../chunks/Layout_USHaZkbm.mjs';
-import { g as getTourById, a as getAllTours, T as TourCard } from '../../chunks/TourCard_C3LOJ1eU.mjs';
+import { l as language, $ as $$Layout } from '../../chunks/Layout_Bcn6R5AW.mjs';
+import { g as getTourById, a as getAllTours, T as TourCard } from '../../chunks/TourCard_Bp-KFvaK.mjs';
 import { d as getTourSchema, a as getBreadcrumbSchema } from '../../chunks/seo-schemas_BZJstb5R.mjs';
-import { N as NewsletterSection } from '../../chunks/NewsletterSection_6Glf63fP.mjs';
+import { N as NewsletterSection } from '../../chunks/NewsletterSection_zqh9rP30.mjs';
 import { jsx, Fragment, jsxs } from 'react/jsx-runtime';
 import React, { useState, useEffect, useMemo } from 'react';
 import { useStore } from '@nanostores/react';
