@@ -9,13 +9,20 @@ import vercel from '@astrojs/vercel';
 export default defineConfig({
   site: 'https://vamosjacotoursdev.com',
   output: 'server',
-  adapter: vercel(),
+  adapter: vercel({
+    isr: {
+      expiration: 60,
+    },
+  }),
 
   integrations: [
     react(),
   ],
 
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
+    ssr: {
+      external: ['@supabase/supabase-js'],
+    },
   }
 });

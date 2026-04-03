@@ -319,8 +319,8 @@ const POST = async ({ request }) => {
       headers: { "Content-Type": "application/json" }
     });
   } catch (error) {
-    console.error("Booking creation error");
-    return new Response(JSON.stringify({ message: "Internal server error" }), {
+    console.error("Booking creation error:", error?.message, error?.stack);
+    return new Response(JSON.stringify({ message: "Internal server error", error: error?.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" }
     });
