@@ -37,7 +37,9 @@ export const POST: APIRoute = async ({ request }) => {
             totalAmount,
             extraPassengers,
             paymentMethod = 'card',
-            language = 'en'
+            language = 'en',
+            variationId,
+            pricePerAdult
         } = body;
 
 
@@ -68,7 +70,9 @@ export const POST: APIRoute = async ({ request }) => {
             tourId,
             adults: adults || 1,
             children: children || 0,
-            extraPassengers: extraPassengers || 0
+            extraPassengers: extraPassengers || 0,
+            variationId: variationId || undefined,
+            pricePerAdult: pricePerAdult || undefined
         });
 
         if (!priceResult.isValid) {

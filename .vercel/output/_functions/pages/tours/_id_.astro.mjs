@@ -22,6 +22,7 @@ const INITIAL_STATE = {
   extraPassengers: 0,
   pricePerAdult: 0,
   pricePerChild: 0,
+  variationId: null,
   ivaAmount: 0,
   totalPrice: 0
 };
@@ -29,7 +30,7 @@ const bookingStore = persistentAtom("booking_cart", INITIAL_STATE, {
   encode: JSON.stringify,
   decode: JSON.parse
 });
-function setBookingTour(id, title, adultPrice, childPrice = 0) {
+function setBookingTour(id, title, adultPrice, childPrice = 0, variationId) {
   const current = bookingStore.get();
   bookingStore.set({
     ...current,
@@ -37,6 +38,7 @@ function setBookingTour(id, title, adultPrice, childPrice = 0) {
     tourTitle: title,
     pricePerAdult: adultPrice,
     pricePerChild: childPrice,
+    variationId: variationId || null,
     extraPassengers: 0
     // Reset extra passengers when switching tours
   });
@@ -145,12 +147,12 @@ function BookingSidebar({ tourId, tourTitle, price, durationOptions }) {
   }, [rawOptions]);
   useEffect(() => {
     if (packages && packages.length > 0) {
-      setBookingTour(tourId, tourTitle, packages[0].adultPrice, packages[0].childPrice);
+      setBookingTour(tourId, tourTitle, packages[0].adultPrice, packages[0].childPrice, packages[0].variation_id);
     }
   }, [tourId, tourTitle, price, packages]);
   const handleDurationChange = (index) => {
     setSelectedDurationIdx(index);
-    setBookingTour(tourId, tourTitle, packages[index].adultPrice, packages[index].childPrice);
+    setBookingTour(tourId, tourTitle, packages[index].adultPrice, packages[index].childPrice, packages[index].variation_id);
   };
   const handleDateChange = (date) => {
     if (date) {

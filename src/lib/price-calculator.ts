@@ -14,11 +14,19 @@ const TOUR_PRICES: Record<string, { adultPrice: number; childPrice: number }> = 
     'sport-fishing': { adultPrice: 150, childPrice: 100 },
 };
 
+interface PricingOption {
+    duration: string;
+    price: number;
+    variation_id?: number;
+}
+
 interface CalculatePriceParams {
     tourId: string;
     adults: number;
     children: number;
     extraPassengers?: number;
+    variationId?: number;
+    pricePerAdult?: number;
 }
 
 interface PriceResult {
@@ -33,51 +41,63 @@ interface PriceResult {
  * This prevents price manipulation from the frontend.
  */
 export async function calculateServerPrice(params: CalculatePriceParams): Promise<PriceResult> {
-    const { tourId, adults, children, extraPassengers = 0 } = params;
+    const { tourId, adults, children, extraPassengers = 0, variationId, pricePerAdult: providedPrice } = params;
     
     let adultPrice = 0;
     let childPrice = 0;
     
-    // Try to get prices from Supabase first
-    if (supabaseAdmin) {
-        try {
-            // Try by slug first, then by UUID
-            let { data: tour, error } = await supabaseAdmin
-                .from('tours')
-                .select('price_base, pricing_options')
-                .eq('slug', tourId)
-                .single();
-            
-            if (error || !tour) {
-                // Fallback: try by UUID
-                const result = await supabaseAdmin
+    if (providedPrice && providedPrice > 0) {
+        adultPrice = providedPrice;
+    } else {
+        // Try to get prices from Supabase first
+        if (supabaseAdmin) {
+            try {
+                // Try by slug first, then by UUID
+                let { data: tour, error } = await supabaseAdmin
                     .from('tours')
                     .select('price_base, pricing_options')
-                    .eq('id', tourId)
+                    .eq('slug', tourId)
                     .single();
-                tour = result.data;
-            }
-            
-            if (tour) {
-                adultPrice = tour.price_base || 0;
-
-                // Extract child price from pricing_options if available
-                if (Array.isArray(tour.pricing_options)) {
-                    const childOpt = tour.pricing_options.find((o: any) =>
-                        o.duration?.toLowerCase().includes('child') || o.duration?.toLowerCase().includes('niño')
-                    );
-                    if (childOpt) childPrice = childOpt.price;
+                
+                if (error || !tour) {
+                    // Fallback: try by UUID
+                    const result = await supabaseAdmin
+                        .from('tours')
+                        .select('price_base, pricing_options')
+                        .eq('id', tourId)
+                        .single();
+                    tour = result.data;
                 }
+                
+                if (tour) {
+                    adultPrice = tour.price_base || 0;
+
+                    // If variationId provided, find the specific pricing option
+                    if (variationId && Array.isArray(tour.pricing_options)) {
+                        const variationOpt = tour.pricing_options.find((o: any) => o.variation_id === variationId);
+                        if (variationOpt) {
+                            adultPrice = variationOpt.price;
+                        }
+                    }
+
+                    // Extract child price from pricing_options if available
+                    if (Array.isArray(tour.pricing_options)) {
+                        const childOpt = tour.pricing_options.find((o: any) =>
+                            o.duration?.toLowerCase().includes('child') || o.duration?.toLowerCase().includes('niño')
+                        );
+                        if (childOpt) childPrice = childOpt.price;
+                    }
+                }
+            } catch (err) {
+                console.error('Failed to fetch tour price from DB:', err);
             }
-        } catch (err) {
-            console.error('Failed to fetch tour price from DB:', err);
         }
-    }
-    
-    // Fallback to hardcoded prices
-    if (adultPrice === 0 && TOUR_PRICES[tourId]) {
-        adultPrice = TOUR_PRICES[tourId].adultPrice;
-        childPrice = TOUR_PRICES[tourId].childPrice;
+        
+        // Fallback to hardcoded prices
+        if (adultPrice === 0 && TOUR_PRICES[tourId]) {
+            adultPrice = TOUR_PRICES[tourId].adultPrice;
+            childPrice = TOUR_PRICES[tourId].childPrice;
+        }
     }
     
     // Calculate subtotal

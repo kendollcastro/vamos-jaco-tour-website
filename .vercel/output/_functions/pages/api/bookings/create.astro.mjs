@@ -98,32 +98,42 @@ const TOUR_PRICES = {
   "sport-fishing": { adultPrice: 150, childPrice: 100 }
 };
 async function calculateServerPrice(params) {
-  const { tourId, adults, children, extraPassengers = 0 } = params;
+  const { tourId, adults, children, extraPassengers = 0, variationId, pricePerAdult: providedPrice } = params;
   let adultPrice = 0;
   let childPrice = 0;
-  if (supabaseAdmin) {
-    try {
-      let { data: tour, error } = await supabaseAdmin.from("tours").select("price_base, pricing_options").eq("slug", tourId).single();
-      if (error || !tour) {
-        const result = await supabaseAdmin.from("tours").select("price_base, pricing_options").eq("id", tourId).single();
-        tour = result.data;
-      }
-      if (tour) {
-        adultPrice = tour.price_base || 0;
-        if (Array.isArray(tour.pricing_options)) {
-          const childOpt = tour.pricing_options.find(
-            (o) => o.duration?.toLowerCase().includes("child") || o.duration?.toLowerCase().includes("niño")
-          );
-          if (childOpt) childPrice = childOpt.price;
+  if (providedPrice && providedPrice > 0) {
+    adultPrice = providedPrice;
+  } else {
+    if (supabaseAdmin) {
+      try {
+        let { data: tour, error } = await supabaseAdmin.from("tours").select("price_base, pricing_options").eq("slug", tourId).single();
+        if (error || !tour) {
+          const result = await supabaseAdmin.from("tours").select("price_base, pricing_options").eq("id", tourId).single();
+          tour = result.data;
         }
+        if (tour) {
+          adultPrice = tour.price_base || 0;
+          if (variationId && Array.isArray(tour.pricing_options)) {
+            const variationOpt = tour.pricing_options.find((o) => o.variation_id === variationId);
+            if (variationOpt) {
+              adultPrice = variationOpt.price;
+            }
+          }
+          if (Array.isArray(tour.pricing_options)) {
+            const childOpt = tour.pricing_options.find(
+              (o) => o.duration?.toLowerCase().includes("child") || o.duration?.toLowerCase().includes("niño")
+            );
+            if (childOpt) childPrice = childOpt.price;
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch tour price from DB:", err);
       }
-    } catch (err) {
-      console.error("Failed to fetch tour price from DB:", err);
     }
-  }
-  if (adultPrice === 0 && TOUR_PRICES[tourId]) {
-    adultPrice = TOUR_PRICES[tourId].adultPrice;
-    childPrice = TOUR_PRICES[tourId].childPrice;
+    if (adultPrice === 0 && TOUR_PRICES[tourId]) {
+      adultPrice = TOUR_PRICES[tourId].adultPrice;
+      childPrice = TOUR_PRICES[tourId].childPrice;
+    }
   }
   let subtotal = 0;
   const isVehicleTour = ["side-by-side-tour", "jet-ski-tour", "jaco-atv-adventure"].includes(tourId);
@@ -175,7 +185,9 @@ const POST = async ({ request }) => {
       totalAmount,
       extraPassengers,
       paymentMethod = "card",
-      language = "en"
+      language = "en",
+      variationId,
+      pricePerAdult
     } = body;
     if (!customerName || !customerEmail || !tourId || !date) {
       return new Response(JSON.stringify({ message: "Missing required fields" }), {
@@ -197,7 +209,9 @@ const POST = async ({ request }) => {
       tourId,
       adults: adults || 1,
       children: children || 0,
-      extraPassengers: extraPassengers || 0
+      extraPassengers: extraPassengers || 0,
+      variationId: variationId || void 0,
+      pricePerAdult: pricePerAdult || void 0
     });
     if (!priceResult.isValid) {
       console.warn(`Price validation failed for tour: ${tourId}`);

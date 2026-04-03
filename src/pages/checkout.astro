@@ -582,7 +582,9 @@ import Layout from "../layouts/Layout.astro";
                     children: state.children,
                     extraPassengers: state.extraPassengers || 0,
                     paymentMethod: 'card',
-                    language: currentLang
+                    language: currentLang,
+                    pricePerAdult: state.pricePerAdult,
+                    variationId: state.variationId
                 }),
             });
 

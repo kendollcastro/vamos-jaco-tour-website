@@ -71,13 +71,13 @@ export default function BookingSidebar({ tourId, tourTitle, price, durationOptio
 
     useEffect(() => {
         if (packages && packages.length > 0) {
-            setBookingTour(tourId, tourTitle, packages[0].adultPrice, packages[0].childPrice);
+            setBookingTour(tourId, tourTitle, packages[0].adultPrice, packages[0].childPrice, packages[0].variation_id);
         }
     }, [tourId, tourTitle, price, packages]);
 
     const handleDurationChange = (index: number) => {
         setSelectedDurationIdx(index);
-        setBookingTour(tourId, tourTitle, packages[index].adultPrice, packages[index].childPrice);
+        setBookingTour(tourId, tourTitle, packages[index].adultPrice, packages[index].childPrice, packages[index].variation_id);
     };
 
     const handleDateChange = (date: Date | null) => {
