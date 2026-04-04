@@ -45,7 +45,7 @@ export default function AboutSection() {
 
     const t = {
         en: {
-            subtitle: "Unleash the Adventure",
+            subtitle: "Kendoll the Adventure",
             title: "THE WILD SIDE OF COSTA RICA",
             description: "Vamos Jacó isn't just a travel agency; we are your adrenaline dealers. We craft raw, heart-pounding adventures and unforgettable extreme experiences. Drop the boring tours and buckle up for the ride of your life.",
             cta: "CHOOSE YOUR ADVENTURE",
@@ -142,7 +142,7 @@ export default function AboutSection() {
 
                             {/* Play Button */}
                             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                <button 
+                                <button
                                     onClick={() => setShowVideoModal(true)}
                                     aria-label={$language === 'en' ? "Play video" : "Ver video"}
                                     className="pointer-events-auto relative flex items-center justify-center w-24 h-24 rounded-full bg-black/60 backdrop-blur-md border-2 border-white text-white hover:bg-primary hover:border-primary transition-all duration-300 group shadow-[0_0_30px_rgba(0,0,0,0.5)]"
@@ -166,23 +166,23 @@ export default function AboutSection() {
 
             {/* Video Modal */}
             {showVideoModal && (
-                <div 
+                <div
                     className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-md p-4 md:p-8"
                     onClick={() => setShowVideoModal(false)}
                 >
-                    <div 
+                    <div
                         className="w-full max-w-4xl aspect-video bg-black rounded-xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,1)] ring-1 ring-white/20 relative z-10"
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Improved close button inside the modal container */}
-                        <button 
+                        <button
                             onClick={() => setShowVideoModal(false)}
                             className="absolute top-4 right-4 text-white/80 hover:text-white transition-colors bg-black/40 hover:bg-black/80 rounded-full p-2.5 z-50 flex items-center justify-center backdrop-blur-md group"
                             title="Close Video"
                         >
-                            <X className="w-5 h-5 group-hover:scale-110 transition-transform" /> 
+                            <X className="w-5 h-5 group-hover:scale-110 transition-transform" />
                         </button>
-                        
+
                         <video
                             src="/vamos-jaco-tour-home-hero-video.mp4"
                             autoPlay
