@@ -42,7 +42,7 @@ export default function HeroSlider() {
     const content = {
         en: {
             tagline: 'COSTA RICA\'S #1 ADVENTURE COMPANY',
-            titleLine1: 'UNLEASH YOUR',
+            titleLine1: 'Kendoll YOUR',
             titleAccent: 'WILD SIDE',
             subtitle: 'ATV trails through the jungle • Zipline over the canopy • Surf the Pacific waves',
             cta: 'Explore Adventures',
