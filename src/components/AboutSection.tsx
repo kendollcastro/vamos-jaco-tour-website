@@ -45,7 +45,7 @@ export default function AboutSection() {
 
     const t = {
         en: {
-            subtitle: "Ken the Adventure",
+            subtitle: "Unleash the Adventure",
             title: "THE WILD SIDE OF COSTA RICA",
             description: "Vamos Jacó isn't just a travel agency; we are your adrenaline dealers. We craft raw, heart-pounding adventures and unforgettable extreme experiences. Drop the boring tours and buckle up for the ride of your life.",
             cta: "CHOOSE YOUR ADVENTURE",
