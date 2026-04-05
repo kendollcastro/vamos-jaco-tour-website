@@ -1,7 +1,13 @@
 import { useState } from 'react';
 import { supabase } from '../../lib/supabase';
+import { useStore } from '@nanostores/react';
+import { language } from '../../store';
+import { adminTranslations } from '../../lib/admin-translations';
 
 export default function AdminLogin({ onAuth }: { onAuth: () => void }) {
+    const $language = useStore(language);
+    const t = adminTranslations[$language];
+    
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -74,12 +80,12 @@ export default function AdminLogin({ onAuth }: { onAuth: () => void }) {
                             }}
                         />
                     </a>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Admin Panel</h1>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Sign in to manage your tours</p>
+                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{$language === 'en' ? 'Admin Panel' : 'Panel de Admin'}</h1>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">{$language === 'en' ? 'Sign in to manage your tours' : 'Inicia sesión para gestionar tus tours'}</p>
                 </div>
 
                 {/* Login Card */}
-                <div className="bg-white dark:bg-dark-soft rounded-[20px] border border-gray-200 dark:border-white/10 p-8 space-y-5 shadow-xl transition-colors duration-300">
+                <div className="bg-white dark:bg-[#0A0A0A] rounded-2xl border border-gray-200 dark:border-white/5 p-8 space-y-5 shadow-xl transition-colors duration-300">
                     {/* Demo mode banner */}
                     {isDemo && (
                         <div className="bg-brand-teal/10 border border-brand-teal/30 rounded-xl px-4 py-3 text-brand-teal text-sm flex items-start gap-2">
@@ -87,8 +93,8 @@ export default function AdminLogin({ onAuth }: { onAuth: () => void }) {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             <div>
-                                <p className="font-semibold">Demo Mode</p>
-                                <p className="text-xs text-brand-teal/70 mt-0.5">Supabase not configured. Click "Enter Demo" to explore with sample data.</p>
+                                <p className="font-semibold">{$language === 'en' ? 'Demo Mode' : 'Modo Demo'}</p>
+                                <p className="text-xs text-brand-teal/70 mt-0.5">{$language === 'en' ? 'Supabase not configured. Click "Enter Demo" to explore with sample data.' : 'Supabase no configurado. Haz clic en "Entrar en Demo" para explorar con datos de ejemplo.'}</p>
                             </div>
                         </div>
                     )}
@@ -109,16 +115,16 @@ export default function AdminLogin({ onAuth }: { onAuth: () => void }) {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                 </svg>
                             </div>
-                            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Check your email</h3>
-                            <p className="text-gray-500 text-sm mb-4">We sent a password reset link to <strong className="text-gray-700 dark:text-gray-300">{email}</strong></p>
+                            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{$language === 'en' ? 'Check your email' : 'Revisa tu correo'}</h3>
+                            <p className="text-gray-500 text-sm mb-4">{$language === 'en' ? 'We sent a password reset link to' : 'Enviamos un enlace de recuperación a'} <strong className="text-gray-700 dark:text-gray-300">{email}</strong></p>
                             <button onClick={() => { setView('login'); setResetSent(false); setError(''); }} className="text-primary text-sm font-bold hover:underline">
-                                Back to Sign In
+                                {$language === 'en' ? 'Back to Sign In' : 'Volver a Iniciar Sesión'}
                             </button>
                         </div>
                     ) : view === 'forgot' ? (
                         <form onSubmit={handleForgotPassword} className="space-y-5">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Email</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{$language === 'en' ? 'Email' : 'Correo Electrónico'}</label>
                                 <input
                                     type="email"
                                     value={email}
@@ -140,21 +146,21 @@ export default function AdminLogin({ onAuth }: { onAuth: () => void }) {
                                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                                         </svg>
-                                        Sending...
+                                        {$language === 'en' ? 'Sending...' : 'Enviando...'}
                                     </>
                                 ) : (
-                                    'Send Reset Link'
+                                    $language === 'en' ? 'Send Reset Link' : 'Enviar Enlace'
                                 )}
                             </button>
 
                             <button type="button" onClick={() => { setView('login'); setError(''); }} className="w-full text-center text-gray-500 text-sm hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
-                                Back to Sign In
+                                {$language === 'en' ? 'Back to Sign In' : 'Volver a Iniciar Sesión'}
                             </button>
                         </form>
                     ) : !isDemo ? (
                         <form onSubmit={handleLogin} className="space-y-5">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Email</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{$language === 'en' ? 'Email' : 'Correo Electrónico'}</label>
                                 <input
                                     type="email"
                                     value={email}
@@ -167,9 +173,9 @@ export default function AdminLogin({ onAuth }: { onAuth: () => void }) {
 
                             <div>
                                 <div className="flex items-center justify-between mb-1.5">
-                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
+                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{$language === 'en' ? 'Password' : 'Contraseña'}</label>
                                     <button type="button" onClick={() => { setView('forgot'); setError(''); }} className="text-xs text-primary font-bold hover:underline">
-                                        Forgot password?
+                                        {$language === 'en' ? 'Forgot password?' : '¿Olvidaste tu contraseña?'}
                                     </button>
                                 </div>
                                 <div className="relative">
@@ -211,10 +217,10 @@ export default function AdminLogin({ onAuth }: { onAuth: () => void }) {
                                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                                         </svg>
-                                        Signing in...
+                                        {$language === 'en' ? 'Signing in...' : 'Iniciando sesión...'}
                                     </>
                                 ) : (
-                                    'Sign In'
+                                    $language === 'en' ? 'Sign In' : 'Iniciar Sesión'
                                 )}
                             </button>
                         </form>
@@ -227,7 +233,7 @@ export default function AdminLogin({ onAuth }: { onAuth: () => void }) {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            Enter Demo
+                            {$language === 'en' ? 'Enter Demo' : 'Entrar en Demo'}
                         </button>
                     )}
                 </div>

@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
+import { useStore } from '@nanostores/react';
+import { language } from '../../store';
+import { adminTranslations } from '../../lib/admin-translations';
 import AddBookingModal from './AddBookingModal';
+import DeleteConfirmModal from './DeleteConfirmModal';
 
 interface Booking {
     id: string;
@@ -32,13 +36,21 @@ const DEMO_BOOKINGS: Booking[] = [
     { id: '6', tour_name: 'Slingshot Rental', customer_name: 'Carlos Méndez', customer_email: 'carlos@email.com', customer_phone: '+506 6666-4321', booking_date: new Date().toISOString().split('T')[0], adults: 1, children: 0, total_amount: 350, status: 'confirmed', created_at: new Date(Date.now() - 7200000).toISOString() },
 ];
 
-export default function BookingsTable() {
+export default function BookingsTable({ onToast }: { onToast?: (message: string) => void }) {
+    const $language = useStore(language);
+    const t = adminTranslations[$language];
+    
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState<string>('all');
     const [searchQuery, setSearchQuery] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
+    const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [bookingToDelete, setBookingToDelete] = useState<{id: string; customerName: string; tourName: string} | null>(null);
+    const [dateFrom, setDateFrom] = useState('');
+    const [dateTo, setDateTo] = useState('');
     const isDemo = !supabase;
 
     async function handleRefresh() {
@@ -87,6 +99,7 @@ export default function BookingsTable() {
     async function updateStatus(id: string, newStatus: string) {
         if (isDemo) {
             setBookings(prev => prev.map(b => b.id === id ? { ...b, status: newStatus as any } : b));
+            onToast?.(newStatus === 'confirmed' ? ($language === 'en' ? 'Booking confirmed!' : '¡Reserva confirmada!') : ($language === 'en' ? 'Booking cancelled' : 'Reserva cancelada'));
             return;
         }
 
@@ -96,7 +109,69 @@ export default function BookingsTable() {
             .update({ status: newStatus })
             .eq('id', id);
 
-        if (!error) fetchBookings();
+        if (!error) {
+            fetchBookings();
+            onToast?.(newStatus === 'confirmed' ? ($language === 'en' ? 'Booking confirmed!' : '¡Reserva confirmada!') : ($language === 'en' ? 'Booking cancelled' : 'Reserva cancelada'));
+        }
+    }
+
+    async function deleteBooking(id: string) {
+        const booking = bookings.find(b => b.id === id);
+        if (booking) {
+            setBookingToDelete({ id, customerName: booking.customer_name, tourName: booking.tour_name });
+            setDeleteModalOpen(true);
+        }
+    }
+
+    async function confirmDelete() {
+        if (!bookingToDelete) return;
+        
+        const id = bookingToDelete.id;
+        
+        if (isDemo) {
+            setBookings(prev => prev.filter(b => b.id !== id));
+            onToast?.($language === 'en' ? 'Booking deleted' : 'Reserva eliminada');
+            setDeleteModalOpen(false);
+            setBookingToDelete(null);
+            return;
+        }
+
+        if (!supabase) return;
+        const { error } = await supabase
+            .from('bookings')
+            .delete()
+            .eq('id', id);
+
+        if (!error) {
+            fetchBookings();
+            onToast?.($language === 'en' ? 'Booking deleted' : 'Reserva eliminada');
+        }
+        setDeleteModalOpen(false);
+        setBookingToDelete(null);
+    }
+
+    function exportToCSV() {
+        const headers = ['Date', 'Customer', 'Email', 'Phone', 'Tour', 'Adults', 'Children', 'Amount', 'Status'];
+        const rows = filtered.map(b => [
+            new Date(b.booking_date).toLocaleDateString(),
+            b.customer_name,
+            b.customer_email,
+            b.customer_phone,
+            b.tour_name,
+            b.adults,
+            b.children,
+            b.total_amount,
+            b.status
+        ]);
+
+        const csvContent = [headers, ...rows].map(row => row.join(',')).join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `bookings_${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+
+        onToast?.($language === 'en' ? `Exported ${filtered.length} bookings to CSV` : `Exportados ${filtered.length} reservas a CSV`);
     }
 
     const filtered = bookings.filter((b) => {
@@ -105,7 +180,12 @@ export default function BookingsTable() {
             b.customer_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             b.tour_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             b.customer_email.toLowerCase().includes(searchQuery.toLowerCase());
-        return matchesFilter && matchesSearch;
+        
+        const bookingDate = new Date(b.booking_date);
+        const matchesDateFrom = !dateFrom || bookingDate >= new Date(dateFrom);
+        const matchesDateTo = !dateTo || bookingDate <= new Date(dateTo);
+        
+        return matchesFilter && matchesSearch && matchesDateFrom && matchesDateTo;
     });
 
     return (
@@ -121,7 +201,7 @@ export default function BookingsTable() {
                         type="text"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Search customer, email or tour..."
+                        placeholder={$language === 'en' ? "Search customer, email or tour..." : "Buscar cliente, email o tour..."}
                         className="w-full bg-white dark:bg-dark-soft border border-gray-200 dark:border-white/10 rounded-full pl-11 pr-4 py-3 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-primary focus:ring-1 focus:ring-primary/50 outline-none transition-colors shadow-sm"
                     />
                 </div>
@@ -136,23 +216,78 @@ export default function BookingsTable() {
                         <svg className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
-                        Refresh
+                        {$language === 'en' ? 'Refresh' : 'Actualizar'}
+                    </button>
+
+                    {/* Export CSV Button */}
+                    <button
+                        onClick={exportToCSV}
+                        disabled={filtered.length === 0}
+                        className="flex items-center gap-2 bg-white dark:bg-dark-soft border border-gray-200 dark:border-white/10 px-4 py-3 rounded-full text-sm font-bold text-gray-700 dark:text-gray-300 hover:text-green-600 hover:border-green-500/30 transition-all shadow-sm shrink-0 disabled:opacity-50"
+                        title={$language === 'en' ? 'Export to CSV' : 'Exportar a CSV'}
+                    >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span className="hidden md:inline">{$language === 'en' ? 'Export' : 'Exportar'}</span>
                     </button>
 
                     {/* Status Filter */}
-                    <div className="flex p-1.5 bg-gray-100 dark:bg-black/20 rounded-[14px] border border-gray-200 dark:border-white/5 w-full sm:w-auto overflow-x-auto hide-scrollbar">
-                        {['all', 'pending', 'confirmed', 'cancelled'].map((s) => (
+                    <div className="flex p-1.5 bg-gray-100 dark:bg-black/20 rounded-lg border border-gray-200 dark:border-white/5 w-full sm:w-auto overflow-x-auto hide-scrollbar">
+                        {[
+                            { key: 'all', en: 'All', es: 'Todos' },
+                            { key: 'pending', en: 'Pending', es: 'Pendiente' },
+                            { key: 'confirmed', en: 'Confirmed', es: 'Confirmado' },
+                            { key: 'cancelled', en: 'Cancelled', es: 'Cancelado' }
+                        ].map((s) => (
                             <button
-                                key={s}
-                                onClick={() => setFilter(s)}
-                                className={`px-5 py-2 rounded-[10px] text-xs font-bold transition-all capitalize whitespace-nowrap ${filter === s
+                                key={s.key}
+                                onClick={() => setFilter(s.key)}
+                                className={`px-5 py-2 rounded-md text-xs font-bold transition-all capitalize whitespace-nowrap ${filter === s.key
                                     ? 'bg-white dark:bg-dark-soft shadow-sm text-gray-900 dark:text-white'
                                     : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'
                                     }`}
                             >
-                                {s}
+                                {$language === 'en' ? s.en : s.es}
                             </button>
                         ))}
+                    </div>
+
+                    {/* Date Filters */}
+                    <div className="flex items-center gap-2">
+                        <div className="relative">
+                            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <input
+                                type="date"
+                                value={dateFrom}
+                                onChange={(e) => setDateFrom(e.target.value)}
+                                className="pl-10 pr-3 py-2 bg-white dark:bg-dark-soft border border-gray-200 dark:border-white/10 rounded-lg text-xs font-medium text-gray-700 dark:text-gray-300 focus:border-primary outline-none"
+                                title={$language === 'en' ? 'From date' : 'Desde fecha'}
+                            />
+                        </div>
+                        <span className="text-gray-400">-</span>
+                        <div className="relative">
+                            <input
+                                type="date"
+                                value={dateTo}
+                                onChange={(e) => setDateTo(e.target.value)}
+                                className="px-3 py-2 bg-white dark:bg-dark-soft border border-gray-200 dark:border-white/10 rounded-lg text-xs font-medium text-gray-700 dark:text-gray-300 focus:border-primary outline-none"
+                                title={$language === 'en' ? 'To date' : 'Hasta fecha'}
+                            />
+                        </div>
+                        {(dateFrom || dateTo) && (
+                            <button
+                                onClick={() => { setDateFrom(''); setDateTo(''); }}
+                                className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                                title={$language === 'en' ? 'Clear dates' : 'Limpiar fechas'}
+                            >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        )}
                     </div>
 
                     {/* Create Booking Button */}
@@ -163,7 +298,7 @@ export default function BookingsTable() {
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
                         </svg>
-                        Create Booking
+                        {$language === 'en' ? 'Create Booking' : 'Crear Reserva'}
                     </button>
                 </div>
             </div>
@@ -174,12 +309,42 @@ export default function BookingsTable() {
                 onSuccess={() => fetchBookings()} 
             />
 
+            <DeleteConfirmModal
+                isOpen={deleteModalOpen}
+                onClose={() => { setDeleteModalOpen(false); setBookingToDelete(null); }}
+                onConfirm={confirmDelete}
+                bookingInfo={bookingToDelete ? { customerName: bookingToDelete.customerName, tourName: bookingToDelete.tourName } : { customerName: '', tourName: '' }}
+            />
+
             {/* Table */}
-            <div className="bg-white dark:bg-dark-soft rounded-3xl border border-gray-200 dark:border-white/5 overflow-hidden shadow-sm transition-colors duration-300">
+            <div className="bg-white dark:bg-[#0A0A0A] rounded-2xl border border-gray-200 dark:border-white/5 overflow-hidden shadow-sm transition-colors duration-300">
                 {loading ? (
-                    <div className="p-8 space-y-3">
-                        {[1, 2, 3, 4, 5].map((i) => (
-                            <div key={i} className="h-16 bg-gray-100 dark:bg-white/5 rounded-xl animate-pulse" />
+                    <div className="p-6">
+                        {/* Header skeleton */}
+                        <div className="flex items-center gap-4 pb-4 mb-4 border-b border-gray-100 dark:border-white/5">
+                            <div className="w-24 h-4 bg-gray-100 dark:bg-white/5 rounded animate-pulse" />
+                            <div className="w-32 h-4 bg-gray-100 dark:bg-white/5 rounded animate-pulse" />
+                            <div className="w-40 h-4 bg-gray-100 dark:bg-white/5 rounded animate-pulse hidden md:block" />
+                            <div className="w-20 h-4 bg-gray-100 dark:bg-white/5 rounded animate-pulse" />
+                            <div className="w-24 h-4 bg-gray-100 dark:bg-white/5 rounded animate-pulse" />
+                            <div className="w-16 h-4 bg-gray-100 dark:bg-white/5 rounded animate-pulse ml-auto" />
+                        </div>
+                        {/* Row skeletons */}
+                        {[1, 2, 3, 4, 5, 6].map((i) => (
+                            <div key={i} className="flex items-center gap-4 py-4 border-b border-gray-50 dark:border-white/5 last:border-0">
+                                <div className="w-24 h-4 bg-gray-100 dark:bg-white/5 rounded animate-pulse" />
+                                <div className="flex items-center gap-3 w-48">
+                                    <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-white/5 animate-pulse" />
+                                    <div className="space-y-2">
+                                        <div className="w-32 h-4 bg-gray-100 dark:bg-white/5 rounded animate-pulse" />
+                                        <div className="w-24 h-3 bg-gray-100 dark:bg-white/5 rounded animate-pulse" />
+                                    </div>
+                                </div>
+                                <div className="w-40 h-4 bg-gray-100 dark:bg-white/5 rounded animate-pulse hidden md:block" />
+                                <div className="w-20 h-6 bg-gray-100 dark:bg-white/5 rounded-full animate-pulse" />
+                                <div className="w-16 h-6 bg-gray-100 dark:bg-white/5 rounded-full animate-pulse" />
+                                <div className="w-16 h-8 bg-gray-100 dark:bg-white/5 rounded-xl animate-pulse ml-auto" />
+                            </div>
                         ))}
                     </div>
                 ) : filtered.length === 0 ? (
@@ -187,19 +352,19 @@ export default function BookingsTable() {
                         <svg className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                         </svg>
-                        <p className="text-gray-500 font-medium">No bookings found</p>
+                        <p className="text-gray-500 font-medium">{$language === 'en' ? 'No bookings found' : 'No se encontraron reservas'}</p>
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="w-full text-sm">
                             <thead>
                                 <tr className="border-b border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-white/5">
-                                    <th className="text-left px-6 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider">Date</th>
-                                    <th className="text-left px-6 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider">Customer</th>
-                                    <th className="text-left px-6 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider hidden md:table-cell">Tour</th>
-                                    <th className="text-left px-6 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider">Amount</th>
-                                    <th className="text-left px-6 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider">Status</th>
-                                    <th className="text-left px-6 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider">Actions</th>
+                                    <th className="text-left px-6 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider">{$language === 'en' ? 'Date' : 'Fecha'}</th>
+                                    <th className="text-left px-6 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider">{$language === 'en' ? 'Customer' : 'Cliente'}</th>
+                                    <th className="text-left px-6 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider hidden md:table-cell">{$language === 'en' ? 'Tour' : 'Tour'}</th>
+                                    <th className="text-left px-6 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider">{$language === 'en' ? 'Amount' : 'Monto'}</th>
+                                    <th className="text-left px-6 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider">{$language === 'en' ? 'Status' : 'Estado'}</th>
+                                    <th className="text-left px-6 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider">{$language === 'en' ? 'Actions' : 'Acciones'}</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100 dark:divide-white/5">
@@ -247,34 +412,158 @@ export default function BookingsTable() {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className="flex gap-2">
-                                                {booking.status === 'pending' ? (
-                                                    <>
-                                                        <button
-                                                            onClick={() => updateStatus(booking.id, 'confirmed')}
-                                                            className="p-2 rounded-xl bg-green-500/10 text-green-500 hover:bg-green-500 hover:text-white transition-all shadow-sm hover:-translate-y-0.5 active:scale-95"
-                                                            title="Confirm"
+                                            <div className="relative">
+                                                <button 
+                                                    onClick={() => setSelectedBooking(selectedBooking?.id === booking.id ? null : booking)}
+                                                    className="p-2 rounded-xl text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+                                                >
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
+                                                    </svg>
+                                                </button>
+                                                
+                                                {selectedBooking?.id === booking.id && (
+                                                    <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-[#111111] rounded-xl shadow-xl border border-gray-200 dark:border-white/10 z-50 py-2 animate-in fade-in slide-in-from-top-2">
+                                                        {booking.status === 'pending' && (
+                                                            <>
+                                                                <button 
+                                                                    onClick={() => { updateStatus(booking.id, 'confirmed'); setSelectedBooking(null); }}
+                                                                    className="w-full px-4 py-2 text-left text-sm font-medium text-green-600 hover:bg-green-500/10 flex items-center gap-2"
+                                                                >
+                                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                                                                    {$language === 'en' ? 'Confirm' : 'Confirmar'}
+                                                                </button>
+                                                                <button 
+                                                                    onClick={() => { updateStatus(booking.id, 'cancelled'); setSelectedBooking(null); }}
+                                                                    className="w-full px-4 py-2 text-left text-sm font-medium text-red-500 hover:bg-red-500/10 flex items-center gap-2"
+                                                                >
+                                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                                                                    {$language === 'en' ? 'Cancel' : 'Cancelar'}
+                                                                </button>
+                                                                <div className="border-t border-gray-100 dark:border-white/5 my-1" />
+                                                            </>
+                                                        )}
+                                                        <button 
+                                                            onClick={() => { window.open(`mailto:${booking.customer_email}?subject=Booking: ${booking.tour_name}`); setSelectedBooking(null); }}
+                                                            className="w-full px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 flex items-center gap-2"
                                                         >
-                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                                                            </svg>
+                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                                                            {$language === 'en' ? 'Send Email' : 'Enviar Email'}
                                                         </button>
-                                                        <button
-                                                            onClick={() => updateStatus(booking.id, 'cancelled')}
-                                                            className="p-2 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-sm hover:-translate-y-0.5 active:scale-95"
-                                                            title="Cancel"
+                                                        {booking.customer_phone && (
+                                                            <button 
+                                                                onClick={() => { window.open(`https://wa.me/${booking.customer_phone.replace(/[^0-9]/g, '')}`); setSelectedBooking(null); }}
+                                                                className="w-full px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 flex items-center gap-2"
+                                                            >
+                                                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
+                                                                {$language === 'en' ? 'WhatsApp' : 'WhatsApp'}
+                                                            </button>
+                                                        )}
+                                                        <button 
+                                                            onClick={() => {
+                                                                const printWindow = window.open('', '_blank');
+                                                                if (printWindow && booking) {
+                                                                    printWindow.document.write(`
+                                                                        <!DOCTYPE html>
+                                                                        <html>
+                                                                        <head>
+                                                                            <title>Booking #${booking.id.slice(0, 8)}</title>
+                                                                            <style>
+                                                                                * { margin: 0; padding: 0; box-sizing: border-box; }
+                                                                                body { font-family: 'Segoe UI', sans-serif; padding: 40px; color: #1a1a1a; max-width: 600px; margin: 0 auto; }
+                                                                                .header { display: flex; align-items: center; gap: 20px; margin-bottom: 30px; border-bottom: 2px solid #D92818; padding-bottom: 20px; }
+                                                                                .header img { width: 80px; height: 80px; object-fit: contain; }
+                                                                                .header-text h1 { color: #D92818; font-size: 24px; margin-bottom: 4px; }
+                                                                                .header-text p { color: #666; font-size: 13px; }
+                                                                                .booking-id { background: #f5f5f5; padding: 8px 16px; border-radius: 8px; font-family: monospace; font-size: 14px; color: #666; margin-bottom: 25px; text-align: center; }
+                                                                                .section { margin-bottom: 20px; }
+                                                                                .section h3 { font-size: 11px; text-transform: uppercase; color: #999; margin-bottom: 6px; letter-spacing: 1px; }
+                                                                                .section p { font-size: 16px; font-weight: 600; }
+                                                                                .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+                                                                                .status { display: inline-block; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
+                                                                                .status.pending { background: #fef3c7; color: #d97706; }
+                                                                                .status.confirmed { background: #d1fae5; color: #059669; }
+                                                                                .status.cancelled { background: #fee2e2; color: #dc2626; }
+                                                                                .total { font-size: 36px; font-weight: 800; color: #D92818; margin-top: 16px; }
+                                                                                .total-label { font-size: 12px; color: #999; text-transform: uppercase; letter-spacing: 1px; }
+                                                                                .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; text-align: center; color: #999; font-size: 12px; }
+                                                                                .footer a { color: #D92818; text-decoration: none; }
+                                                                                @media print { body { padding: 20px; } }
+                                                                            </style>
+                                                                        </head>
+                                                                        <body>
+                                                                            <div class="header">
+                                                                                <img src="/logo-optimized.png" alt="Vamos Jacó Tours" />
+                                                                                <div class="header-text">
+                                                                                    <h1>VAMOS JACÓ TOURS</h1>
+                                                                                    <p>Adventure Booking Confirmation</p>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="booking-id">Booking ID: ${booking.id.slice(0, 8).toUpperCase()}</div>
+                                                                            <div class="grid">
+                                                                                <div class="section">
+                                                                                    <h3>Customer</h3>
+                                                                                    <p>${booking.customer_name}</p>
+                                                                                </div>
+                                                                                <div class="section">
+                                                                                    <h3>Email</h3>
+                                                                                    <p style="font-size: 14px;">${booking.customer_email}</p>
+                                                                                </div>
+                                                                                <div class="section">
+                                                                                    <h3>Phone</h3>
+                                                                                    <p>${booking.customer_phone || 'N/A'}</p>
+                                                                                </div>
+                                                                                <div class="section">
+                                                                                    <h3>Tour Experience</h3>
+                                                                                    <p>${booking.tour_name}</p>
+                                                                                </div>
+                                                                                <div class="section">
+                                                                                    <h3>Tour Date</h3>
+                                                                                    <p>${new Date(booking.booking_date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                                                                                </div>
+                                                                                <div class="section">
+                                                                                    <h3>Status</h3>
+                                                                                    <span class="status ${booking.status}">${booking.status}</span>
+                                                                                </div>
+                                                                                <div class="section">
+                                                                                    <h3>Adults</h3>
+                                                                                    <p>${booking.adults}</p>
+                                                                                </div>
+                                                                                <div class="section">
+                                                                                    <h3>Children</h3>
+                                                                                    <p>${booking.children}</p>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="section">
+                                                                                <p class="total-label">Total Amount</p>
+                                                                                <p class="total">$${Number(booking.total_amount).toLocaleString()}</p>
+                                                                            </div>
+                                                                            <div class="footer">
+                                                                                <p>📍 Jacó Beach, Costa Rica | 📞 +506 2643-1234</p>
+                                                                                <p><a href="https://vamosjaco.com">vamosjaco.com</a> | Generated ${new Date().toLocaleString()}</p>
+                                                                            </div>
+                                                                        </body>
+                                                                        </html>
+                                                                    `);
+                                                                    printWindow.document.close();
+                                                                    printWindow.print();
+                                                                }
+                                                                setSelectedBooking(null);
+                                                            }}
+                                                            className="w-full px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 flex items-center gap-2"
                                                         >
-                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-                                                            </svg>
+                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+                                                            {$language === 'en' ? 'Print' : 'Imprimir'}
                                                         </button>
-                                                    </>
-                                                ) : (
-                                                    <button className="p-2 rounded-xl text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
-                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
-                                                        </svg>
-                                                    </button>
+                                                        <div className="border-t border-gray-100 dark:border-white/5 my-1" />
+                                                        <button 
+                                                            onClick={() => { deleteBooking(booking.id); }}
+                                                            className="w-full px-4 py-2 text-left text-sm font-medium text-red-500 hover:bg-red-500/10 flex items-center gap-2"
+                                                        >
+                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                                            {$language === 'en' ? 'Delete' : 'Eliminar'}
+                                                        </button>
+                                                    </div>
                                                 )}
                                             </div>
                                         </td>

@@ -1,8 +1,10 @@
 import { useState, useEffect, type ReactNode } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useStore } from '@nanostores/react';
-import { theme, toggleTheme, initTheme } from '../../store';
+import { theme, toggleTheme, initTheme, language, setLanguage, initLanguage } from '../../store';
+import { adminTranslations } from '../../lib/admin-translations';
 import AdminLogin from './AdminLogin';
+import { cardClasses, buttonVariant, background, text } from '../../lib/admin-design-tokens';
 
 type AdminView = 'dashboard' | 'tours' | 'bookings' | 'subscribers' | 'gallery' | 'team' | 'website' | 'emails';
 
@@ -10,15 +12,15 @@ interface Props {
     children?: ReactNode;
 }
 
-const NAV_ITEMS: { id: AdminView; label: string; icon: string }[] = [
-    { id: 'dashboard', label: 'Dashboard', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
-    { id: 'tours', label: 'Tours', icon: 'M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7' },
-    { id: 'bookings', label: 'Bookings', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01' },
-    { id: 'subscribers', label: 'Subscribers', icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
-    { id: 'gallery', label: 'Gallery', icon: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z' },
-    { id: 'team', label: 'Team', icon: 'M17 20h5V4H2v16h5m10 0v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5m10 0H7M12 11a4 4 0 100-8 4 4 0 000 8z' },
-    { id: 'website', label: 'Components', icon: 'M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z' },
-    { id: 'emails', label: 'Email Tests', icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
+const getNavItems = (t: typeof adminTranslations.en) => [
+    { id: 'dashboard' as AdminView, label: t.nav.dashboard, icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
+    { id: 'tours' as AdminView, label: t.nav.tours, icon: 'M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7' },
+    { id: 'bookings' as AdminView, label: t.nav.bookings, icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01' },
+    { id: 'subscribers' as AdminView, label: t.nav.subscribers, icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
+    { id: 'gallery' as AdminView, label: t.nav.gallery, icon: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z' },
+    { id: 'team' as AdminView, label: t.nav.team, icon: 'M17 20h5V4H2v16h5m10 0v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5m10 0H7M12 11a4 4 0 100-8 4 4 0 000 8z' },
+    { id: 'website' as AdminView, label: t.nav.components, icon: 'M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z' },
+    { id: 'emails' as AdminView, label: t.nav.emailTests, icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
 ];
 
 export default function AdminLayout({ children }: Props) {
@@ -36,15 +38,66 @@ export default function AdminLayout({ children }: Props) {
     const [userEmail, setUserEmail] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
     const [toast, setToast] = useState<{message: string, type?: 'info' | 'success'} | null>(null);
+    const [isSearchFocused, setIsSearchFocused] = useState(false);
 
     const showToast = (message: string, type: 'info' | 'success' = 'info') => {
         setToast({ message, type });
         setTimeout(() => setToast(null), 3000);
     };
     const $theme = useStore(theme);
+    const $language = useStore(language);
+    const t = adminTranslations[$language];
+
+    // Keyboard shortcuts
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            // Ignore if typing in input
+            if ((e.target as HTMLElement).tagName === 'INPUT' || (e.target as HTMLElement).tagName === 'TEXTAREA') {
+                return;
+            }
+
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                const searchInput = document.querySelector('input[placeholder*="Search"]') as HTMLInputElement;
+                searchInput?.focus();
+            }
+            if (e.key === 'Escape') {
+                setSidebarOpen(false);
+                setSearchQuery('');
+            }
+            if ((e.metaKey || e.ctrlKey) && e.key === 'b') {
+                e.preventDefault();
+                setSidebarOpen(prev => !prev);
+            }
+            // Quick navigation shortcuts
+            if (e.key === 'g' && !e.metaKey && !e.ctrlKey) {
+                e.preventDefault();
+                setCurrentView('dashboard');
+            }
+            if (e.key === 't' && !e.metaKey && !e.ctrlKey) {
+                e.preventDefault();
+                setCurrentView('tours');
+            }
+            if (e.key === 'r' && !e.metaKey && !e.ctrlKey) {
+                e.preventDefault();
+                setCurrentView('bookings');
+            }
+            if (e.key === 's' && !e.metaKey && !e.ctrlKey) {
+                e.preventDefault();
+                setCurrentView('subscribers');
+            }
+            if (e.key === 'g' && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault();
+                setCurrentView('gallery');
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
 
     useEffect(() => {
         initTheme();
+        initLanguage();
     }, []);
 
     // Lazy-import view components
@@ -150,18 +203,18 @@ export default function AdminLayout({ children }: Props) {
 
                 {/* Navigation */}
                 <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-                    {NAV_ITEMS.filter(item => 
+                    {getNavItems(t as any).filter(item => 
                         item.label.toLowerCase().includes(searchQuery.toLowerCase())
                     ).map((item) => (
                         <button
                             key={item.id}
                             onClick={() => { setCurrentView(item.id); setSidebarOpen(false); localStorage.setItem('admin_view', item.id); }}
                             className={`
-                w-full flex items-center gap-3 px-4 py-3 rounded-[14px] text-sm font-medium transition-all duration-300
+                w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300
                 ${currentView === item.id
-                                    ? 'bg-primary/10 text-primary translate-x-1'
-                                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 hover:translate-x-1'
-                                }
+                                ? 'bg-primary/10 text-primary translate-x-1'
+                                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 hover:translate-x-1'
+                            }
               `}
                         >
                             <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -170,7 +223,7 @@ export default function AdminLayout({ children }: Props) {
                             {item.label}
                         </button>
                     ))}
-                    {NAV_ITEMS.filter(item => item.label.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
+                    {getNavItems(t as any).filter(item => item.label.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
                         <div className="px-4 py-2 text-xs text-gray-500 italic">No sections found</div>
                     )}
                 </nav>
@@ -178,33 +231,56 @@ export default function AdminLayout({ children }: Props) {
                 {/* Quick Actions & User */}
                 <div className="px-4 py-6 border-t border-gray-200 dark:border-white/5">
                     {/* Quick Stats Widget */}
-                    <div className="bg-gradient-to-br from-primary/10 to-brand-orange/10 dark:from-primary/20 dark:to-brand-orange/20 rounded-2xl p-4 mb-4 border border-primary/10">
+                    <div className="bg-gradient-to-br from-primary/10 to-brand-orange/10 dark:from-primary/20 dark:to-brand-orange/20 rounded-lg p-4 mb-4 border border-primary/10">
                         <div className="flex items-center gap-3 mb-2">
                             <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
                                 <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                             </div>
-                            <span className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wider">Quick Note</span>
+                            <span className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wider">{t.sidebar.quickNote}</span>
                         </div>
-                        <p className="text-[10px] text-gray-500 dark:text-gray-400 leading-relaxed font-medium">Use the "Create Tour" button above to add new adventures instantly.</p>
+                        <p className="text-[10px] text-gray-500 dark:text-gray-400 leading-relaxed font-medium">{t.sidebar.quickNoteText}</p>
                     </div>
 
                     <div className="flex items-center gap-3 mb-4 px-2">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-orange/20 to-primary/20 flex items-center justify-center text-brand-orange text-sm font-bold shadow-sm border border-brand-orange/10">
+                        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-brand-orange/20 to-primary/20 flex items-center justify-center text-brand-orange text-sm font-bold shadow-sm border border-brand-orange/10">
                             {userEmail?.charAt(0)?.toUpperCase() || 'A'}
                         </div>
                         <div className="flex flex-col min-w-0">
                             <span className="text-gray-900 dark:text-white text-sm font-bold truncate">{userEmail.split('@')[0] || 'Admin'}</span>
-                            <span className="text-gray-500 dark:text-gray-500 text-[10px] truncate font-bold uppercase tracking-widest">Administrator</span>
+                            <span className="text-gray-500 dark:text-gray-500 text-[10px] truncate font-bold uppercase tracking-widest">{t.sidebar.administrator}</span>
+                        </div>
+                    </div>
+
+                    {/* Keyboard Shortcuts Hint */}
+                    <div className="px-2 py-3 bg-gray-100 dark:bg-white/5 rounded-lg mb-4">
+                        <p className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider mb-2">{$language === 'en' ? 'Shortcuts' : 'Atajos'}</p>
+                        <div className="space-y-1 text-[10px]">
+                            <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                                <span>{$language === 'en' ? 'Search' : 'Buscar'}</span>
+                                <kbd className="px-1.5 py-0.5 bg-white dark:bg-black/30 rounded text-gray-500 font-mono">⌘K</kbd>
+                            </div>
+                            <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                                <span>{$language === 'en' ? 'Dashboard' : 'Panel'}</span>
+                                <kbd className="px-1.5 py-0.5 bg-white dark:bg-black/30 rounded text-gray-500 font-mono">G</kbd>
+                            </div>
+                            <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                                <span>{$language === 'en' ? 'Tours' : 'Tours'}</span>
+                                <kbd className="px-1.5 py-0.5 bg-white dark:bg-black/30 rounded text-gray-500 font-mono">T</kbd>
+                            </div>
+                            <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                                <span>{$language === 'en' ? 'Bookings' : 'Reservas'}</span>
+                                <kbd className="px-1.5 py-0.5 bg-white dark:bg-black/30 rounded text-gray-500 font-mono">R</kbd>
+                            </div>
                         </div>
                     </div>
                     <button
                         onClick={handleLogout}
-                        className="w-full flex items-center gap-2 px-4 py-2 rounded-xl text-sm text-gray-600 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/5 transition-colors"
+                        className="w-full flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/5 transition-colors"
                     >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                         </svg>
-                        Sign Out
+                        {t.common.signOut}
                     </button>
                 </div>
             </aside>
@@ -216,35 +292,40 @@ export default function AdminLayout({ children }: Props) {
                     <div className="flex items-center gap-4 flex-1">
                         <button
                             onClick={() => setSidebarOpen(true)}
-                            className="lg:hidden w-10 h-10 rounded-xl bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition"
+                            className="lg:hidden w-10 h-10 rounded-lg bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition"
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                             </svg>
                         </button>
 
-                        {/* Search Bar */}
-                        <div className="hidden md:flex items-center bg-gray-50 dark:bg-[#111111] rounded-full px-5 py-2.5 w-80 border border-gray-200 dark:border-white/5 focus-within:border-primary transition-all duration-300 hover:bg-gray-100 dark:hover:bg-white/5 focus-within:w-96 shadow-sm">
-                            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                        {/* Search Bar with Keyboard Shortcut */}
+                        <div className="hidden md:flex items-center bg-gray-50 dark:bg-[#111111] rounded-full px-5 py-2.5 w-80 border border-gray-200 dark:border-white/5 focus-within:border-primary transition-all duration-300 hover:bg-gray-100 dark:hover:bg-white/5 focus-within:w-96 shadow-sm group">
+                            <svg className="w-4 h-4 text-gray-400 group-focus-within:text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                             <input 
                                 type="text" 
-                                placeholder="Search sections, tours..." 
+                                placeholder={t.common.search} 
                                 className="bg-transparent border-none outline-none text-sm text-gray-900 dark:text-white ml-3 w-full placeholder-gray-400 dark:placeholder-gray-500 font-bold uppercase tracking-widest text-[10px]" 
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
+                                onFocus={() => setIsSearchFocused(true)}
+                                onBlur={() => setIsSearchFocused(false)}
                             />
+                            <kbd className={`hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-gray-200 dark:bg-white/10 text-gray-500 dark:text-gray-400 text-[10px] font-medium transition-opacity ${isSearchFocused ? 'opacity-0' : 'opacity-100'}`}>
+                                <span className="text-xs">⌘</span>K
+                            </kbd>
                         </div>
                     </div>
                     <div className="flex items-center gap-4">
-                        <button onClick={() => showToast('You are all caught up! No recent alerts.')} className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 dark:bg-[#111111] border border-gray-200 dark:border-white/5 text-gray-500 dark:text-gray-400 hover:text-primary transition-all" aria-label="Notifications">
+                        <button onClick={() => showToast(t.notifications.noAlerts)} className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 dark:bg-[#111111] border border-gray-200 dark:border-white/5 text-gray-500 dark:text-gray-400 hover:text-primary transition-all" aria-label="Notifications">
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
                         </button>
                         
-                        <button onClick={() => setCurrentView('tours')} className="hidden sm:flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest transition-premium shadow-xl hover:-translate-y-0.5 shadow-primary/20 hover:shadow-primary/40 active:scale-95 leading-none">
+                        <button onClick={() => setCurrentView('tours')} className="hidden sm:flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all shadow-lg hover:-translate-y-0.5 shadow-primary/20 hover:shadow-primary/40 active:scale-95 leading-none">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
                             </svg>
-                            Create Tour
+                            {t.common.createTour}
                         </button>
 
                         <div className="w-px h-6 bg-gray-200 dark:bg-white/10 hidden sm:block"></div>
@@ -273,6 +354,15 @@ export default function AdminLayout({ children }: Props) {
                             </span>
                         </button>
 
+                        {/* Language Toggle */}
+                        <button
+                            onClick={() => setLanguage($language === 'en' ? 'es' : 'en')}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-200 dark:border-white/10 bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-300 hover:text-primary transition-all text-xs font-bold uppercase tracking-widest"
+                            title={$language === 'en' ? 'Cambiar a Español' : 'Switch to English'}
+                        >
+                            <span>{$language === 'en' ? '🇺🇸 EN' : '🇨🇷 ES'}</span>
+                        </button>
+
                         <a
                             href="/"
                             target="_blank"
@@ -282,7 +372,7 @@ export default function AdminLayout({ children }: Props) {
                             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                             </svg>
-                            View Site
+                            {t.common.viewSite}
                         </a>
                     </div>
                 </header>
@@ -302,7 +392,7 @@ export default function AdminLayout({ children }: Props) {
                 {/* Global Toast Notification */}
                 <div className={`fixed bottom-6 right-6 z-[100] transition-all duration-300 transform ${toast ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0 pointer-events-none'}`}>
                     {toast && (
-                        <div className="flex items-center gap-3 px-5 py-4 bg-gray-900 dark:bg-[#111111] border border-gray-700 dark:border-white/10 shadow-2xl rounded-2xl">
+                        <div className="flex items-center gap-3 px-5 py-4 bg-gray-900 dark:bg-[#111111] border border-gray-700 dark:border-white/10 shadow-2xl rounded-lg">
                             {toast.type === 'success' ? (
                                 <div className="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center shrink-0">
                                     <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>

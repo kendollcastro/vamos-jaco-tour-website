@@ -107,7 +107,7 @@ export default function SalesChart({ onToast }: { onToast?: (message: string) =>
     }
 
     return (
-        <div className="bg-white dark:bg-dark-soft rounded-2xl border border-gray-200 dark:border-white/5 p-6 shadow-sm transition-colors duration-300">
+        <div className="bg-white dark:bg-[#0A0A0A] rounded-2xl border border-gray-200 dark:border-white/5 p-6 shadow-sm transition-colors duration-300">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                 <div>
                     <h3 className="text-gray-900 dark:text-white font-bold text-lg">Revenue Trends</h3>
