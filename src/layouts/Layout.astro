@@ -22,7 +22,7 @@ const {
 	keywords = "Costa Rica tours, Jacó tours, ATV tours Jacó, jet ski Costa Rica, surfing Jacó, adventure tours, flyboard, zipline, Vamos Jacó",
 	robots = "index, follow",
 	jsonLd,
-    preloadImage,
+	preloadImage,
 	hideChrome = false,
 } = Astro.props;
 
@@ -57,8 +57,17 @@ const schemas = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [];
 		<meta name="robots" content={robots} />
 		<link rel="canonical" href={canonicalURL.href} />
 
-        <!-- LCP Image Preload -->
-        {preloadImage && <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />}
+		<!-- LCP Image Preload -->
+		{
+			preloadImage && (
+				<link
+					rel="preload"
+					as="image"
+					href={preloadImage}
+					fetchpriority="high"
+				/>
+			)
+		}
 
 		<!-- Open Graph / Social -->
 		<meta property="og:type" content="website" />
@@ -67,7 +76,10 @@ const schemas = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [];
 		<meta property="og:image" content={ogImage} />
 		<meta property="og:image:width" content="1200" />
 		<meta property="og:image:height" content="630" />
-		<meta property="og:image:alt" content="Vamos Jacó Tours Adventure Preview" />
+		<meta
+			property="og:image:alt"
+			content="Vamos Jacó Tours Adventure Preview"
+		/>
 		<meta property="og:url" content={canonicalURL.href} />
 		<meta property="og:site_name" content="Vamos Jacó Tours" />
 		<meta property="og:locale" content="en_US" />
@@ -89,6 +101,20 @@ const schemas = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [];
 		<meta http-equiv="X-Content-Type-Options" content="nosniff" />
 		<meta name="referrer" content="strict-origin-when-cross-origin" />
 
+		<!-- Google Analytics -->
+		<script
+			async
+			src="https://www.googletagmanager.com/gtag/js?id=G-9JE06Z1NV3"
+		></script>
+		<script is:inline>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag("js", new Date());
+			gtag("config", "G-9JE06Z1NV3");
+		</script>
+
 		<!-- JSON-LD Structured Data -->
 		{
 			schemas.map((schema) => (
@@ -101,9 +127,16 @@ const schemas = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [];
 
 		<!-- Resource Hints -->
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+		<link
+			rel="preconnect"
+			href="https://fonts.gstatic.com"
+			crossorigin="anonymous"
+		/>
 		<link rel="preconnect" href="https://images.unsplash.com" />
-		<link rel="preconnect" href="https://yebtzzqngiurwddrvhry.supabase.co" />
+		<link
+			rel="preconnect"
+			href="https://yebtzzqngiurwddrvhry.supabase.co"
+		/>
 
 		<!-- Google Fonts: Preloaded for performance -->
 		<link
