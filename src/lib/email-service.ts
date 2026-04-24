@@ -23,7 +23,7 @@ interface BookingEmailData {
 
 const BRAND_COLOR = '#D92818';
 const ACCENT_COLOR = '#03A696';
-const LOGO_URL = 'https://vamosjt.com/logo.png'; // Production Logo Fallback
+const LOGO_URL = 'https://www.vamosjacotours.com/logo.png'; // Production Logo Fallback
 
 /**
  * Fetches a setting from the database with a local fallback
@@ -186,7 +186,7 @@ export async function sendBookingNotifications(data: BookingEmailData, logoOverr
                             </table>
 
                             <div style="margin-top: 40px; text-align: center;">
-                                <a href="https://vamosjt.com/admin" style="background: #111827; color: white; padding: 18px 40px; text-decoration: none; border-radius: 12px; font-weight: 800; display: inline-block; text-transform: uppercase; letter-spacing: 1px;">View in Dashboard</a>
+                                <a href="https://www.vamosjacotours.com/admin" style="background: #111827; color: white; padding: 18px 40px; text-decoration: none; border-radius: 12px; font-weight: 800; display: inline-block; text-transform: uppercase; letter-spacing: 1px;">View in Dashboard</a>
                             </div>
                         </div>
                     </div>

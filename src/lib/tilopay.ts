@@ -7,7 +7,7 @@ const TILOPAY_API_PASSWORD = import.meta.env.TILOPAY_API_PASSWORD;
 const TILOPAY_API_KEY = import.meta.env.TILOPAY_API_KEY;
 
 // Production domain for TiloPay redirect URLs
-const PUBLIC_DOMAIN = 'https://vamos-jaco-tour-website.vercel.app';
+const PUBLIC_DOMAIN = 'https://www.vamosjacotours.com';
 
 interface TilopayCustomerInfo {
     firstName: string;
