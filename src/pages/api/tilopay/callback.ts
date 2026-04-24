@@ -7,6 +7,8 @@ export const prerender = false;
 export const GET: APIRoute = async ({ request }) => handleCallback(request);
 export const POST: APIRoute = async ({ request }) => handleCallback(request);
 
+const SITE_URL = 'https://vamosjt.vercel.app';
+
 async function handleCallback(request: Request): Promise<ARoute.response> {
     try {
         const url = new URL(request.url);
@@ -21,30 +23,29 @@ async function handleCallback(request: Request): Promise<ARoute.response> {
             } catch {}
         }
 
-        console.log("TiloPay callback params:", JSON.stringify(params));
+        console.log("TiloPay callback:", JSON.stringify(params));
 
         const orderNumber = params.order || params.orderNumber || params.pending_id || url.searchParams.get('order') || '';
         const tpt = params.tpt || params.tilopayTransaction || '';
         const status = (params.status || params.code || params.responseCode || '').toLowerCase();
         
         const isSuccess = status === 'success' || status === '1' || status === 'approved' || status === 'completed' || status === 'true';
-        
-        console.log("Order:", orderNumber, "TPT:", tpt, "Status:", status, "Success:", isSuccess);
 
         if (!orderNumber) {
-            return new Response(null, { status: 302, headers: { Location: '/?payment=error' } });
+            console.error("Missing order reference");
+            return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/?payment=error` } });
         }
 
         if (!isSuccess) {
-            return new Response(null, { status: 302, headers: { Location: '/?payment=failed' } });
+            console.log("Payment failed/cancelled");
+            return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/?payment=failed` } });
         }
 
         if (!supabaseAdmin) {
-            console.error("No supabase admin");
-            return new Response(null, { status: 302, headers: { Location: '/?payment=error' } });
+            console.error("Supabase not available");
+            return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/?payment=error` } });
         }
 
-        // Extract booking data from URL params
         const tourId = params.tour_id || 'unknown';
         const tourName = params.tourName || params.tour_name || 'Tour';
         const customerName = params.customerName || params.customer_name || 'Customer';
@@ -56,7 +57,7 @@ async function handleCallback(request: Request): Promise<ARoute.response> {
         const totalAmount = parseFloat(params.total_amount || params.amount || '0');
         const language = params.language || 'en';
 
-        console.log("Creating booking:", { tourName, customerName, totalAmount, adults, children });
+        console.log("Creating booking:", { tourName, customerName, totalAmount });
 
         const bookingId = crypto.randomUUID();
         const tilopayId = tpt || 'TILOPAY_SUCCESS';
@@ -79,7 +80,7 @@ async function handleCallback(request: Request): Promise<ARoute.response> {
 
         if (error) {
             console.error("Insert error:", error);
-            return new Response(null, { status: 302, headers: { Location: '/?payment=error' } });
+            return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/?payment=error` } });
         }
 
         console.log("Booking created:", bookingId);
@@ -96,10 +97,10 @@ async function handleCallback(request: Request): Promise<ARoute.response> {
             language: language as 'en' | 'es'
         }).catch(e => console.error("Email error:", e));
 
-        return new Response(null, { status: 302, headers: { Location: `/payment-success?order=${bookingId}` } });
+        return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/payment-success?order=${bookingId}` } });
 
     } catch (err) {
         console.error("Callback error:", err);
-        return new Response(null, { status: 302, headers: { Location: '/?payment=error' } });
+        return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/?payment=error` } });
     }
 }
