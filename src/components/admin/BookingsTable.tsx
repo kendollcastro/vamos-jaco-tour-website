@@ -5,6 +5,7 @@ import { language } from '../../store';
 import { adminTranslations } from '../../lib/admin-translations';
 import AddBookingModal from './AddBookingModal';
 import DeleteConfirmModal from './DeleteConfirmModal';
+import BookingDetailsModal from './BookingDetailsModal';
 
 interface Booking {
     id: string;
@@ -13,25 +14,30 @@ interface Booking {
     customer_email: string;
     customer_phone: string;
     booking_date: string;
+    booking_time?: string;
     adults: number;
     children: number;
     total_amount: number;
-    status: 'pending' | 'confirmed' | 'cancelled';
+    status: 'pending' | 'paid' | 'office' | 'confirmed' | 'completed' | 'cancelled';
     tilopay_order_id?: string;
+    tilopay_response?: Record<string, any>;
     created_at: string;
 }
 
-const STATUS_STYLES: Record<string, string> = {
-    pending: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
-    confirmed: 'bg-green-500/10 text-green-400 border-green-500/20',
-    cancelled: 'bg-red-500/10 text-red-400 border-red-500/20',
+const STATUS_STYLES: Record<string, { light: string; dark: string }> = {
+    pending: { light: 'bg-yellow-100 text-yellow-700 border-yellow-200', dark: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' },
+    paid: { light: 'bg-green-100 text-green-700 border-green-200', dark: 'bg-green-500/20 text-green-400 border-green-500/30' },
+    office: { light: 'bg-blue-100 text-blue-700 border-blue-200', dark: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
+    confirmed: { light: 'bg-emerald-100 text-emerald-700 border-emerald-200', dark: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' },
+    completed: { light: 'bg-gray-100 text-gray-600 border-gray-200', dark: 'bg-gray-500/20 text-gray-400 border-gray-500/30' },
+    cancelled: { light: 'bg-red-100 text-red-700 border-red-200', dark: 'bg-red-500/20 text-red-400 border-red-500/30' },
 };
 
 const DEMO_BOOKINGS: Booking[] = [
-    { id: '1', tour_name: 'ATV Mountain Adventure', customer_name: 'Sarah Johnson', customer_email: 'sarah@email.com', customer_phone: '+1 555-0101', booking_date: new Date().toISOString().split('T')[0], adults: 2, children: 1, total_amount: 180, status: 'confirmed', created_at: new Date().toISOString() },
+    { id: '1', tour_name: 'ATV Mountain Adventure', customer_name: 'Sarah Johnson', customer_email: 'sarah@email.com', customer_phone: '+1 555-0101', booking_date: new Date().toISOString().split('T')[0], adults: 2, children: 1, total_amount: 180, status: 'paid', tilopay_order_id: 'TIL-2024-ABC123', tilopay_response: { orderNumber: 'ORD-001', authorizationCode: 'AUTH123', cardBrand: 'Visa', lastFour: '4242' }, created_at: new Date().toISOString() },
     { id: '2', tour_name: 'Jet Ski Ocean Thrill', customer_name: 'Mike Chen', customer_email: 'mike@email.com', customer_phone: '+1 555-0102', booking_date: new Date().toISOString().split('T')[0], adults: 2, children: 0, total_amount: 240, status: 'pending', created_at: new Date().toISOString() },
-    { id: '3', tour_name: 'Side by Side Buggy Tour', customer_name: 'Ana García', customer_email: 'ana@email.com', customer_phone: '+506 8888-1234', booking_date: new Date(Date.now() + 86400000).toISOString().split('T')[0], adults: 4, children: 2, total_amount: 600, status: 'pending', created_at: new Date(Date.now() - 3600000).toISOString() },
-    { id: '4', tour_name: 'Surf Lessons', customer_name: 'James Wilson', customer_email: 'james@email.com', customer_phone: '+1 555-0104', booking_date: new Date(Date.now() - 86400000).toISOString().split('T')[0], adults: 1, children: 0, total_amount: 70, status: 'confirmed', created_at: new Date(Date.now() - 86400000).toISOString() },
+    { id: '3', tour_name: 'Side by Side Buggy Tour', customer_name: 'Ana García', customer_email: 'ana@email.com', customer_phone: '+506 8888-1234', booking_date: new Date(Date.now() + 86400000).toISOString().split('T')[0], adults: 4, children: 2, total_amount: 600, status: 'office', created_at: new Date(Date.now() - 3600000).toISOString() },
+    { id: '4', tour_name: 'Surf Lessons', customer_name: 'James Wilson', customer_email: 'james@email.com', customer_phone: '+1 555-0104', booking_date: new Date(Date.now() - 86400000).toISOString().split('T')[0], adults: 1, children: 0, total_amount: 70, status: 'completed', created_at: new Date(Date.now() - 86400000).toISOString() },
     { id: '5', tour_name: 'Flyboard Experience', customer_name: 'Laura Rodríguez', customer_email: 'laura@email.com', customer_phone: '+506 7777-5678', booking_date: new Date(Date.now() - 172800000).toISOString().split('T')[0], adults: 2, children: 0, total_amount: 160, status: 'cancelled', created_at: new Date(Date.now() - 172800000).toISOString() },
     { id: '6', tour_name: 'Slingshot Rental', customer_name: 'Carlos Méndez', customer_email: 'carlos@email.com', customer_phone: '+506 6666-4321', booking_date: new Date().toISOString().split('T')[0], adults: 1, children: 0, total_amount: 350, status: 'confirmed', created_at: new Date(Date.now() - 7200000).toISOString() },
 ];
@@ -51,6 +57,8 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
     const [bookingToDelete, setBookingToDelete] = useState<{id: string; customerName: string; tourName: string} | null>(null);
     const [dateFrom, setDateFrom] = useState('');
     const [dateTo, setDateTo] = useState('');
+    const [detailsModalOpen, setDetailsModalOpen] = useState(false);
+    const [selectedBookingDetails, setSelectedBookingDetails] = useState<Booking | null>(null);
     const isDemo = !supabase;
 
     async function handleRefresh() {
@@ -92,6 +100,8 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
         if (error) {
             console.error('Error fetching bookings:', error);
         }
+        
+        console.log('Bookings fetched:', data);
         setBookings((data as Booking[]) || []);
         setLoading(false);
     }
@@ -237,7 +247,10 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                         {[
                             { key: 'all', en: 'All', es: 'Todos' },
                             { key: 'pending', en: 'Pending', es: 'Pendiente' },
+                            { key: 'paid', en: 'Paid', es: 'Pagado' },
+                            { key: 'office', en: 'Office', es: 'Oficina' },
                             { key: 'confirmed', en: 'Confirmed', es: 'Confirmado' },
+                            { key: 'completed', en: 'Completed', es: 'Completado' },
                             { key: 'cancelled', en: 'Cancelled', es: 'Cancelado' }
                         ].map((s) => (
                             <button
@@ -314,6 +327,12 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                 onClose={() => { setDeleteModalOpen(false); setBookingToDelete(null); }}
                 onConfirm={confirmDelete}
                 bookingInfo={bookingToDelete ? { customerName: bookingToDelete.customerName, tourName: bookingToDelete.tourName } : { customerName: '', tourName: '' }}
+            />
+
+            <BookingDetailsModal
+                isOpen={detailsModalOpen}
+                onClose={() => { setDetailsModalOpen(false); setSelectedBookingDetails(null); }}
+                booking={selectedBookingDetails}
             />
 
             {/* Table */}
@@ -397,17 +416,24 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                                         </td>
                                         <td className="px-6 py-4">
                                             <span className="text-gray-900 dark:text-white font-black text-base">${Number(booking.total_amount).toLocaleString()}</span>
-                                            {booking.tilopay_order_id ? (
-                                                <div className="mt-1 flex items-center gap-1.5 text-[10px] text-green-500/80 font-mono font-bold bg-green-500/10 w-max px-2 py-0.5 rounded border border-green-500/20" title="Tilopay Transition ID">
+                                            {booking.tilopay_order_id && (
+                                                <div className="mt-1 flex items-center gap-1.5 text-[10px] text-green-500/80 font-mono font-bold bg-green-500/10 w-max px-2 py-0.5 rounded border border-green-500/20" title="Tilopay Order ID">
                                                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
-                                                    {booking.tilopay_order_id.substring(0, 16)}...
+                                                    Paid
                                                 </div>
-                                            ) : (
+                                            )}
+                                            {!booking.tilopay_order_id && (
                                                 <div className="mt-1 text-[10px] text-gray-400 font-medium">Cash / Manual</div>
                                             )}
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className={`inline-flex px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm ${STATUS_STYLES[booking.status] || ''}`}>
+                                            <span className={`inline-flex px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm ${
+                                                STATUS_STYLES[booking.status] 
+                                                ? (typeof document !== 'undefined' && document.documentElement.classList.contains('dark')
+                                                    ? STATUS_STYLES[booking.status].dark 
+                                                    : STATUS_STYLES[booking.status].light)
+                                                : STATUS_STYLES.pending.light
+                                            }`}>
                                                 {booking.status}
                                             </span>
                                         </td>
@@ -422,9 +448,41 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                                                     </svg>
                                                 </button>
                                                 
+                                                {/* Quick View Button - Open Details Modal */}
+                                                <button 
+                                                    onClick={() => { setSelectedBookingDetails(booking); setDetailsModalOpen(true); }}
+                                                    className="ml-2 p-2 rounded-xl text-gray-400 hover:text-primary hover:bg-primary/10 transition-colors"
+                                                    title={$language === 'en' ? 'View Details' : 'Ver Detalles'}
+                                                >
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                    </svg>
+                                                </button>
+                                                
                                                 {selectedBooking?.id === booking.id && (
                                                     <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-[#111111] rounded-xl shadow-xl border border-gray-200 dark:border-white/10 z-50 py-2 animate-in fade-in slide-in-from-top-2">
                                                         {booking.status === 'pending' && (
+                                                            <>
+                                                                <button 
+                                                                    onClick={() => { updateStatus(booking.id, 'paid'); setSelectedBooking(null); }}
+                                                                    className="w-full px-4 py-2 text-left text-sm font-medium text-green-600 hover:bg-green-500/10 flex items-center gap-2"
+                                                                >
+                                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                                                                    {$language === 'en' ? 'Mark as Paid' : 'Marcar como Pagado'}
+                                                                </button>
+                                                                <button 
+                                                                    onClick={() => { updateStatus(booking.id, 'office'); setSelectedBooking(null); }}
+                                                                    className="w-full px-4 py-2 text-left text-sm font-medium text-blue-600 hover:bg-blue-500/10 flex items-center gap-2"
+                                                                >
+                                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m0 0H3m2 0h5M9 7h1m1 0h1m-1 0v11a2 2 0 01-2 2h2m4 0h2"/></svg>
+                                                                    {$language === 'en' ? 'Mark as Office' : 'Marcar como Oficina'}
+                                                                </button>
+                                                                <div className="border-t border-gray-100 dark:border-white/5 my-1" />
+                                                            </>
+                                                        )}
+                                                        
+                                                        {booking.status === 'paid' && (
                                                             <>
                                                                 <button 
                                                                     onClick={() => { updateStatus(booking.id, 'confirmed'); setSelectedBooking(null); }}
@@ -434,11 +492,44 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                                                                     {$language === 'en' ? 'Confirm' : 'Confirmar'}
                                                                 </button>
                                                                 <button 
-                                                                    onClick={() => { updateStatus(booking.id, 'cancelled'); setSelectedBooking(null); }}
-                                                                    className="w-full px-4 py-2 text-left text-sm font-medium text-red-500 hover:bg-red-500/10 flex items-center gap-2"
+                                                                    onClick={() => { updateStatus(booking.id, 'completed'); setSelectedBooking(null); }}
+                                                                    className="w-full px-4 py-2 text-left text-sm font-medium text-gray-600 hover:bg-gray-500/10 flex items-center gap-2"
                                                                 >
-                                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-                                                                    {$language === 'en' ? 'Cancel' : 'Cancelar'}
+                                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                                                                    {$language === 'en' ? 'Mark Completed' : 'Marcar Completado'}
+                                                                </button>
+                                                                <div className="border-t border-gray-100 dark:border-white/5 my-1" />
+                                                            </>
+                                                        )}
+
+                                                        {booking.status === 'office' && (
+                                                            <>
+                                                                <button 
+                                                                    onClick={() => { updateStatus(booking.id, 'confirmed'); setSelectedBooking(null); }}
+                                                                    className="w-full px-4 py-2 text-left text-sm font-medium text-green-600 hover:bg-green-500/10 flex items-center gap-2"
+                                                                >
+                                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                                                                    {$language === 'en' ? 'Confirm' : 'Confirmar'}
+                                                                </button>
+                                                                <button 
+                                                                    onClick={() => { updateStatus(booking.id, 'completed'); setSelectedBooking(null); }}
+                                                                    className="w-full px-4 py-2 text-left text-sm font-medium text-gray-600 hover:bg-gray-500/10 flex items-center gap-2"
+                                                                >
+                                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                                                                    {$language === 'en' ? 'Mark Completed' : 'Marcar Completado'}
+                                                                </button>
+                                                                <div className="border-t border-gray-100 dark:border-white/5 my-1" />
+                                                            </>
+                                                        )}
+
+                                                        {booking.status === 'confirmed' && (
+                                                            <>
+                                                                <button 
+                                                                    onClick={() => { updateStatus(booking.id, 'completed'); setSelectedBooking(null); }}
+                                                                    className="w-full px-4 py-2 text-left text-sm font-medium text-gray-600 hover:bg-gray-500/10 flex items-center gap-2"
+                                                                >
+                                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                                                                    {$language === 'en' ? 'Mark Completed' : 'Marcar Completado'}
                                                                 </button>
                                                                 <div className="border-t border-gray-100 dark:border-white/5 my-1" />
                                                             </>

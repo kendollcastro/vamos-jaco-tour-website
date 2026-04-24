@@ -4,8 +4,8 @@ import { supabaseAdmin } from './supabase';
 const resendApiKey = import.meta.env.RESEND_API_KEY || '';
 const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
-const ADMIN_EMAIL = 'kendollcastro@gmail.com'; 
-const FROM_EMAIL = 'onboarding@resend.dev'; // Replace with verified domain when ready (e.g., info@vamosjacotours.com)
+const ADMIN_EMAIL = 'vamosjacotours2024@gmail.com'; 
+const FROM_EMAIL = 'Vamos Jacó Tours <vamosjacotours2024@gmail.com>';
 
 interface BookingEmailData {
     customerName: string;

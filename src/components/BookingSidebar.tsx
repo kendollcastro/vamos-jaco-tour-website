@@ -36,13 +36,20 @@ export default function BookingSidebar({ tourId, tourTitle, price, durationOptio
         ? durationOptions
         : [{ duration: "Standard Tour", price: price || 0 }];
 
+    // Extract duration in hours from duration string
+    const extractHours = (durationStr: string): number => {
+        const match = durationStr.match(/(\d+)\s*(hour|hr|hora)/i);
+        return match ? parseInt(match[1]) : 2; // Default 2 hours if not found
+    };
+
     const packages = useMemo(() => {
-        const pkgMap = new Map<string, { duration: string; adultPrice: number; childPrice: number; variation_id?: number }>();
+        const pkgMap = new Map<string, { duration: string; adultPrice: number; childPrice: number; variation_id?: number; hours: number }>();
 
         rawOptions.forEach(opt => {
             const rawName = opt.duration;
             let baseName = rawName;
             let isChild = false;
+            const hours = extractHours(rawName);
 
             if (baseName.toLowerCase().includes('child') || baseName.toLowerCase().includes('niño')) {
                 isChild = true;
@@ -54,7 +61,7 @@ export default function BookingSidebar({ tourId, tourTitle, price, durationOptio
             baseName = baseName.replace(/[-\s]+$/, '');
 
             if (!pkgMap.has(baseName)) {
-                pkgMap.set(baseName, { duration: baseName, adultPrice: opt.price, childPrice: 0, variation_id: opt.variation_id });
+                pkgMap.set(baseName, { duration: baseName, adultPrice: opt.price, childPrice: 0, variation_id: opt.variation_id, hours });
             }
 
             const pkg = pkgMap.get(baseName)!;
@@ -69,6 +76,27 @@ export default function BookingSidebar({ tourId, tourTitle, price, durationOptio
         return Array.from(pkgMap.values());
     }, [rawOptions]);
 
+    // Get available times based on selected duration
+    const getAvailableTimes = () => {
+        const tourHours = packages[selectedDurationIdx]?.hours || 2;
+        const startHour = 8; // 8 AM
+        const endHour = 17; // 5 PM
+        const times: string[] = [];
+        
+        for (let h = startHour; h <= endHour - tourHours; h++) {
+            times.push(`${h.toString().padStart(2, '0')}:00`);
+        }
+        
+        return times;
+    };
+
+    const availableTimes = getAvailableTimes();
+
+    // Check if tour duration exceeds closing time
+    const selectedHours = packages[selectedDurationIdx]?.hours || 2;
+    const maxStartHour = 17 - selectedHours;
+    const isTimeUnavailable = availableTimes.length === 0;
+
     useEffect(() => {
         if (packages && packages.length > 0) {
             setBookingTour(tourId, tourTitle, packages[0].adultPrice, packages[0].childPrice, packages[0].variation_id);
@@ -78,6 +106,26 @@ export default function BookingSidebar({ tourId, tourTitle, price, durationOptio
     const handleDurationChange = (index: number) => {
         setSelectedDurationIdx(index);
         setBookingTour(tourId, tourTitle, packages[index].adultPrice, packages[index].childPrice, packages[index].variation_id);
+        
+        // Clear selected time if it's no longer available with new duration
+        const newAvailableTimes = getAvailableTimesForDuration(index);
+        if ($booking.time && !newAvailableTimes.includes($booking.time)) {
+            setBookingTime(null);
+        }
+    };
+
+    // Get available times for a specific duration index
+    const getAvailableTimesForDuration = (durationIdx: number) => {
+        const tourHours = packages[durationIdx]?.hours || 2;
+        const startHour = 8;
+        const endHour = 17;
+        const times: string[] = [];
+        
+        for (let h = startHour; h <= endHour - tourHours; h++) {
+            times.push(`${h.toString().padStart(2, '0')}:00`);
+        }
+        
+        return times;
     };
 
     const handleDateChange = (date: Date | null) => {
@@ -193,6 +241,49 @@ export default function BookingSidebar({ tourId, tourTitle, price, durationOptio
                             <span className="text-[10px] text-gray-400">Select a date in the calendar above to enable checkout.</span>
                         </div>
                     )}
+                </div>
+
+                {/* Time Selection */}
+                <div className="space-y-3">
+                    <label className="text-sm text-gray-400 font-medium uppercase tracking-wider flex items-center gap-2">
+                        <Clock className="w-4 h-4" /> <TranslatedText content={{en: "Preferred Time", es: "Hora Preferida"}} />
+                    </label>
+                    {isTimeUnavailable ? (
+                        <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4">
+                            <div className="flex items-center gap-2 text-red-400 text-sm font-medium">
+                                <Info className="w-4 h-4" />
+                                {$language === 'en' 
+                                    ? `This ${selectedHours}-hour tour cannot be scheduled within our operating hours (8am - 5pm)`
+                                    : `Este tour de ${selectedHours} horas no puede programarse dentro de nuestro horario (8am - 5pm)`
+                                }
+                            </div>
+                            <p className="text-gray-500 text-xs mt-2">
+                                {$language === 'en'
+                                    ? `Please select a shorter duration or contact us directly.`
+                                    : `Por favor seleccione una duración más corta o contáctenos directamente.`
+                                }
+                            </p>
+                        </div>
+                    ) : (
+                        <div className="relative">
+                            <select
+                                value={$booking.time || ''}
+                                onChange={(e) => setBookingTime(e.target.value || null)}
+                                className="w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors cursor-pointer shadow-inner appearance-none"
+                            >
+                                <option value="" className="bg-[#1A1A1A] text-gray-400">
+                                    {$language === 'en' ? "Select a time (optional)" : "Seleccionar hora (opcional)"}
+                                </option>
+                                {availableTimes.map(time => (
+                                    <option key={time} value={time} className="bg-[#1A1A1A]">
+                                        {time.startsWith('0') ? time.slice(1) : time} {parseInt(time) < 12 ? 'AM' : 'PM'}
+                                    </option>
+                                ))}
+                            </select>
+                            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+                        </div>
+                    )}
+                    <span className="text-[10px] text-gray-500">{$language === 'en' ? "Pickup time will be confirmed via WhatsApp" : "La hora de recogida se confirmará por WhatsApp"}</span>
                 </div>
 
                 <div className="space-y-3">

@@ -18,6 +18,8 @@ export interface TourSEO {
     location?: string;
     url: string;
     category?: string;
+    rating?: number;
+    reviewCount?: number;
 }
 
 export interface FAQItem {
@@ -114,7 +116,7 @@ export function getLocalBusinessSchema() {
  * Tour/Product schema for individual tour pages
  */
 export function getTourSchema(tour: TourSEO) {
-    return {
+    const schema: Record<string, any> = {
         '@context': 'https://schema.org',
         '@type': 'TouristTrip',
         name: tour.name,
@@ -134,25 +136,39 @@ export function getTourSchema(tour: TourSEO) {
             availability: 'https://schema.org/InStock',
             validFrom: new Date().toISOString().split('T')[0],
         },
-        ...(tour.duration && {
-            itinerary: {
-                '@type': 'ItemList',
-                description: `Duration: ${tour.duration}`,
-            },
-        }),
-        ...(tour.location && {
-            contentLocation: {
-                '@type': 'Place',
-                name: tour.location,
-                address: {
-                    '@type': 'PostalAddress',
-                    addressLocality: 'Jacó',
-                    addressRegion: 'Puntarenas',
-                    addressCountry: 'CR',
-                },
-            },
-        }),
     };
+
+    if (tour.rating && tour.reviewCount) {
+        schema.aggregateRating = {
+            '@type': 'AggregateRating',
+            ratingValue: tour.rating,
+            bestRating: 5,
+            worstRating: 1,
+            ratingCount: tour.reviewCount,
+        };
+    }
+
+    if (tour.duration) {
+        schema.itinerary = {
+            '@type': 'ItemList',
+            description: `Duration: ${tour.duration}`,
+        };
+    }
+
+    if (tour.location) {
+        schema.contentLocation = {
+            '@type': 'Place',
+            name: tour.location,
+            address: {
+                '@type': 'PostalAddress',
+                addressLocality: 'Jacó',
+                addressRegion: 'Puntarenas',
+                addressCountry: 'CR',
+            },
+        };
+    }
+
+    return schema;
 }
 
 /**
@@ -205,5 +221,86 @@ export function getWebsiteSchema() {
             target: `${SITE_URL}/tours?q={search_term_string}`,
             'query-input': 'required name=search_term_string',
         },
+    };
+}
+
+/**
+ * AggregateRating schema for tours with reviews
+ */
+export function getAggregateRatingSchema(rating: number, reviewCount: number, bestRating: number = 5) {
+    return {
+        '@context': 'https://schema.org',
+        '@type': 'AggregateRating',
+        ratingValue: rating,
+        bestRating: bestRating,
+        worstRating: 1,
+        ratingCount: reviewCount,
+    };
+}
+
+/**
+ * Review schema for individual reviews
+ */
+export interface ReviewItem {
+    author: string;
+    rating: number;
+    date: string;
+    title?: string;
+    text: string;
+}
+
+export function getReviewSchema(review: ReviewItem) {
+    return {
+        '@context': 'https://schema.org',
+        '@type': 'Review',
+        reviewRating: {
+            '@type': 'Rating',
+            ratingValue: review.rating,
+            bestRating: 5,
+        },
+        author: {
+            '@type': 'Person',
+            name: review.author,
+        },
+        datePublished: review.date,
+        headline: review.title || undefined,
+        reviewBody: review.text,
+    };
+}
+
+/**
+ * Event schema for tour dates/special events
+ */
+export interface TourEvent {
+    name: string;
+    startDate: string;
+    endDate?: string;
+    location: string;
+    price?: number;
+}
+
+export function getEventSchema(event: TourEvent) {
+    return {
+        '@context': 'https://schema.org',
+        '@type': 'Event',
+        name: event.name,
+        startDate: event.startDate,
+        ...(event.endDate && { endDate: event.endDate }),
+        eventLocation: {
+            '@type': 'Place',
+            address: {
+                '@type': 'PostalAddress',
+                addressLocality: 'Jacó',
+                addressRegion: 'Puntarenas',
+                addressCountry: 'CR',
+            },
+        },
+        ...(event.price && {
+            offers: {
+                '@type': 'Offer',
+                price: event.price,
+                priceCurrency: 'USD',
+            },
+        }),
     };
 }

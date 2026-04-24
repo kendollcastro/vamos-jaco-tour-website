@@ -1,0 +1,130 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import NewsletterSection from "../../components/NewsletterSection";
+import { getOrganizationSchema, getBreadcrumbSchema } from "../../lib/seo-schemas";
+
+const schemas = [
+    getOrganizationSchema(),
+    getBreadcrumbSchema([
+        { name: "Home", url: "/" },
+        { name: "Travel Guide", url: "/blog" },
+        { name: "Best Time to Visit Jacó Costa Rica", url: "/blog/best-time-to-visit-jaco-costa-rica" },
+    ]),
+];
+---
+
+<Layout
+    title="Best Time to Visit Jacó Costa Rica | Seasonal Guide 2025"
+    description="Discover the perfect time to visit Jacó Beach, Costa Rica. Learn about weather, surfing conditions, prices, and what to expect each season for your adventure vacation."
+    keywords="best time to visit Jaco Costa Rica, Jaco weather, surfing season Jaco, dry season Costa Rica, rainy season Jaco, Costa Rica travel guide"
+    jsonLd={schemas}
+>
+    <main class="relative py-20">
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+            <div class="absolute top-0 right-0 w-1/3 h-1/3 bg-brand-teal/10 blur-[100px] rounded-full"></div>
+            <div class="absolute bottom-0 left-0 w-1/3 h-1/3 bg-primary/10 blur-[100px] rounded-full"></div>
+        </div>
+
+        <article class="max-w-4xl mx-auto px-6 relative z-10">
+            <a href="/blog" class="inline-flex items-center gap-2 text-brand-orange hover:text-white transition-colors mb-8">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                Back to Travel Guides
+            </a>
+
+            <span class="text-brand-orange font-bold text-sm tracking-widest uppercase">Travel Guide</span>
+            <h1 class="text-4xl md:text-5xl font-black text-white mt-2 mb-6 uppercase italic">Best Time to Visit Jacó Costa Rica</h1>
+            
+            <div class="flex items-center gap-4 text-gray-400 text-sm mb-10">
+                <span>January 15, 2025</span>
+                <span class="w-1 h-1 bg-gray-600 rounded-full"></span>
+                <span>8 min read</span>
+            </div>
+
+            <img 
+                src="https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=1200&h=600&fit=crop"
+                alt="Jaco Beach Costa Rica sunset"
+                class="w-full h-[400px] object-cover rounded-2xl mb-10"
+            />
+
+            <div class="prose prose-invert prose-lg max-w-none text-gray-300">
+                <p class="text-xl leading-relaxed mb-8">Planning your dream adventure to Jacó Beach? Here's everything you need to know about the best time to visit Costa Rica's most exciting beach town.</p>
+
+                <h2 class="text-2xl font-bold text-white mt-12 mb-4">Understanding Jacó's Climate</h2>
+                <p>Jacö is located on Costa Rica's Pacific coast, featuring a tropical climate with two distinct seasons: dry (December-April) and wet (May-November). Temperature remains warm year-round, averaging 80-90°F (27-32°C).</p>
+
+                <h2 class="text-2xl font-bold text-white mt-12 mb-4">Dry Season: December - April</h2>
+                <ul class="list-disc pl-6 space-y-3 my-6">
+                    <li><strong class="text-white">Weather:</strong> Sunny days, minimal rainfall, low humidity</li>
+                    <li><strong class="text-white">Temperature:</strong> 85-95°F (29-35°C)</li>
+                    <li><strong class="text-white">Surf:</strong> Bigger waves, especially December-February</li>
+                    <li><strong class="text-white">Pros:</strong> Perfect beach weather, ideal for outdoor adventures</li>
+                    <li><strong class="text-white">Cons:</strong> Higher prices, more crowds</li>
+                </ul>
+
+                <h2 class="text-2xl font-bold text-white mt-12 mb-4">Wet Season: May - November</h2>
+                <ul class="list-disc pl-6 space-y-3 my-6">
+                    <li><strong class="text-white">Weather:</strong> Afternoon rain showers, morning sun common</li>
+                    <li><strong class="text-white">Temperature:</strong> 80-88°F (27-31°C)</li>
+                    <li><strong class="text-white">Surf:</strong> Smaller, more consistent waves for beginners</li>
+                    <li><strong class="text-white">Pros:</strong> Lower prices, fewer crowds, lush green scenery</li>
+                    <li><strong class="text-white">Cons:</strong> Occasional heavy rainfall, some tours may limit activities</li>
+                </ul>
+
+                <h2 class="text-2xl font-bold text-white mt-12 mb-4">Best Time for Activities</h2>
+                <div class="grid md:grid-cols-2 gap-6 my-8">
+                    <div class="bg-white/5 border border-white/10 rounded-xl p-6">
+                        <h3 class="text-white font-bold mb-3">🏄 Surfing</h3>
+                        <p class="text-gray-400 text-sm">December-March for advanced surfers seeking bigger waves. May-October offers gentler waves perfect for beginners.</p>
+                    </div>
+                    <div class="bg-white/5 border border-white/10 rounded-xl p-6">
+                        <h3 class="text-white font-bold mb-3">🚙 ATV Tours</h3>
+                        <p class="text-gray-400 text-sm">Best during dry season (Dec-Apr) for dust-free trails. Wet season still possible but trails can be muddy and more adventurous!</p>
+                    </div>
+                    <div class="bg-white/5 border border-white/10 rounded-xl p-6">
+                        <h3 class="text-white font-bold mb-3">🏝️ Jet Ski & Water Sports</h3>
+                        <p class="text-gray-400 text-sm">Year-round activity. Dry season offers calmer waters, wet season brings more exciting waves.</p>
+                    </div>
+                    <div class="bg-white/5 border border-white/10 rounded-xl p-6">
+                        <h3 class="text-white font-bold mb-3">💰 Budget Travel</h3>
+                        <p class="text-gray-400 text-sm">September-October typically offers the lowest prices and best deals on tours and accommodations.</p>
+                    </div>
+                </div>
+
+                <h2 class="text-2xl font-bold text-white mt-12 mb-4">Quick Summary</h2>
+                <div class="bg-brand-orange/10 border border-brand-orange/30 rounded-xl p-6 my-8">
+                    <table class="w-full text-sm">
+                        <tbody>
+                            <tr class="border-b border-white/10">
+                                <td class="py-3 text-white font-medium">Best Overall</td>
+                                <td class="py-3 text-gray-300">December - April</td>
+                            </tr>
+                            <tr class="border-b border-white/10">
+                                <td class="py-3 text-white font-medium">Best Value</td>
+                                <td class="py-3 text-gray-300">September - October</td>
+                            </tr>
+                            <tr class="border-b border-white/10">
+                                <td class="py-3 text-white font-medium">Best for Surfing</td>
+                                <td class="py-3 text-gray-300">December - March</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 text-white font-medium">Best for Beginners</td>
+                                <td class="py-3 text-gray-300">May - October</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 class="text-2xl font-bold text-white mt-12 mb-4">Book Your Adventure</h2>
+                <p>No matter when you visit, Jacó offers incredible adventures year-round. From thrilling ATV jungle rides to exciting jet ski tours and world-class surfing, your Costa Rica adventure awaits!</p>
+                
+                <div class="mt-10">
+                    <a href="/tours" class="inline-flex items-center gap-3 text-white bg-gradient-to-r from-primary to-brand-orange hover:shadow-[0_0_30px_rgba(220,53,34,0.4)] px-8 py-4 rounded-full font-bold transition-all hover:scale-105">
+                        Browse All Tours <span class="text-xl">→</span>
+                    </a>
+                </div>
+            </div>
+        </article>
+
+        <NewsletterSection client:visible />
+    </main>
+</Layout>

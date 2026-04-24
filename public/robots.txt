@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://vamosjacotoursdev.com/api/sitemap.xml
+
+# Admin and private areas
+Disallow: /admin/
+Disallow: /api/admin/
+Disallow: /checkout
+Disallow: /payment-success
+Disallow: /payment-failure
+
+# Crawl delay for politeness (optional, uncomment if needed)
+# Crawl-delay: 1

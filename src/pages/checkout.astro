@@ -567,7 +567,8 @@ import Layout from "../layouts/Layout.astro";
                 phone: fullPhoneInput.value || inputPhone.value.trim(),
             };
 
-            const res = await fetch("/api/bookings/create", {
+            // Use /initiate - does NOT create booking, just gets payment URL
+            const res = await fetch("/api/bookings/initiate", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -589,8 +590,19 @@ import Layout from "../layouts/Layout.astro";
             });
 
             const data = await res.json();
+            
             if (data.success && data.requiresRedirect && data.paymentUrl) {
-                window.location.href = data.paymentUrl;
+                // Append booking data to payment URL so callback can create the booking
+                const paymentUrlWithData = new URL(data.paymentUrl);
+                paymentUrlWithData.searchParams.set('pending_id', data.pendingId);
+                paymentUrlWithData.searchParams.set('tour_id', state.tourId);
+                paymentUrlWithData.searchParams.set('date', state.date);
+                paymentUrlWithData.searchParams.set('adults', String(state.adults));
+                paymentUrlWithData.searchParams.set('children', String(state.children));
+                paymentUrlWithData.searchParams.set('total_amount', String(state.totalPrice));
+                paymentUrlWithData.searchParams.set('language', currentLang);
+                
+                window.location.href = paymentUrlWithData.toString();
             } else {
                 alert("Payment initialization failed: " + (data.message || "Unknown error"));
             }
