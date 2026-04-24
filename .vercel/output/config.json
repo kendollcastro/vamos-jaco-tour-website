@@ -44,6 +44,10 @@
 			"dest": "/_isr?x_astro_path=$0"
 		},
 		{
+			"src": "^/api/bookings/initiate/?$",
+			"dest": "/_isr?x_astro_path=$0"
+		},
+		{
 			"src": "^/api/media/?$",
 			"dest": "/_isr?x_astro_path=$0"
 		},
@@ -52,11 +56,31 @@
 			"dest": "/_isr?x_astro_path=$0"
 		},
 		{
+			"src": "^/api/reviews/?$",
+			"dest": "/_isr?x_astro_path=$0"
+		},
+		{
+			"src": "^/api/sitemap\\.xml/?$",
+			"dest": "/_isr?x_astro_path=$0"
+		},
+		{
 			"src": "^/api/tilopay/callback/?$",
 			"dest": "/_isr?x_astro_path=$0"
 		},
 		{
 			"src": "^/api/tilopay-webhook/?$",
+			"dest": "/_isr?x_astro_path=$0"
+		},
+		{
+			"src": "^/blog/atv-vs-side-by-side-costa-rica/?$",
+			"dest": "/_isr?x_astro_path=$0"
+		},
+		{
+			"src": "^/blog/best-time-to-visit-jaco-costa-rica/?$",
+			"dest": "/_isr?x_astro_path=$0"
+		},
+		{
+			"src": "^/blog/?$",
 			"dest": "/_isr?x_astro_path=$0"
 		},
 		{

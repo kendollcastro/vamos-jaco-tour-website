@@ -1,20 +1,20 @@
 import { f as createComponent, l as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_DYRfXif5.mjs';
 import 'piccolore';
-import { l as language, $ as $$Layout } from '../chunks/Layout_q50dhggo.mjs';
-import { a as getAllTours } from '../chunks/TourCard_DJVx28vW.mjs';
-import { f as fetchWPAPI, a as TrustBar, A as AboutSection, T as TeamSection, F as FaqSection } from '../chunks/wp_DZfVfT4d.mjs';
+import { l as language, $ as $$Layout } from '../chunks/Layout_DvX-58aZ.mjs';
+import { g as getAllTours } from '../chunks/tours__JEStAIi.mjs';
+import { f as fetchWPAPI, a as TrustBar, A as AboutSection, T as TeamSection, F as FaqSection } from '../chunks/wp_fBMgaIju.mjs';
 import { g as getTeamMembers } from '../chunks/supabase-team_Dc6PVDSG.mjs';
 import { g as getWebsiteComponent } from '../chunks/supabase-components_CFZRylM8.mjs';
-import { g as getOrganizationSchema, e as getWebsiteSchema, b as getFAQSchema } from '../chunks/seo-schemas_BZJstb5R.mjs';
+import { g as getOrganizationSchema, e as getWebsiteSchema, b as getFAQSchema } from '../chunks/seo-schemas_BdYtPc9Z.mjs';
 import { jsx, jsxs } from 'react/jsx-runtime';
 import { useState, useRef, useEffect } from 'react';
 import { useStore } from '@nanostores/react';
 import { MapPin, Calendar, Users, Search, Play, ChevronDown, Flame, Mountain, Shield, Zap, ArrowRight, Star, ChevronLeft, ChevronRight, ShieldAlert, Route, AlertTriangle, Hand, FileText } from 'lucide-react';
-import { T as TourFilter } from '../chunks/TourFilter_BYx77YQm.mjs';
+import { T as TourFilter } from '../chunks/TourFilter_Db3umcHA.mjs';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Autoplay } from 'swiper/modules';
 /* empty css                                 */
-import { N as NewsletterSection } from '../chunks/NewsletterSection_MbEIJZ-S.mjs';
+import { N as NewsletterSection } from '../chunks/NewsletterSection_DbWiMEMZ.mjs';
 import { S as ScrollReveal } from '../chunks/ScrollReveal_CEJ16IzC.mjs';
 export { renderers } from '../renderers.mjs';
 

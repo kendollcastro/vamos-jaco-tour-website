@@ -1,9 +1,9 @@
 import { f as createComponent, l as renderComponent, r as renderTemplate, m as maybeRenderHead, h as addAttribute } from '../chunks/astro/server_DYRfXif5.mjs';
 import 'piccolore';
-import { $ as $$Layout } from '../chunks/Layout_q50dhggo.mjs';
-import { a as getAllTours } from '../chunks/TourCard_DJVx28vW.mjs';
-import { a as getBreadcrumbSchema } from '../chunks/seo-schemas_BZJstb5R.mjs';
-import { T as TourFilter } from '../chunks/TourFilter_BYx77YQm.mjs';
+import { $ as $$Layout } from '../chunks/Layout_DvX-58aZ.mjs';
+import { g as getAllTours } from '../chunks/tours__JEStAIi.mjs';
+import { a as getBreadcrumbSchema } from '../chunks/seo-schemas_BdYtPc9Z.mjs';
+import { T as TourFilter } from '../chunks/TourFilter_Db3umcHA.mjs';
 export { renderers } from '../renderers.mjs';
 
 const $$Tours = createComponent(async ($$result, $$props, $$slots) => {

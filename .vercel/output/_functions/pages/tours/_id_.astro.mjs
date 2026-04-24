@@ -1,9 +1,10 @@
 import { e as createAstro, f as createComponent, l as renderComponent, n as renderScript, r as renderTemplate, m as maybeRenderHead, h as addAttribute } from '../../chunks/astro/server_DYRfXif5.mjs';
 import 'piccolore';
-import { l as language, $ as $$Layout } from '../../chunks/Layout_q50dhggo.mjs';
-import { g as getTourById, a as getAllTours, T as TourCard } from '../../chunks/TourCard_DJVx28vW.mjs';
-import { d as getTourSchema, a as getBreadcrumbSchema } from '../../chunks/seo-schemas_BZJstb5R.mjs';
-import { N as NewsletterSection } from '../../chunks/NewsletterSection_MbEIJZ-S.mjs';
+import { l as language, $ as $$Layout } from '../../chunks/Layout_DvX-58aZ.mjs';
+import { a as getTourById, g as getAllTours } from '../../chunks/tours__JEStAIi.mjs';
+import { d as getTourSchema, a as getBreadcrumbSchema } from '../../chunks/seo-schemas_BdYtPc9Z.mjs';
+import { T as TourCard } from '../../chunks/TourCard_CQBw6Z-c.mjs';
+import { N as NewsletterSection } from '../../chunks/NewsletterSection_DbWiMEMZ.mjs';
 import { jsx, Fragment, jsxs } from 'react/jsx-runtime';
 import React, { useState, useEffect, useMemo } from 'react';
 import { useStore } from '@nanostores/react';
@@ -49,6 +50,13 @@ function setBookingDate(date) {
   bookingStore.set({
     ...current,
     date: date.toISOString()
+  });
+}
+function setBookingTime(time) {
+  const current = bookingStore.get();
+  bookingStore.set({
+    ...current,
+    time
   });
 }
 function setGuests(adults, children) {
@@ -119,12 +127,17 @@ function BookingSidebar({ tourId, tourTitle, price, durationOptions }) {
     });
   }, []);
   const rawOptions = durationOptions && durationOptions.length > 0 ? durationOptions : [{ duration: "Standard Tour", price: price || 0 }];
+  const extractHours = (durationStr) => {
+    const match = durationStr.match(/(\d+)\s*(hour|hr|hora)/i);
+    return match ? parseInt(match[1]) : 2;
+  };
   const packages = useMemo(() => {
     const pkgMap = /* @__PURE__ */ new Map();
     rawOptions.forEach((opt) => {
       const rawName = opt.duration;
       let baseName = rawName;
       let isChild = false;
+      const hours = extractHours(rawName);
       if (baseName.toLowerCase().includes("child") || baseName.toLowerCase().includes("niño")) {
         isChild = true;
         baseName = baseName.replace(/\s*-\s*child.*$/i, "").replace(/\s*-\s*niño.*$/i, "").replace(/\s*niños.*$/i, "").replace(/\([-+a-z0-9\s]*\)/i, "").trim();
@@ -133,7 +146,7 @@ function BookingSidebar({ tourId, tourTitle, price, durationOptions }) {
       }
       baseName = baseName.replace(/[-\s]+$/, "");
       if (!pkgMap.has(baseName)) {
-        pkgMap.set(baseName, { duration: baseName, adultPrice: opt.price, childPrice: 0, variation_id: opt.variation_id });
+        pkgMap.set(baseName, { duration: baseName, adultPrice: opt.price, childPrice: 0, variation_id: opt.variation_id, hours });
       }
       const pkg = pkgMap.get(baseName);
       if (isChild) {
@@ -145,6 +158,19 @@ function BookingSidebar({ tourId, tourTitle, price, durationOptions }) {
     });
     return Array.from(pkgMap.values());
   }, [rawOptions]);
+  const getAvailableTimes = () => {
+    const tourHours = packages[selectedDurationIdx]?.hours || 2;
+    const startHour = 8;
+    const endHour = 17;
+    const times = [];
+    for (let h = startHour; h <= endHour - tourHours; h++) {
+      times.push(`${h.toString().padStart(2, "0")}:00`);
+    }
+    return times;
+  };
+  const availableTimes = getAvailableTimes();
+  const selectedHours = packages[selectedDurationIdx]?.hours || 2;
+  const isTimeUnavailable = availableTimes.length === 0;
   useEffect(() => {
     if (packages && packages.length > 0) {
       setBookingTour(tourId, tourTitle, packages[0].adultPrice, packages[0].childPrice, packages[0].variation_id);
@@ -153,6 +179,20 @@ function BookingSidebar({ tourId, tourTitle, price, durationOptions }) {
   const handleDurationChange = (index) => {
     setSelectedDurationIdx(index);
     setBookingTour(tourId, tourTitle, packages[index].adultPrice, packages[index].childPrice, packages[index].variation_id);
+    const newAvailableTimes = getAvailableTimesForDuration(index);
+    if ($booking.time && !newAvailableTimes.includes($booking.time)) {
+      setBookingTime(null);
+    }
+  };
+  const getAvailableTimesForDuration = (durationIdx) => {
+    const tourHours = packages[durationIdx]?.hours || 2;
+    const startHour = 8;
+    const endHour = 17;
+    const times = [];
+    for (let h = startHour; h <= endHour - tourHours; h++) {
+      times.push(`${h.toString().padStart(2, "0")}:00`);
+    }
+    return times;
   };
   const handleDateChange = (date) => {
     if (date) {
@@ -271,6 +311,39 @@ function BookingSidebar({ tourId, tourTitle, price, durationOptions }) {
           /* @__PURE__ */ jsx(Info, { className: "w-3 h-3 text-primary" }),
           /* @__PURE__ */ jsx("span", { className: "text-[10px] text-gray-400", children: "Select a date in the calendar above to enable checkout." })
         ] })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "space-y-3", children: [
+        /* @__PURE__ */ jsxs("label", { className: "text-sm text-gray-400 font-medium uppercase tracking-wider flex items-center gap-2", children: [
+          /* @__PURE__ */ jsx(Clock, { className: "w-4 h-4" }),
+          " ",
+          /* @__PURE__ */ jsx(TranslatedText, { content: { en: "Preferred Time", es: "Hora Preferida" } })
+        ] }),
+        isTimeUnavailable ? /* @__PURE__ */ jsxs("div", { className: "bg-red-500/10 border border-red-500/30 rounded-xl p-4", children: [
+          /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-red-400 text-sm font-medium", children: [
+            /* @__PURE__ */ jsx(Info, { className: "w-4 h-4" }),
+            $language === "en" ? `This ${selectedHours}-hour tour cannot be scheduled within our operating hours (8am - 5pm)` : `Este tour de ${selectedHours} horas no puede programarse dentro de nuestro horario (8am - 5pm)`
+          ] }),
+          /* @__PURE__ */ jsx("p", { className: "text-gray-500 text-xs mt-2", children: $language === "en" ? `Please select a shorter duration or contact us directly.` : `Por favor seleccione una duración más corta o contáctenos directamente.` })
+        ] }) : /* @__PURE__ */ jsxs("div", { className: "relative", children: [
+          /* @__PURE__ */ jsxs(
+            "select",
+            {
+              value: $booking.time || "",
+              onChange: (e) => setBookingTime(e.target.value || null),
+              className: "w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors cursor-pointer shadow-inner appearance-none",
+              children: [
+                /* @__PURE__ */ jsx("option", { value: "", className: "bg-[#1A1A1A] text-gray-400", children: $language === "en" ? "Select a time (optional)" : "Seleccionar hora (opcional)" }),
+                availableTimes.map((time) => /* @__PURE__ */ jsxs("option", { value: time, className: "bg-[#1A1A1A]", children: [
+                  time.startsWith("0") ? time.slice(1) : time,
+                  " ",
+                  parseInt(time) < 12 ? "AM" : "PM"
+                ] }, time))
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsx(ChevronDown, { className: "absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" })
+        ] }),
+        /* @__PURE__ */ jsx("span", { className: "text-[10px] text-gray-500", children: $language === "en" ? "Pickup time will be confirmed via WhatsApp" : "La hora de recogida se confirmará por WhatsApp" })
       ] }),
       /* @__PURE__ */ jsxs("div", { className: "space-y-3", children: [
         /* @__PURE__ */ jsxs("label", { className: "text-sm text-gray-400 font-medium uppercase tracking-wider flex items-center gap-2", children: [

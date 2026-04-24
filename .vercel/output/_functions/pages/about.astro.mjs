@@ -1,15 +1,15 @@
 import { f as createComponent, l as renderComponent, r as renderTemplate, m as maybeRenderHead, h as addAttribute } from '../chunks/astro/server_DYRfXif5.mjs';
 import 'piccolore';
-import { l as language, $ as $$Layout } from '../chunks/Layout_q50dhggo.mjs';
-import { f as fetchWPAPI, A as AboutSection, T as TeamSection, a as TrustBar, F as FaqSection } from '../chunks/wp_DZfVfT4d.mjs';
+import { l as language, $ as $$Layout } from '../chunks/Layout_DvX-58aZ.mjs';
+import { f as fetchWPAPI, A as AboutSection, T as TeamSection, a as TrustBar, F as FaqSection } from '../chunks/wp_fBMgaIju.mjs';
 import { jsx, jsxs } from 'react/jsx-runtime';
 import { useState, useEffect } from 'react';
 import { useStore } from '@nanostores/react';
 import { Instagram } from 'lucide-react';
-import { N as NewsletterSection } from '../chunks/NewsletterSection_MbEIJZ-S.mjs';
+import { N as NewsletterSection } from '../chunks/NewsletterSection_DbWiMEMZ.mjs';
 import { S as ScrollReveal } from '../chunks/ScrollReveal_CEJ16IzC.mjs';
 import { g as getTeamMembers } from '../chunks/supabase-team_Dc6PVDSG.mjs';
-import { g as getOrganizationSchema, a as getBreadcrumbSchema, b as getFAQSchema } from '../chunks/seo-schemas_BZJstb5R.mjs';
+import { g as getOrganizationSchema, a as getBreadcrumbSchema, b as getFAQSchema } from '../chunks/seo-schemas_BdYtPc9Z.mjs';
 export { renderers } from '../renderers.mjs';
 
 function AboutGallery() {

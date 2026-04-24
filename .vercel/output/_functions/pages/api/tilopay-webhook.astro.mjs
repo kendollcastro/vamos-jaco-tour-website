@@ -48,7 +48,7 @@ const POST = async ({ request }) => {
     if (isSuccess && updated) {
       const { data: booking } = await supabase.from("bookings").select("*").eq("id", bookingId).single();
       if (booking) {
-        const { sendBookingNotifications } = await import('../../chunks/email-service_B0pUzxu9.mjs');
+        const { sendBookingNotifications } = await import('../../chunks/email-service_BOo9znAY.mjs');
         sendBookingNotifications({
           customerName: booking.customer_name,
           customerEmail: booking.customer_email,

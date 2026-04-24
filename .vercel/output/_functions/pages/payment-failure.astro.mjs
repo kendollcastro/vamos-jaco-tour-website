@@ -1,6 +1,6 @@
 import { f as createComponent, l as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_DYRfXif5.mjs';
 import 'piccolore';
-import { $ as $$Layout } from '../chunks/Layout_q50dhggo.mjs';
+import { $ as $$Layout } from '../chunks/Layout_DvX-58aZ.mjs';
 export { renderers } from '../renderers.mjs';
 
 const $$PaymentFailure = createComponent(($$result, $$props, $$slots) => {
