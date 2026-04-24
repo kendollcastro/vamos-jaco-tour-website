@@ -7,7 +7,7 @@ export const prerender = false;
 export const GET: APIRoute = async ({ request }) => handleCallback(request);
 export const POST: APIRoute = async ({ request }) => handleCallback(request);
 
-const SITE_URL = 'https://vamosjt.vercel.app';
+const SITE_URL = 'https://vamosjacotours.com';
 
 async function handleCallback(request: Request): Promise<ARoute.response> {
     try {
