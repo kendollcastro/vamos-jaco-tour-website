@@ -30,6 +30,7 @@ async function handleCallback(request: Request): Promise<ARoute.response> {
         const orderNumber = params.order || 
                            params.orderNumber || 
                            params.reference || 
+                           params.pending_id ||
                            url.searchParams.get('order') ||
                            url.searchParams.get('pending_id') || '';
 

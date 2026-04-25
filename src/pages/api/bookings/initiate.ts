@@ -77,7 +77,8 @@ export const POST: APIRoute = async ({ request }) => {
         }
 
         // 3. Generate a pending booking ID (NOT saved yet - will be created on payment success)
-        const generatedPendingId = `pending-${crypto.randomUUID()}`;
+        const timestamp = Date.now();
+        const generatedPendingId = `p${timestamp}-${crypto.randomUUID().substring(0, 8)}`;
 
         // 4. Handle TiloPay Gateway for Card Payments
         if (paymentMethod === 'card') {
