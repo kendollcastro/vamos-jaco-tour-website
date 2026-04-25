@@ -76,16 +76,15 @@ export const POST: APIRoute = async ({ request }) => {
             });
         }
 
-        // 3. Generate a pending booking ID (NOT saved yet - will be created on payment success)
-        const timestamp = Date.now();
-        const generatedPendingId = `p${timestamp}-${crypto.randomUUID().substring(0, 8)}`;
+        // 3. Generate a unique order ID for Tilopay
+        const orderId = crypto.randomUUID();
 
         // 4. Handle TiloPay Gateway for Card Payments
         if (paymentMethod === 'card') {
             try {
                 const paymentUrl = await createPaymentSession({
                     amount: priceResult.total,
-                    orderNumber: generatedPendingId,
+                    orderNumber: orderId,
                     language: language as 'en' | 'es',
                     customer: {
                         firstName: sanitizedName.split(' ')[0],
@@ -97,7 +96,7 @@ export const POST: APIRoute = async ({ request }) => {
 
                 return new Response(JSON.stringify({
                     success: true,
-                    pendingId: generatedPendingId,
+                    pendingId: orderId,
                     paymentData: {
                         customerName: sanitizedName,
                         customerEmail: sanitizedEmail,

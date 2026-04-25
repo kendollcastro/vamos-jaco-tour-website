@@ -33,7 +33,7 @@ async function handleCallback(request: Request): Promise<ARoute.response> {
 
         // Get order from any possible field
         const order = params.order || params.orderNumber || params.reference || 
-                     params.pending_id || params.order_id || '';
+                     params.order_id || params.pending_id || '';
         
         // Check for payment success - be very permissive
         const status = (params.status || params.code || params.responseCode || 
