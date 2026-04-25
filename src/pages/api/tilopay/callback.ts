@@ -23,45 +23,68 @@ async function handleCallback(request: Request): Promise<ARoute.response> {
             } catch {}
         }
 
-        console.log("TiloPay callback:", JSON.stringify(params));
+        console.log("=== TiloPay Callback ===");
+        console.log("All params:", JSON.stringify(params));
 
-        const orderNumber = params.order || params.orderNumber || params.pending_id || url.searchParams.get('order') || '';
-        const tpt = params.tpt || params.tilopayTransaction || '';
-        const status = (params.status || params.code || params.responseCode || '').toLowerCase();
-        
-        const isSuccess = status === 'success' || status === '1' || status === 'approved' || status === 'completed' || status === 'true';
+        // Extract order number - try multiple fields
+        const orderNumber = params.order || 
+                           params.orderNumber || 
+                           params.reference || 
+                           url.searchParams.get('order') ||
+                           url.searchParams.get('pending_id') || '';
 
-        if (!orderNumber) {
-            console.error("Missing order reference");
+        // Extract status/code - try multiple fields
+        const statusRaw = params.status || params.code || params.responseCode || params.result || params.description || '';
+        const status = statusRaw.toString().toLowerCase();
+        const tpt = params.tpt || params.tilopayTransaction || params.transactionId || params.auth || '';
+
+        // Determine if payment was successful
+        // code=1, status=success, description contains "aprobada"/"approved"
+        const isSuccess = status === 'success' || 
+                          status === '1' || 
+                          status === 'approved' ||
+                          status === 'completed' ||
+                          params.description?.toLowerCase().includes('aprobada') ||
+                          params.description?.toLowerCase().includes('approved');
+
+        console.log("Order:", orderNumber, "TPT:", tpt, "Status:", status, "isSuccess:", isSuccess);
+
+        // If no order number, return error
+        if (!orderNumber || orderNumber === '') {
+            console.error("MISSING ORDER NUMBER - Full params:", JSON.stringify(params));
             return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/?payment=error` } });
         }
 
+        // If payment not successful
         if (!isSuccess) {
-            console.log("Payment failed/cancelled");
+            console.log("Payment not successful - status:", status);
             return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/?payment=failed` } });
         }
 
+        // If no supabase
         if (!supabaseAdmin) {
-            console.error("Supabase not available");
+            console.error("NO SUPABASE");
             return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/?payment=error` } });
         }
 
-        const tourId = params.tour_id || 'unknown';
-        const tourName = params.tourName || params.tour_name || 'Tour';
-        const customerName = params.customerName || params.customer_name || 'Customer';
+        // Extract booking details from params
+        const tourId = params.tour_id || params.tourId || 'unknown';
+        const tourName = params.tourName || params.tour_name || params.productName || 'Tour';
+        const customerName = params.customerName || params.customer_name || params.firstName || 'Customer';
         const customerEmail = params.customerEmail || params.customer_email || params.email || 'unknown@email.com';
-        const customerPhone = params.customerPhone || params.customer_phone || '';
-        const bookingDate = params.date || new Date().toISOString().split('T')[0];
+        const customerPhone = params.customerPhone || params.customer_phone || params.phone || '';
+        const bookingDate = params.date || params.bookingDate || new Date().toISOString().split('T')[0];
         const adults = parseInt(params.adults || '1');
         const children = parseInt(params.children || '0');
-        const totalAmount = parseFloat(params.total_amount || params.amount || '0');
-        const language = params.language || 'en';
+        const totalAmount = parseFloat(params.total_amount || params.amount || params.totalAmount || '0');
+        const language = params.language || params.lang || 'en';
 
-        console.log("Creating booking:", { tourName, customerName, totalAmount });
+        console.log("Creating booking:", { tourId, tourName, customerName, customerEmail, totalAmount, adults, children });
 
         const bookingId = crypto.randomUUID();
         const tilopayId = tpt || 'TILOPAY_SUCCESS';
 
+        // Insert booking
         const { error } = await supabaseAdmin.from('bookings').insert([{
             id: bookingId,
             tour_id: tourId,
@@ -79,12 +102,13 @@ async function handleCallback(request: Request): Promise<ARoute.response> {
         }]);
 
         if (error) {
-            console.error("Insert error:", error);
+            console.error("INSERT ERROR:", error.message, error.details);
             return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/?payment=error` } });
         }
 
-        console.log("Booking created:", bookingId);
+        console.log("✅ Booking created:", bookingId);
 
+        // Send email (fire and forget)
         sendBookingNotifications({
             customerName,
             customerEmail,
@@ -97,10 +121,11 @@ async function handleCallback(request: Request): Promise<ARoute.response> {
             language: language as 'en' | 'es'
         }).catch(e => console.error("Email error:", e));
 
+        // Redirect to success
         return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/payment-success?order=${bookingId}` } });
 
     } catch (err) {
-        console.error("Callback error:", err);
+        console.error("CALLBACK ERROR:", err);
         return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/?payment=error` } });
     }
 }
