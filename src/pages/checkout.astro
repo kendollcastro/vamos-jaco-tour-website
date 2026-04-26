@@ -592,17 +592,8 @@ import Layout from "../layouts/Layout.astro";
             const data = await res.json();
             
             if (data.success && data.requiresRedirect && data.paymentUrl) {
-                // Append booking data to payment URL so callback can create the booking
-                const paymentUrlWithData = new URL(data.paymentUrl);
-                paymentUrlWithData.searchParams.set('pending_id', data.pendingId);
-                paymentUrlWithData.searchParams.set('tour_id', state.tourId);
-                paymentUrlWithData.searchParams.set('date', state.date);
-                paymentUrlWithData.searchParams.set('adults', String(state.adults));
-                paymentUrlWithData.searchParams.set('children', String(state.children));
-                paymentUrlWithData.searchParams.set('total_amount', String(state.totalPrice));
-                paymentUrlWithData.searchParams.set('language', currentLang);
-                
-                window.location.href = paymentUrlWithData.toString();
+                // Redirect directly to TiloPay, data is now handled via DB persistence
+                window.location.href = data.paymentUrl;
             } else {
                 alert("Payment initialization failed: " + (data.message || "Unknown error"));
             }
@@ -613,6 +604,15 @@ import Layout from "../layouts/Layout.astro";
             setPayButtonsLoading(false);
         }
     };
+
+    // Check for errors in URL on load
+    window.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const error = urlParams.get('error');
+        if (error) {
+            alert("Payment issue: " + error);
+        }
+    });
 
     [desktopPayBtn, mobilePayBtn].forEach(btn => {
         if (btn) btn.addEventListener("click", handlePayment);

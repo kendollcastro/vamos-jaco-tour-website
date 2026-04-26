@@ -7,7 +7,8 @@ const TILOPAY_API_PASSWORD = import.meta.env.TILOPAY_API_PASSWORD;
 const TILOPAY_API_KEY = import.meta.env.TILOPAY_API_KEY;
 
 // Production domain for TiloPay redirect URLs
-const PUBLIC_DOMAIN = 'https://www.vamosjacotours.com';
+// Production domain for TiloPay redirect URLs - can be overridden for testing
+const PUBLIC_DOMAIN = import.meta.env.PUBLIC_SITE_URL || 'https://www.vamosjacotours.com';
 
 interface TilopayCustomerInfo {
     firstName: string;

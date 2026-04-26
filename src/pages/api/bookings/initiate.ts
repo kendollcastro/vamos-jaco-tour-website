@@ -79,7 +79,41 @@ export const POST: APIRoute = async ({ request }) => {
         // 3. Generate a unique order ID for Tilopay
         const orderId = crypto.randomUUID();
 
-        // 4. Handle TiloPay Gateway for Card Payments
+        // 4. Resolve tour UUID if tourId is a slug
+        let tourUuid = tourId;
+        if (supabaseAdmin && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(tourId)) {
+            const { data: tourData } = await supabaseAdmin
+                .from('tours')
+                .select('id')
+                .eq('slug', tourId)
+                .single();
+            if (tourData) tourUuid = tourData.id;
+        }
+
+        // 5. Create PENDING booking in Supabase
+        if (supabaseAdmin) {
+            const { error: dbError } = await supabaseAdmin.from('bookings').insert({
+                id: orderId,
+                customer_name: `${sanitizedName.split(' ')[0]} ${sanitizedName.split(' ').slice(1).join(' ') || 'Customer'}`,
+                customer_email: sanitizedEmail,
+                customer_phone: sanitizedPhone,
+                tour_id: tourUuid,
+                tour_name: tourName || tourId,
+                booking_date: new Date(date).toISOString().split('T')[0],
+                adults: adults || 1,
+                children: children || 0,
+                total_amount: priceResult.total,
+                status: 'pending',
+                language: language
+            });
+
+            if (dbError) {
+                console.error('Failed to create pending booking:', dbError);
+                // We'll continue anyway, but the callback might have issues
+            }
+        }
+
+        // 6. Handle TiloPay Gateway for Card Payments
         if (paymentMethod === 'card') {
             try {
                 const paymentUrl = await createPaymentSession({
@@ -101,7 +135,7 @@ export const POST: APIRoute = async ({ request }) => {
                         customerName: sanitizedName,
                         customerEmail: sanitizedEmail,
                         customerPhone: sanitizedPhone,
-                        tourId,
+                        tourId: tourUuid,
                         tourName: tourName || tourId,
                         date,
                         formattedDate: new Date(date).toISOString().split('T')[0],
@@ -119,7 +153,7 @@ export const POST: APIRoute = async ({ request }) => {
                 });
 
             } catch (paymentError: any) {
-                console.error('TiloPay Integration Error');
+                console.error('TiloPay Integration Error:', paymentError);
                 return new Response(JSON.stringify({
                     success: false,
                     message: 'Payment service unavailable'

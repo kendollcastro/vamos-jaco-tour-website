@@ -6,92 +6,110 @@ export const prerender = false;
 export const GET: APIRoute = async ({ request }) => handleCallback(request);
 export const POST: APIRoute = async ({ request }) => handleCallback(request);
 
-const SITE_URL = 'https://www.vamosjacotours.com';
-
-async function handleCallback(request: Request): Promise<ARoute.response> {
-    console.log("=== CALLBACK START ===");
+async function handleCallback(request: Request): Promise<Response> {
+    console.log("=== TILOPAY CALLBACK START ===");
+    const requestUrl = new URL(request.url);
+    const SITE_URL = `${requestUrl.protocol}//${requestUrl.host}`;
     
     try {
-        const url = new URL(request.url);
+        const params: Record<string, any> = {};
         
-        const params: Record<string, string> = {};
-        url.searchParams.forEach((value, key) => { params[key] = value; });
+        // 1. Get parameters from URL
+        requestUrl.searchParams.forEach((value, key) => { params[key] = value; });
 
+        // 2. Get parameters from Body (TiloPay often POSTs back)
         if (request.method === 'POST') {
+            const contentType = request.headers.get('content-type') || '';
+            console.log("POST Content-Type:", contentType);
+            
             try {
-                const formData = await request.formData();
-                formData.forEach((value, key) => { params[key] = String(value); });
-            } catch {}
+                if (contentType.includes('application/json')) {
+                    const jsonBody = await request.json();
+                    Object.assign(params, jsonBody);
+                } else {
+                    const formData = await request.formData();
+                    formData.forEach((value, key) => { params[key] = String(value); });
+                }
+            } catch (bodyErr) {
+                console.error("Error parsing body:", bodyErr);
+            }
         }
 
-        console.log("ALL PARAMS:", JSON.stringify(params));
+        console.log("RECEIVED PARAMS:", JSON.stringify(params, null, 2));
 
-        // ALWAYS try to create booking if there's any transaction ID (tpt, auth, transactionId)
-        // This handles all success cases
-        const hasTransactionId = params.tpt || params.auth || params.tilopayTransaction || 
-                                params.transactionId || params.transaction_id;
+        // 3. Identify the booking
+        const bookingId = params.order || params.orderNumber || params.reference || params.order_id;
         
-        console.log("hasTransactionId:", hasTransactionId);
-
-        // If no transaction ID at all, it's an error
-        if (!hasTransactionId) {
-            console.log("NO TRANSACTION - treating as failed");
-            return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/?payment=failed` } });
+        if (!bookingId || bookingId === 'unknown') {
+            console.error("NO ORDER ID FOUND");
+            return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/checkout?error=InvalidSession` } });
         }
 
-        // Has transaction ID = payment went through
-        console.log("Payment confirmed, creating booking...");
+        // 4. Success check (TiloPay V2 uses response_code=1 for success)
+        const responseCode = params.response_code || params.code;
+        const hasTransactionId = params.tpt || params.auth || params.tilopayTransaction || params.transactionId;
+        const isSuccess = responseCode === 1 || responseCode === '1' || hasTransactionId;
 
-        // Check supabase
-        console.log("Has supabase:", !!supabaseAdmin);
-        
+        console.log(`Success check: code=${responseCode}, hasTx=${!!hasTransactionId}, isSuccess=${isSuccess}`);
+
         if (!supabaseAdmin) {
-            console.log("NO SUPABASE - returning error");
+            console.error("SUPABASE NOT CONFIGURED");
             return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/?payment=error` } });
         }
 
-        // Extract data
-        const order = params.order || params.orderNumber || params.reference || 'unknown';
-        const tourName = params.tourName || params.tour_name || 'Tour';
-        const customerName = params.customerName || params.customer_name || 'Customer';
-        const customerEmail = params.customerEmail || params.customer_email || 'unknown@email.com';
-        const customerPhone = params.customerPhone || params.customer_phone || '';
-        const bookingDate = params.date || new Date().toISOString().split('T')[0];
-        const adults = parseInt(params.adults || '1');
-        const children = parseInt(params.children || '0');
-        const totalAmount = parseFloat(params.total_amount || params.amount || '50');
-        const tpt = params.tpt || params.auth || params.tilopayTransaction || params.transactionId || 'TILOPAY';
+        // 5. Lookup the booking
+        const { data: booking, error: fetchError } = await supabaseAdmin
+            .from('bookings')
+            .select('*')
+            .eq('id', bookingId)
+            .single();
 
-        console.log("Creating booking:", { tourName, customerName, totalAmount, order, tpt });
-
-        const bookingId = crypto.randomUUID();
-
-        const { error } = await supabaseAdmin.from('bookings').insert({
-            id: bookingId,
-            customer_name: customerName,
-            customer_email: customerEmail,
-            customer_phone: customerPhone,
-            tour_name: tourName,
-            booking_date: bookingDate,
-            adults: adults,
-            children: children,
-            total_amount: totalAmount,
-            status: 'paid',
-            tilopay_order_id: tpt
-        });
-
-        console.log("Insert result:", error ? error.message : "OK");
-
-        if (error) {
-            console.log("DB ERROR:", error);
-            return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/?payment=error` } });
+        if (fetchError || !booking) {
+            console.warn(`Booking ${bookingId} not found in DB. Error:`, fetchError?.message);
+            // Fallback: This might be an old flow or someone missed the initiate step
+            // We'll create a new one if it's successful, but it's not ideal
+            if (isSuccess) {
+                console.log("Creating fallback booking for missing ID...");
+                const newBookingId = crypto.randomUUID();
+                await supabaseAdmin.from('bookings').insert({
+                    id: newBookingId,
+                    customer_name: params.customerName || 'Customer',
+                    customer_email: params.customerEmail || 'unknown@email.com',
+                    tour_name: params.tourName || 'Tour',
+                    booking_date: params.date || new Date().toISOString().split('T')[0],
+                    total_amount: parseFloat(params.total_amount || params.amount || '0'),
+                    status: 'paid',
+                    tilopay_order_id: params.tpt || params.auth || 'TILOPAY'
+                });
+                return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/payment-success?order=${newBookingId}` } });
+            }
         }
 
-        console.log("SUCCESS! Booking:", bookingId);
-        return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/payment-success?order=${bookingId}` } });
+        // 6. Update booking status
+        if (isSuccess) {
+            console.log(`Updating booking ${bookingId} to PAID`);
+            await supabaseAdmin.from('bookings').update({
+                status: 'paid',
+                tilopay_order_id: params.tpt || params.auth,
+                tilopay_response: params
+            }).eq('id', bookingId);
+
+            // Optional: Send confirmation emails here (they are also handled by webhook usually)
+            
+            return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/payment-success?order=${bookingId}` } });
+        } else {
+            console.log(`Updating booking ${bookingId} to FAILED/CANCELLED`);
+            await supabaseAdmin.from('bookings').update({
+                status: 'failed',
+                tilopay_response: params
+            }).eq('id', bookingId);
+
+            const msg = params.message || 'Payment Declined';
+            return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/checkout?error=${encodeURIComponent(msg)}` } });
+        }
 
     } catch (err) {
-        console.log("EXCEPTION:", err);
+        console.error("CALLBACK EXCEPTION:", err);
         return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/?payment=error` } });
     }
 }
