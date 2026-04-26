@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { supabaseAdmin } from '../../../lib/supabase';
 import { sendBookingNotifications } from '../../../lib/email-service';
+import { createClient } from '@supabase/supabase-js';
 
 export const prerender = false;
 
@@ -10,16 +11,14 @@ export const POST: APIRoute = async ({ request }) => handleCallback(request);
 const SITE_URL = 'https://www.vamosjacotours.com';
 
 async function handleCallback(request: Request): Promise<ARoute.response> {
+    console.log("=== CALLBACK START ===");
+    
     try {
         const url = new URL(request.url);
         
-        // Collect ALL params from URL and form data
         const params: Record<string, string> = {};
-        
-        // URL params
         url.searchParams.forEach((value, key) => { params[key] = value; });
 
-        // Form data (POST)
         if (request.method === 'POST') {
             try {
                 const formData = await request.formData();
@@ -27,124 +26,82 @@ async function handleCallback(request: Request): Promise<ARoute.response> {
             } catch {}
         }
 
-        console.log("=== TILO PAY CALLBACK ===");
-        console.log("Full URL:", request.url);
-        console.log("All params:", JSON.stringify(params));
+        console.log("Params received:", JSON.stringify(params));
 
-        // Get order from any possible field
-        const order = params.order || params.orderNumber || params.reference || 
-                     params.order_id || params.pending_id || '';
-        
-        // Check for payment success - be very permissive
-        const status = (params.status || params.code || params.responseCode || 
-                       params.result || params.description || '').toLowerCase();
+        // Get order
+        const order = params.order || params.orderNumber || params.reference || params.order_id || '';
+        console.log("Order:", order);
+
+        // Check status - BE VERY PERMISSIVE
+        const description = params.description || '';
+        const code = params.code || '';
+        const responseCode = params.responseCode || params.response_code || '';
         
         const isSuccess = 
-            status === 'success' || 
-            status === '1' || 
-            status === 'approved' ||
-            status === 'completed' ||
-            status === 'true' ||
-            status.includes('aprobada') ||
-            status.includes('approved') ||
-            params.code === '1' ||
-            params.code === '0' && params.status === 'success';
+            params.status === 'success' ||
+            code === '1' || 
+            code === '0' ||
+            responseCode === '1' ||
+            description.toLowerCase().includes('aprobada') ||
+            description.toLowerCase().includes('approved') ||
+            description.toLowerCase().includes('transaccion');
 
-        console.log("Order:", order, "Status:", status, "isSuccess:", isSuccess);
+        console.log("Description:", description, "Code:", code, "isSuccess:", isSuccess);
 
-        // If no order, try to create a new booking anyway if there's payment info
-        if (!order) {
-            console.log("No order found - checking if payment might have succeeded");
-            
-            // If there's any transaction ID, assume success
-            const hasPayment = params.tpt || params.tilopayTransaction || params.transactionId || params.auth;
-            if (hasPayment) {
-                console.log("Payment detected but no order - treating as success");
-            } else {
-                console.log("No payment info - treating as error");
-                return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/?payment=error` } });
-            }
-        }
-
-        if (!isSuccess && !order) {
+        if (!isSuccess) {
+            console.log("Payment not successful");
             return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/?payment=failed` } });
         }
 
-        // Try to create booking
+        // Check supabase
+        console.log("Supabase admin exists:", !!supabaseAdmin);
+        
         if (!supabaseAdmin) {
-            console.log("NO SUPABASE - redirecting to error");
+            console.log("NO SUPABASE");
             return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/?payment=error` } });
         }
 
-        // Extract all possible fields
-        const tourId = params.tour_id || params.tourId || params.product_id || 'unknown';
         const tourName = params.tourName || params.tour_name || params.productName || 'Tour';
-        const customerName = params.customerName || params.customer_name || 
-                          (params.firstName && params.lastName ? `${params.firstName} ${params.lastName}` : 'Customer');
+        const customerName = params.customerName || params.customer_name || 'Customer';
         const customerEmail = params.customerEmail || params.customer_email || params.email || 'unknown@email.com';
-        const customerPhone = params.customerPhone || params.customer_phone || params.phone || '';
-        
-        let bookingDate = params.date || params.bookingDate || params.tour_date;
-        if (!bookingDate) {
-            bookingDate = new Date().toISOString().split('T')[0];
-        }
-        
+        const customerPhone = params.customerPhone || params.customer_phone || '';
+        const bookingDate = params.date || params.bookingDate || new Date().toISOString().split('T')[0];
         const adults = parseInt(params.adults || '1');
         const children = parseInt(params.children || '0');
-        const totalAmount = parseFloat(params.total_amount || params.amount || params.totalAmount || '0');
-        
-        const tpt = params.tpt || params.tilopayTransaction || params.transactionId || params.auth || 'TILOPAY';
-        const language = params.language || params.lang || 'en';
+        const totalAmount = parseFloat(params.total_amount || params.amount || '0');
+        const tpt = params.tpt || params.tilopayTransaction || params.transactionId || 'TILOPAY';
 
-        console.log("Creating booking with:", { tourName, customerName, customerEmail, totalAmount });
+        console.log("Inserting booking:", { tourName, customerName, customerEmail, totalAmount, bookingDate });
 
         const bookingId = crypto.randomUUID();
 
-        const insertData = {
+        // Try simple insert - just required fields
+        const { error } = await supabaseAdmin.from('bookings').insert({
             id: bookingId,
-            tour_id: tourId,
             customer_name: customerName,
             customer_email: customerEmail,
             customer_phone: customerPhone,
             tour_name: tourName,
             booking_date: bookingDate,
-            adults,
-            children,
+            adults: adults,
+            children: children,
             total_amount: totalAmount,
-            status: 'paid' as const,
-            tilopay_order_id: tpt,
-            tilopay_response: params
-        };
+            status: 'paid',
+            tilopay_order_id: tpt
+        });
 
-        console.log("Inserting:", JSON.stringify(insertData));
-
-        const { error } = await supabaseAdmin.from('bookings').insert([insertData]);
+        console.log("Insert error:", error);
 
         if (error) {
-            console.log("INSERT ERROR:", error.message, error.details);
+            console.log("DB Error:", error.message);
             return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/?payment=error` } });
         }
 
-        console.log("✅ BOOKING CREATED:", bookingId);
-
-        // Send email
-        sendBookingNotifications({
-            customerName,
-            customerEmail,
-            customerPhone: customerPhone || 'N/A',
-            tourName,
-            tourDate: bookingDate,
-            adults,
-            children,
-            totalAmount,
-            language: language as 'en' | 'es'
-        }).catch(e => console.log("Email error:", e));
-
-        // Success!
+        console.log("SUCCESS - Booking:", bookingId);
         return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/payment-success?order=${bookingId}` } });
 
     } catch (err) {
-        console.log("Callback error:", err);
+        console.log("EXCEPTION:", err);
         return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/?payment=error` } });
     }
 }
