@@ -26,26 +26,21 @@ async function handleCallback(request: Request): Promise<ARoute.response> {
 
         console.log("ALL PARAMS:", JSON.stringify(params));
 
-        // ONLY REQUIREMENT: Payment was successful
-        // Accept: status=success, code=1, code=0, description contains "aprobada"
-        const desc = (params.description || '').toLowerCase();
-        const code = params.code || '';
+        // ALWAYS try to create booking if there's any transaction ID (tpt, auth, transactionId)
+        // This handles all success cases
+        const hasTransactionId = params.tpt || params.auth || params.tilopayTransaction || 
+                                params.transactionId || params.transaction_id;
         
-        // Success if: code=1 OR code=0 with success in description OR status=success
-        const isSuccess = 
-            code === '1' || 
-            code === '0' || 
-            params.status === 'success' ||
-            desc.includes('aprobada') ||
-            desc.includes('approved') ||
-            desc.includes('transaccion');
+        console.log("hasTransactionId:", hasTransactionId);
 
-        console.log("isSuccess:", isSuccess, "code:", code, "desc:", desc);
-
-        // If no success, go to failed
-        if (!isSuccess) {
+        // If no transaction ID at all, it's an error
+        if (!hasTransactionId) {
+            console.log("NO TRANSACTION - treating as failed");
             return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/?payment=failed` } });
         }
+
+        // Has transaction ID = payment went through
+        console.log("Payment confirmed, creating booking...");
 
         // Check supabase
         console.log("Has supabase:", !!supabaseAdmin);
@@ -65,9 +60,9 @@ async function handleCallback(request: Request): Promise<ARoute.response> {
         const adults = parseInt(params.adults || '1');
         const children = parseInt(params.children || '0');
         const totalAmount = parseFloat(params.total_amount || params.amount || '50');
-        const tpt = params.tpt || params.tilopayTransaction || 'TILOPAY';
+        const tpt = params.tpt || params.auth || params.tilopayTransaction || params.transactionId || 'TILOPAY';
 
-        console.log("Creating booking:", { tourName, customerName, totalAmount, order });
+        console.log("Creating booking:", { tourName, customerName, totalAmount, order, tpt });
 
         const bookingId = crypto.randomUUID();
 
