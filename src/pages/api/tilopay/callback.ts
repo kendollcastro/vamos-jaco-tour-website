@@ -3,15 +3,16 @@ import { supabaseAdmin } from '../../../lib/supabase';
 
 export const prerender = false;
 
-export const GET: APIRoute = async ({ request }) => handleCallback(request);
-export const POST: APIRoute = async ({ request }) => handleCallback(request);
+export const GET: APIRoute = async (context) => handleCallback(context);
+export const POST: APIRoute = async (context) => handleCallback(context);
 
-async function handleCallback(request: Request): Promise<Response> {
+async function handleCallback(context: any): Promise<Response> {
+    const { request, url: contextUrl } = context;
     console.log("=== TILOPAY CALLBACK START ===");
     
     // Determine the public URL of the site
-    const host = request.headers.get('x-forwarded-host') || request.headers.get('host') || 'www.vamosjacotours.com';
-    const protocol = request.headers.get('x-forwarded-proto') || 'https';
+    const host = request.headers.get('x-forwarded-host') || request.headers.get('host') || contextUrl.host;
+    const protocol = request.headers.get('x-forwarded-proto') || contextUrl.protocol.replace(':', '') || 'https';
     // If host is localhost but we are not in dev, fallback to production
     const publicHost = (host.includes('localhost') && !import.meta.env.DEV) ? 'www.vamosjacotours.com' : host;
     const SITE_URL = `${protocol}://${publicHost}`;
@@ -19,11 +20,10 @@ async function handleCallback(request: Request): Promise<Response> {
     console.log(`Detected SITE_URL: ${SITE_URL} (Original host: ${host})`);
 
     try {
-        const requestUrl = new URL(request.url);
         const params: Record<string, any> = {};
         
-        // 1. Get parameters from URL
-        requestUrl.searchParams.forEach((value, key) => { params[key] = value; });
+        // 1. Get parameters from URL (Prioritize contextUrl which is more reliable in Astro)
+        contextUrl.searchParams.forEach((value: string, key: string) => { params[key] = value; });
 
         // 2. Get parameters from Body (TiloPay often POSTs back)
         if (request.method === 'POST') {
@@ -36,7 +36,9 @@ async function handleCallback(request: Request): Promise<Response> {
                     Object.assign(params, jsonBody);
                 } else {
                     const formData = await request.formData();
-                    formData.forEach((value, key) => { params[key] = String(value); });
+                    formData.forEach((value: FormDataEntryValue, key: string) => { 
+                        params[key] = String(value); 
+                    });
                 }
             } catch (bodyErr) {
                 console.error("Error parsing body:", bodyErr);
@@ -52,6 +54,7 @@ async function handleCallback(request: Request): Promise<Response> {
             console.error("NO ORDER ID FOUND");
             const debug = encodeURIComponent(JSON.stringify({
                 url: request.url,
+                contextUrl: contextUrl.toString(),
                 method: request.method,
                 params,
                 headers: Object.fromEntries(request.headers.entries())
