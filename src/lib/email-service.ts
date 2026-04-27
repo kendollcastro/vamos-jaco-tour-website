@@ -5,7 +5,8 @@ const resendApiKey = import.meta.env.RESEND_API_KEY || '';
 const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
 const ADMIN_EMAIL = 'vamosjacotours2024@gmail.com'; 
-const FROM_EMAIL = 'Vamos Jacó Tours <vamosjacotours2024@gmail.com>';
+const FROM_EMAIL = 'Vamos Jacó Tours <bookings@vamosjacotours.com>';
+const REPLY_TO_EMAIL = 'vamosjacotours2024@gmail.com';
 
 interface BookingEmailData {
     customerName: string;
@@ -82,6 +83,7 @@ export async function sendBookingNotifications(data: BookingEmailData, logoOverr
         // 1. Send Confirmation to Customer
         await resend.emails.send({
             from: FROM_EMAIL,
+            replyTo: REPLY_TO_EMAIL,
             to: customerEmail,
             subject: isEs 
                 ? `¡Tu aventura te espera! Confirmación: ${tourName}`
@@ -162,6 +164,7 @@ export async function sendBookingNotifications(data: BookingEmailData, logoOverr
         // 2. Send Notification to Admin
         await resend.emails.send({
             from: FROM_EMAIL,
+            replyTo: customerEmail,
             to: ADMIN_EMAIL,
             subject: `🚨 NEW BOOKING: ${customerName} - ${tourName}`,
             html: `
@@ -212,6 +215,7 @@ export async function sendNewsletterWelcome(email: string, logoOverride?: string
     try {
         await resend.emails.send({
             from: FROM_EMAIL,
+            replyTo: REPLY_TO_EMAIL,
             to: email,
             subject: isEs
                 ? '¡Bienvenido al Club de Aventuras de Vamos Jacó! 🌴'

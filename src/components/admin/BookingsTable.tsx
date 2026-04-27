@@ -417,9 +417,9 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                                         <td className="px-6 py-4">
                                             <span className="text-gray-900 dark:text-white font-black text-base">${Number(booking.total_amount).toLocaleString()}</span>
                                             {booking.tilopay_order_id && (
-                                                <div className="mt-1 flex items-center gap-1.5 text-[10px] text-green-500/80 font-mono font-bold bg-green-500/10 w-max px-2 py-0.5 rounded border border-green-500/20" title="Tilopay Order ID">
-                                                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
-                                                    Paid
+                                                <div className="mt-1 flex items-center gap-1.5 text-[10px] text-green-600 dark:text-green-500/90 font-bold bg-green-500/20 w-max px-2 py-0.5 rounded border border-green-500/30">
+                                                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                    TiloPay - Paid
                                                 </div>
                                             )}
                                             {!booking.tilopay_order_id && (
