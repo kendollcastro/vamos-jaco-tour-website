@@ -8,10 +8,18 @@ export const POST: APIRoute = async ({ request }) => handleCallback(request);
 
 async function handleCallback(request: Request): Promise<Response> {
     console.log("=== TILOPAY CALLBACK START ===");
-    const requestUrl = new URL(request.url);
-    const SITE_URL = `${requestUrl.protocol}//${requestUrl.host}`;
     
+    // Determine the public URL of the site
+    const host = request.headers.get('x-forwarded-host') || request.headers.get('host') || 'www.vamosjacotours.com';
+    const protocol = request.headers.get('x-forwarded-proto') || 'https';
+    // If host is localhost but we are not in dev, fallback to production
+    const publicHost = (host.includes('localhost') && !import.meta.env.DEV) ? 'www.vamosjacotours.com' : host;
+    const SITE_URL = `${protocol}://${publicHost}`;
+    
+    console.log(`Detected SITE_URL: ${SITE_URL} (Original host: ${host})`);
+
     try {
+        const requestUrl = new URL(request.url);
         const params: Record<string, any> = {};
         
         // 1. Get parameters from URL
@@ -38,11 +46,17 @@ async function handleCallback(request: Request): Promise<Response> {
         console.log("RECEIVED PARAMS:", JSON.stringify(params, null, 2));
 
         // 3. Identify the booking
-        const bookingId = params.order || params.orderNumber || params.reference || params.order_id;
+        const bookingId = params.order || params.orderNumber || params.reference || params.order_id || params.order_number;
         
         if (!bookingId || bookingId === 'unknown') {
             console.error("NO ORDER ID FOUND");
-            return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/checkout?error=InvalidSession` } });
+            const debug = encodeURIComponent(JSON.stringify({
+                url: request.url,
+                method: request.method,
+                params,
+                headers: Object.fromEntries(request.headers.entries())
+            }));
+            return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/checkout?error=InvalidSession&debug=${debug}` } });
         }
 
         // 4. Success check (TiloPay V2 uses response_code=1 for success)

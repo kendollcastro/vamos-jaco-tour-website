@@ -609,8 +609,13 @@ import Layout from "../layouts/Layout.astro";
     window.addEventListener('DOMContentLoaded', () => {
         const urlParams = new URLSearchParams(window.location.search);
         const error = urlParams.get('error');
+        const debug = urlParams.get('debug');
         if (error) {
-            alert("Payment issue: " + error);
+            let msg = "Payment issue: " + error;
+            if (debug) {
+                msg += "\n\nDebug Info: " + decodeURIComponent(debug);
+            }
+            alert(msg);
         }
     });
 
