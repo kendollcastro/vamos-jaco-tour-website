@@ -26,21 +26,29 @@ async function handleCallback(context: any): Promise<Response> {
         contextUrl.searchParams.forEach((value: string, key: string) => { params[key] = value; });
 
         // 2. Get parameters from Body (TiloPay often POSTs back)
+        const contentType = request.headers.get('content-type') || '';
         if (request.method === 'POST') {
-            const contentType = request.headers.get('content-type') || '';
             console.log("POST Content-Type:", contentType);
             
             try {
                 if (contentType.includes('application/json')) {
                     const jsonBody = await request.json();
                     Object.assign(params, jsonBody);
-                } else {
+                } else if (contentType.includes('application/x-www-form-urlencoded') || contentType.includes('multipart/form-data')) {
                     const formData = await request.formData();
                     formData.forEach((value: FormDataEntryValue, key: string) => { 
                         params[key] = String(value); 
                     });
+                } else {
+                    const text = await request.clone().text();
+                    console.log("Raw body text:", text);
+                    // Try to parse as query string if it looks like one
+                    if (text.includes('=') && !text.includes('{')) {
+                        const searchParams = new URLSearchParams(text);
+                        searchParams.forEach((v, k) => { params[k] = v; });
+                    }
                 }
-            } catch (bodyErr) {
+            } catch (bodyErr: any) {
                 console.error("Error parsing body:", bodyErr);
             }
         }
@@ -56,6 +64,7 @@ async function handleCallback(context: any): Promise<Response> {
                 url: request.url,
                 contextUrl: contextUrl.toString(),
                 method: request.method,
+                contentType,
                 params,
                 headers: Object.fromEntries(request.headers.entries())
             }));

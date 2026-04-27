@@ -9,11 +9,7 @@ import vercel from '@astrojs/vercel';
 export default defineConfig({
   site: 'https://vamosjacotoursdev.com',
   output: 'server',
-  adapter: vercel({
-    isr: {
-      expiration: 60,
-    },
-  }),
+  adapter: vercel(),
 
   integrations: [
     react(),
