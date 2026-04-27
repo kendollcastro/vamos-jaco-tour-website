@@ -6,18 +6,20 @@ const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
 
 async function check() {
-    console.log("Listing tours in the DB...");
     const { data, error } = await supabaseAdmin
-        .from('tours')
-        .select('id, slug, name');
+        .from('bookings')
+        .select('id, customer_name, tour_id, tour_name')
+        .eq('id', '9d2b2114-81d4-47e9-a0dc-2ccdbf122a92')
+        .single();
     
     if (error) {
         console.error("Error:", error.message);
     } else {
-        console.log(`Found ${data?.length} tours.`);
-        data?.forEach(t => {
-            console.log(`- ${t.name}: slug=${t.slug}, id=${t.id}`);
-        });
+        console.log("Existing booking details:");
+        console.log(`ID: ${data.id}`);
+        console.log(`Name: ${data.customer_name}`);
+        console.log(`Tour ID (in DB): ${data.tour_id}`);
+        console.log(`Tour Name: ${data.tour_name}`);
     }
 }
 

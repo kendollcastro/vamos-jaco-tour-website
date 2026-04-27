@@ -120,7 +120,27 @@ async function handleCallback(context: any): Promise<Response> {
                 tilopay_response: params
             }).eq('id', bookingId);
 
-            // Optional: Send confirmation emails here (they are also handled by webhook usually)
+            // 7. Send confirmation emails immediately
+            if (booking) {
+                try {
+                    const { sendBookingNotifications } = await import('../../../lib/email-service');
+                    console.log(`Triggering email notification for booking ${bookingId}`);
+                    await sendBookingNotifications({
+                        customerName: booking.customer_name,
+                        customerEmail: booking.customer_email,
+                        customerPhone: booking.customer_phone || 'N/A',
+                        tourName: booking.tour_name,
+                        tourDate: booking.booking_date,
+                        adults: booking.adults,
+                        children: booking.children,
+                        totalAmount: booking.total_amount,
+                        language: params.language || 'en'
+                    });
+                    console.log("Email notification sent successfully");
+                } catch (emailErr) {
+                    console.error('Failed to send confirmation email in callback:', emailErr);
+                }
+            }
             
             return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/payment-success?order=${bookingId}` } });
         } else {

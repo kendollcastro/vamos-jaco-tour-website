@@ -103,8 +103,7 @@ export const POST: APIRoute = async ({ request }) => {
                 adults: adults || 1,
                 children: children || 0,
                 total_amount: priceResult.total,
-                status: 'pending',
-                language: language
+                status: 'pending'
             });
 
             if (dbError) {
