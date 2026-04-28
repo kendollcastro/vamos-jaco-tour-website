@@ -6,19 +6,18 @@ const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
 
 async function check() {
-    console.log("Checking for bookings created today (2026-04-27)...");
-    const { data, error } = await supabaseAdmin
+    console.log("Looking for recent bookings...");
+    const { data: bookings, error } = await supabaseAdmin
         .from('bookings')
-        .select('*')
-        .gte('created_at', '2026-04-27T00:00:00')
+        .select('id, status, customer_name, tilopay_order_id, booking_time, created_at')
+        .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
         .order('created_at', { ascending: false });
     
     if (error) {
         console.error("Error:", error.message);
     } else {
-        console.log(`Found ${data?.length} bookings for today.`);
-        data?.forEach(b => {
-            console.log(`- ${b.customer_name}: ID=${b.id}, Status=${b.status}, TilopayID=${b.tilopay_order_id}, CreatedAt=${b.created_at}`);
+        bookings?.forEach((b, i) => {
+            console.log(`- ${b.customer_name}: Status=${b.status}, TiloPayID=${b.tilopay_order_id}, Time=${b.booking_time}, Created=${b.created_at}`);
         });
     }
 }

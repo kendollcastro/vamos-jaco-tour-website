@@ -127,18 +127,30 @@ export default function BookingDetailsModal({ isOpen, onClose, booking }: Bookin
                             <div className="grid grid-cols-2 gap-4">
                                 {booking.tilopay_order_id && (
                                     <div>
-                                        <p className={getTextMuted(isDarkMode) + ' text-xs'}>Order ID</p>
-                                        <p className={isDarkMode ? 'text-green-400 font-mono text-sm' : 'text-green-600 font-mono text-sm'}>
-                                            {booking.tilopay_order_id}
-                                        </p>
+                                        <p className={getTextMuted(isDarkMode) + ' text-xs'}># (Transacción / Auth)</p>
+                                        <div className="flex items-center gap-2">
+                                            <p className={isDarkMode ? 'text-green-400 font-mono text-sm' : 'text-green-600 font-mono text-sm'}>
+                                                {booking.tilopay_order_id}
+                                            </p>
+                                            <button onClick={() => navigator.clipboard.writeText(booking.tilopay_order_id!)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors" title="Copiar #">
+                                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                            </button>
+                                        </div>
                                     </div>
                                 )}
                                 {safeTilopayResponse && (
                                     <>
-                                        {(safeTilopayResponse as any).orderNumber && (
+                                        {((safeTilopayResponse as any).order || (safeTilopayResponse as any).orderNumber) && (
                                             <div>
-                                                <p className={getTextMuted(isDarkMode) + ' text-xs'}>Order Number</p>
-                                                <p className={`${getTextPrimary(isDarkMode)} font-mono text-sm`}>{(safeTilopayResponse as any).orderNumber}</p>
+                                                <p className={getTextMuted(isDarkMode) + ' text-xs'}>#Orden</p>
+                                                <div className="flex items-center gap-2">
+                                                    <p className={`${getTextPrimary(isDarkMode)} font-mono text-xs truncate max-w-[120px]`} title={(safeTilopayResponse as any).order || (safeTilopayResponse as any).orderNumber}>
+                                                        {(safeTilopayResponse as any).order || (safeTilopayResponse as any).orderNumber}
+                                                    </p>
+                                                    <button onClick={() => navigator.clipboard.writeText((safeTilopayResponse as any).order || (safeTilopayResponse as any).orderNumber)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors" title="Copiar #Orden">
+                                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                                    </button>
+                                                </div>
                                             </div>
                                         )}
                                         {(safeTilopayResponse as any).cardBrand && (

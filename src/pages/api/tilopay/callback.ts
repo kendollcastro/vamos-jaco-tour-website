@@ -104,7 +104,7 @@ async function handleCallback(context: any): Promise<Response> {
                     tour_name: params.tourName || 'Tour',
                     booking_date: params.date || new Date().toISOString().split('T')[0],
                     total_amount: parseFloat(params.total_amount || params.amount || '0'),
-                    status: 'paid',
+                    status: 'confirmed',
                     tilopay_order_id: params.tpt || params.auth || 'TILOPAY'
                 });
                 return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/payment-success?order=${newBookingId}` } });
@@ -115,7 +115,7 @@ async function handleCallback(context: any): Promise<Response> {
         if (isSuccess) {
             console.log(`Updating booking ${bookingId} to PAID`);
             await supabaseAdmin.from('bookings').update({
-                status: 'paid',
+                status: 'confirmed',
                 tilopay_order_id: params.tpt || params.auth,
                 tilopay_response: params
             }).eq('id', bookingId);
