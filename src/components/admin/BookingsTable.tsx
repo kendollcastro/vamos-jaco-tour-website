@@ -18,7 +18,7 @@ interface Booking {
     adults: number;
     children: number;
     total_amount: number;
-    status: 'pending' | 'paid' | 'office' | 'confirmed' | 'completed' | 'cancelled';
+    status: 'pending' | 'paid' | 'office' | 'confirmed' | 'completed' | 'cancelled' | 'overbooked';
     tilopay_order_id?: string;
     tilopay_response?: Record<string, any>;
     created_at: string;
@@ -31,6 +31,7 @@ const STATUS_STYLES: Record<string, { light: string; dark: string }> = {
     confirmed: { light: 'bg-emerald-100 text-emerald-700 border-emerald-200', dark: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' },
     completed: { light: 'bg-gray-100 text-gray-600 border-gray-200', dark: 'bg-gray-500/20 text-gray-400 border-gray-500/30' },
     cancelled: { light: 'bg-red-100 text-red-700 border-red-200', dark: 'bg-red-500/20 text-red-400 border-red-500/30' },
+    overbooked: { light: 'bg-red-200 text-red-800 border-red-300 animate-pulse', dark: 'bg-red-600/30 text-red-400 border-red-600/40 animate-pulse' },
 };
 
 const DEMO_BOOKINGS: Booking[] = [
@@ -251,7 +252,8 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                             { key: 'office', en: 'Office', es: 'Oficina' },
                             { key: 'confirmed', en: 'Confirmed', es: 'Confirmado' },
                             { key: 'completed', en: 'Completed', es: 'Completado' },
-                            { key: 'cancelled', en: 'Cancelled', es: 'Cancelado' }
+                            { key: 'cancelled', en: 'Cancelled', es: 'Cancelado' },
+                            { key: 'overbooked', en: 'Overbooked', es: 'Sobrebooking' }
                         ].map((s) => (
                             <button
                                 key={s.key}

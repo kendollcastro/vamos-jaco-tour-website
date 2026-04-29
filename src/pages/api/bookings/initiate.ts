@@ -91,26 +91,38 @@ export const POST: APIRoute = async ({ request }) => {
             if (tourData) tourUuid = tourData.id;
         }
 
-        // 5. Create PENDING booking in Supabase
+        // 5. Check availability before proceeding (overbooking prevention)
         if (supabaseAdmin) {
-            const { error: dbError } = await supabaseAdmin.from('bookings').insert({
-                id: orderId,
-                customer_name: `${sanitizedName.split(' ')[0]} ${sanitizedName.split(' ').slice(1).join(' ') || 'Customer'}`,
-                customer_email: sanitizedEmail,
-                customer_phone: sanitizedPhone,
-                tour_id: tourUuid,
-                tour_name: tourName || tourId,
-                booking_date: new Date(date).toISOString().split('T')[0],
-                booking_time: time || null,
-                adults: adults || 1,
-                children: children || 0,
-                total_amount: priceResult.total,
-                status: 'pending'
-            });
-
-            if (dbError) {
-                console.error('Failed to create pending booking:', dbError);
-                // We'll continue anyway, but the callback might have issues
+            const { data: tourData } = await supabaseAdmin
+                .from('tours')
+                .select('max_participants')
+                .eq('id', tourUuid)
+                .single();
+            
+            const maxParticipants = tourData?.max_participants || 10;
+            const requestedGuests = (adults || 1) + (children || 0);
+            
+            // Get existing bookings for that date/tour
+            const { data: existingBookings } = await supabaseAdmin
+                .from('bookings')
+                .select('adults, children, status')
+                .eq('tour_id', tourUuid)
+                .eq('booking_date', new Date(date).toISOString().split('T')[0])
+                .in('status', ['confirmed', 'paid', 'pending']);
+            
+            const totalBooked = (existingBookings || []).reduce((sum: number, b: any) => {
+                return sum + (b.adults || 0) + (b.children || 0);
+            }, 0);
+            
+            if ((totalBooked + requestedGuests) > maxParticipants) {
+                return new Response(JSON.stringify({
+                    success: false,
+                    message: 'Sorry, this tour is fully booked for the selected date. Please choose a different date or time.',
+                    code: 'OVERBOOKED'
+                }), {
+                    status: 409,
+                    headers: { 'Content-Type': 'application/json' }
+                });
             }
         }
 

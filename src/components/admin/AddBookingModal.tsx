@@ -6,21 +6,29 @@ interface Props {
     isOpen: boolean;
     onClose: () => void;
     onSuccess: () => void;
+    prefillDate?: string;
 }
 
-export default function AddBookingModal({ isOpen, onClose, onSuccess }: Props) {
+export default function AddBookingModal({ isOpen, onClose, onSuccess, prefillDate }: Props) {
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         customer_name: '',
         customer_email: '',
         customer_phone: '',
         tour_name: 'Jaco ATV Off-Road Adventure',
-        booking_date: new Date().toISOString().split('T')[0],
+        booking_date: prefillDate || new Date().toISOString().split('T')[0],
         total_amount: 0,
         status: 'confirmed',
         adults: 1,
         children: 0
     });
+
+    // Update form date when prefillDate changes
+    React.useEffect(() => {
+        if (prefillDate) {
+            setFormData(prev => ({ ...prev, booking_date: prefillDate }));
+        }
+    }, [prefillDate]);
 
     if (!isOpen) return null;
 

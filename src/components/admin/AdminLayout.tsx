@@ -170,7 +170,7 @@ export default function AdminLayout({ children }: Props) {
                             : currentView === 'emails' ? EmailsView
                                 : GalleryView;
 
-    return (
+return (
         <div className="min-h-screen font-sans text-gray-900 dark:text-white bg-gray-50 dark:bg-dark flex transition-premium">
             {/* Mobile overlay */}
             {sidebarOpen && (
@@ -182,12 +182,12 @@ export default function AdminLayout({ children }: Props) {
 
             {/* Sidebar */}
             <aside className={`
-        fixed lg:static inset-y-0 left-0 z-50
-        w-72 bg-white dark:bg-[#0A0A0A] border-r border-gray-200 dark:border-white/5
-        transform transition-premium
-        ${sidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0'}
-        flex flex-col
-      `}>
+                fixed lg:static inset-y-0 left-0 z-50
+                w-72 bg-white dark:bg-[#0A0A0A] border-r border-gray-200 dark:border-white/5
+                transform transition-premium
+                ${sidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0'}
+                flex flex-col
+            `}>
                 {/* Brand */}
                 <div className="px-8 py-8 border-b border-gray-200 dark:border-white/5">
                     <div className="flex items-center gap-4">
@@ -196,7 +196,7 @@ export default function AdminLayout({ children }: Props) {
                         </div>
                         <div>
                             <h2 className="text-gray-900 dark:text-white font-heading font-extrabold text-lg leading-tight tracking-tight uppercase">Vamos Jacó</h2>
-                            <p className="text-primary font-bold text-[10px] uppercase tracking-[0.2em] mt-0.5">Administrator</p>
+                            <p className="text-primary font-bold text-[10px] uppercase tracking-widest">Administrator</p>
                         </div>
                     </div>
                 </div>
@@ -210,12 +210,12 @@ export default function AdminLayout({ children }: Props) {
                             key={item.id}
                             onClick={() => { setCurrentView(item.id); setSidebarOpen(false); localStorage.setItem('admin_view', item.id); }}
                             className={`
-                w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300
-                ${currentView === item.id
+                        w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300
+                        ${currentView === item.id
                                 ? 'bg-primary/10 text-primary translate-x-1'
                                 : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 hover:translate-x-1'
                             }
-              `}
+                        `}
                         >
                             <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={item.icon} />
@@ -228,59 +228,57 @@ export default function AdminLayout({ children }: Props) {
                     )}
                 </nav>
 
-                {/* Quick Actions & User */}
+                {/* User Profile */}
                 <div className="px-4 py-6 border-t border-gray-200 dark:border-white/5">
-                    {/* Quick Stats Widget */}
-                    <div className="bg-gradient-to-br from-primary/10 to-brand-orange/10 dark:from-primary/20 dark:to-brand-orange/20 rounded-lg p-4 mb-4 border border-primary/10">
-                        <div className="flex items-center gap-3 mb-2">
-                            <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
-                                <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                            </div>
-                            <span className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wider">{t.sidebar.quickNote}</span>
-                        </div>
-                        <p className="text-[10px] text-gray-500 dark:text-gray-400 leading-relaxed font-medium">{t.sidebar.quickNoteText}</p>
-                    </div>
-
                     <div className="flex items-center gap-3 mb-4 px-2">
                         <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-brand-orange/20 to-primary/20 flex items-center justify-center text-brand-orange text-sm font-bold shadow-sm border border-brand-orange/10">
                             {userEmail?.charAt(0)?.toUpperCase() || 'A'}
                         </div>
                         <div className="flex flex-col min-w-0">
                             <span className="text-gray-900 dark:text-white text-sm font-bold truncate">{userEmail.split('@')[0] || 'Admin'}</span>
-                            <span className="text-gray-500 dark:text-gray-500 text-[10px] truncate font-bold uppercase tracking-widest">{t.sidebar.administrator}</span>
+                            <span className="text-gray-500 dark:text-gray-400 text-[10px] truncate font-bold uppercase tracking-widest">{t.sidebar.administrator}</span>
                         </div>
                     </div>
 
-                    {/* Keyboard Shortcuts Hint */}
-                    <div className="px-2 py-3 bg-gray-100 dark:bg-white/5 rounded-lg mb-4">
-                        <p className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider mb-2">{$language === 'en' ? 'Shortcuts' : 'Atajos'}</p>
-                        <div className="space-y-1 text-[10px]">
-                            <div className="flex justify-between text-gray-600 dark:text-gray-400">
-                                <span>{$language === 'en' ? 'Search' : 'Buscar'}</span>
-                                <kbd className="px-1.5 py-0.5 bg-white dark:bg-black/30 rounded text-gray-500 font-mono">⌘K</kbd>
-                            </div>
-                            <div className="flex justify-between text-gray-600 dark:text-gray-400">
-                                <span>{$language === 'en' ? 'Dashboard' : 'Panel'}</span>
-                                <kbd className="px-1.5 py-0.5 bg-white dark:bg-black/30 rounded text-gray-500 font-mono">G</kbd>
-                            </div>
-                            <div className="flex justify-between text-gray-600 dark:text-gray-400">
-                                <span>{$language === 'en' ? 'Tours' : 'Tours'}</span>
-                                <kbd className="px-1.5 py-0.5 bg-white dark:bg-black/30 rounded text-gray-500 font-mono">T</kbd>
-                            </div>
-                            <div className="flex justify-between text-gray-600 dark:text-gray-400">
-                                <span>{$language === 'en' ? 'Bookings' : 'Reservas'}</span>
-                                <kbd className="px-1.5 py-0.5 bg-white dark:bg-black/30 rounded text-gray-500 font-mono">R</kbd>
-                            </div>
-                        </div>
+                    {/* Theme & Language Switchers */}
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={toggleTheme}
+                            className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 text-xs font-medium transition-all hover:-translate-y-0.5 active:scale-95"
+                            title="Toggle theme"
+                        >
+                            {theme === 'dark' ? (
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3V1m0 2a9 9 0 1 0 9 9m-9-9a9 9 0 0 0 0-9 9m9-9a9 9 0 0 0 9 9m-18 0a9 9 0 1 0 9-9m-9 9a9 9 0 0 0 0-9 9m9-9a9 9 0 0 0-9 9" />
+                                </svg>
+                            ) : (
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 0 1 18.657 4m-1.323 0A9 9 0 1 0 20.354 15.354z" />
+                                </svg>
+                            )}
+                            {theme === 'dark' ? 'Light' : 'Dark'}
+                        </button>
+                        <button
+                            onClick={() => setLanguage(language === 'en' ? 'es' : 'en')}
+                            className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 text-xs font-medium transition-all hover:-translate-y-0.5 active:scale-95"
+                            title="Switch language"
+                        >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m-6 2a14 14 0 1 1 6 3.76M10 14a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+                            </svg>
+                            {language === 'en' ? 'ES' : 'EN'}
+                        </button>
                     </div>
+
+                    {/* Logout */}
                     <button
                         onClick={handleLogout}
-                        className="w-full flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/5 transition-colors"
+                        className="mt-3 w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 border border-red-200 dark:border-red-500/20 hover:border-red-300 dark:hover:border-red-500/30 transition-all hover:-translate-y-0.5 active:scale-95"
                     >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 20v-1a3 3 0 0 0-3-3H5a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1" />
                         </svg>
-                        {t.common.signOut}
+                        {t.sidebar.logout}
                     </button>
                 </div>
             </aside>

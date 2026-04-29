@@ -142,8 +142,12 @@ export function buttonVariant(variant: 'primary' | 'secondary' | 'ghost' | 'dang
 // ─── Helper: Status badge classes ──────────────────────────────
 export const statusBadge = {
   pending: 'bg-amber-500/10 text-amber-600 dark:text-amber-500 border-amber-500/20',
+  paid: 'bg-blue-500/10 text-blue-600 dark:text-blue-500 border-blue-500/20',
+  office: 'bg-purple-500/10 text-purple-600 dark:text-purple-500 border-purple-500/20',
   confirmed: 'bg-green-500/10 text-green-600 dark:text-green-500 border-green-500/20',
+  completed: 'bg-gray-500/10 text-gray-600 dark:text-gray-500 border-gray-500/20',
   cancelled: 'bg-red-500/10 text-red-600 dark:text-red-500 border-red-500/20',
+  overbooked: 'bg-red-600/10 text-red-600 dark:text-red-600 border-red-600/20 animate-pulse',
   active: 'bg-green-500/10 text-green-600 dark:text-green-500 border-green-500/20',
   inactive: 'bg-gray-500/10 text-gray-600 dark:text-gray-500 border-gray-500/20',
 } as const;

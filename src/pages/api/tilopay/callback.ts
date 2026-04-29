@@ -111,9 +111,45 @@ async function handleCallback(context: any): Promise<Response> {
             }
         }
 
-        // 6. Update booking status
-        if (isSuccess) {
-            console.log(`Updating booking ${bookingId} to PAID`);
+        // 6. Check for overbooking before confirming
+        if (isSuccess && booking) {
+            // Get tour capacity
+            const { data: tourData } = await supabaseAdmin
+                .from('tours')
+                .select('max_participants, name_en')
+                .eq('id', booking.tour_id)
+                .single();
+            
+            const maxParticipants = tourData?.max_participants || 10;
+            const requestedGuests = (booking.adults || 1) + (booking.children || 0);
+            
+            // Get all bookings for that date/tour
+            const { data: existingBookings } = await supabaseAdmin
+                .from('bookings')
+                .select('adults, children, status')
+                .eq('tour_id', booking.tour_id)
+                .eq('booking_date', booking.booking_date)
+                .in('status', ['confirmed', 'paid', 'pending'])
+                .neq('id', bookingId); // Exclude current booking
+            
+            const totalBooked = (existingBookings || []).reduce((sum: number, b: any) => {
+                return sum + (b.adults || 0) + (b.children || 0);
+            }, 0);
+            
+            if ((totalBooked + requestedGuests) > maxParticipants) {
+                console.warn(`OVERBOOKING PREVENTED for booking ${bookingId}: ${totalBooked} already booked, ${requestedGuests} requested, max is ${maxParticipants}`);
+                // Mark as overbooked instead of confirmed
+                await supabaseAdmin.from('bookings').update({
+                    status: 'overbooked',
+                    tilopay_order_id: params.tpt || params.auth,
+                    tilopay_response: { ...params, overbooked: true, reason: 'Capacity exceeded' }
+                }).eq('id', bookingId);
+                
+                // TODO: Send overbooking alert to admin
+                return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/payment-success?order=${bookingId}&overbooked=true` } });
+            }
+            
+            console.log(`Updating booking ${bookingId} to CONFIRMED`);
             await supabaseAdmin.from('bookings').update({
                 status: 'confirmed',
                 tilopay_order_id: params.tpt || params.auth,
