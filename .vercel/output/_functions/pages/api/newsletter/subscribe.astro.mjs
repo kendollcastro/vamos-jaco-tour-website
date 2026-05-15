@@ -61,7 +61,7 @@ const POST = async ({ request }) => {
         headers: { "Content-Type": "application/json" }
       });
     }
-    const { sendNewsletterWelcome } = await import('../../../chunks/email-service_BOo9znAY.mjs');
+    const { sendNewsletterWelcome } = await import('../../../chunks/email-service_C4_kf4wL.mjs');
     sendNewsletterWelcome(sanitizedEmail, void 0, language).catch((err) => console.error("Error sending welcome email:", err));
     return new Response(JSON.stringify({
       success: true,

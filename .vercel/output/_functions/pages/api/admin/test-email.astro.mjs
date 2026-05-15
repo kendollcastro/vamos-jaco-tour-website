@@ -1,5 +1,5 @@
 import { v as verifyAdmin } from '../../../chunks/auth_DCmJjDju.mjs';
-import { sendBookingNotifications, sendNewsletterWelcome } from '../../../chunks/email-service_BOo9znAY.mjs';
+import { sendBookingNotifications, sendNewsletterWelcome } from '../../../chunks/email-service_C4_kf4wL.mjs';
 export { renderers } from '../../../renderers.mjs';
 
 const POST = async ({ request }) => {

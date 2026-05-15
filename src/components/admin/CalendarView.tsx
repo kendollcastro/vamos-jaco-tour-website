@@ -301,9 +301,13 @@ export default function CalendarView() {
                         <div
                             key={idx}
                             onClick={() => handleDateClick(day)}
+                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleDateClick(day); }}
+                            tabIndex={0}
+                            role="button"
+                            aria-label={`${day.date.toLocaleDateString()} ${day.bookings.length} bookings`}
                             className={`
-                                min-h-[120px] p-2 border-b border-r border-gray-200/50 dark:border-white/5 cursor-pointer
-                                transition-all duration-200 hover:bg-gray-50 dark:hover:bg-white/[0.02]
+                                min-h-[100px] sm:min-h-[120px] p-2 border-b border-r border-gray-200/50 dark:border-white/5 cursor-pointer
+                                transition-all duration-200 hover:bg-gray-50 dark:hover:bg-white/[0.02] focus:outline-none focus:ring-2 focus:ring-primary focus:z-10
                                 ${!day.isCurrentMonth ? 'opacity-30' : ''}
                                 ${day.isToday ? 'bg-primary/5 dark:bg-primary/10' : ''}
                             `}
@@ -324,8 +328,15 @@ export default function CalendarView() {
                                             e.stopPropagation();
                                             handleAddBookingForDate(day.date);
                                         }}
-                                        className="w-5 h-5 rounded-md bg-primary/10 text-primary flex items-center justify-center opacity-0 hover:opacity-100 focus:opacity-100 group-hover:opacity-100 transition-all"
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' || e.key === ' ') {
+                                                e.stopPropagation();
+                                                handleAddBookingForDate(day.date);
+                                            }
+                                        }}
+                                        className="w-5 h-5 rounded-md bg-primary/10 text-primary flex items-center justify-center hover:opacity-100 transition-all focus:outline-none focus:ring-2 focus:ring-primary"
                                         title={$language === 'en' ? 'Add booking' : 'Agregar reserva'}
+                                        aria-label={$language === 'en' ? `Add booking for ${day.date.toLocaleDateString()}` : `Agregar reserva para ${day.date.toLocaleDateString()}`}
                                     >
                                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -400,9 +411,19 @@ export default function CalendarView() {
                                     </div>
                                     <p className="text-sm text-gray-600 dark:text-gray-300">{booking.tour_name}</p>
                                     <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
-                                        <span>🕐 {booking.booking_time}</span>
-                                        <span>👥 {booking.guests} {$language === 'en' ? 'guests' : 'personas'}</span>
-                                        <span>💰 ${booking.total_amount}</span>
+                                        <span className="flex items-center gap-1">
+                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a8 8 0 11-16 0 8 8 0 0116 0z" />
+                                            </svg>
+                                            {booking.booking_time}
+                                        </span>
+                                        <span className="flex items-center gap-1">
+                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                            </svg>
+                                            {booking.guests}
+                                        </span>
+                                        <span className="font-bold">${booking.total_amount}</span>
                                     </div>
                                 </div>
                             ))}

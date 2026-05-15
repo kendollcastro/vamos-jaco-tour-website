@@ -6,16 +6,17 @@ import { adminTranslations } from '../../lib/admin-translations';
 import AdminLogin from './AdminLogin';
 import { cardClasses, buttonVariant, background, text } from '../../lib/admin-design-tokens';
 
-type AdminView = 'dashboard' | 'tours' | 'bookings' | 'subscribers' | 'gallery' | 'team' | 'website' | 'emails';
+type AdminView = 'dashboard' | 'tours' | 'bookings' | 'calendar' | 'subscribers' | 'gallery' | 'team' | 'website' | 'emails';
 
 interface Props {
     children?: ReactNode;
 }
 
-const getNavItems = (t: typeof adminTranslations.en) => [
+const getNavItems = (t: typeof adminTranslations.en, lang: 'en' | 'es') => [
     { id: 'dashboard' as AdminView, label: t.nav.dashboard, icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
     { id: 'tours' as AdminView, label: t.nav.tours, icon: 'M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7' },
     { id: 'bookings' as AdminView, label: t.nav.bookings, icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01' },
+    { id: 'calendar' as AdminView, label: lang === 'en' ? 'Calendar' : 'Calendario', icon: 'M8 7V3m8 4V3m-9 8h10M5 21h10a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' },
     { id: 'subscribers' as AdminView, label: t.nav.subscribers, icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
     { id: 'gallery' as AdminView, label: t.nav.gallery, icon: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z' },
     { id: 'team' as AdminView, label: t.nav.team, icon: 'M17 20h5V4H2v16h5m10 0v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5m10 0H7M12 11a4 4 0 100-8 4 4 0 000 8z' },
@@ -28,7 +29,7 @@ export default function AdminLayout({ children }: Props) {
     const [currentView, setCurrentView] = useState<AdminView>(() => {
         if (typeof window !== 'undefined') {
             const saved = localStorage.getItem('admin_view');
-            if (saved && ['dashboard', 'tours', 'bookings', 'subscribers', 'gallery', 'team', 'website', 'emails'].includes(saved)) {
+            if (saved && ['dashboard', 'tours', 'bookings', 'calendar', 'subscribers', 'gallery', 'team', 'website', 'emails'].includes(saved)) {
                 return saved as AdminView;
             }
         }
@@ -82,6 +83,10 @@ export default function AdminLayout({ children }: Props) {
                 e.preventDefault();
                 setCurrentView('bookings');
             }
+            if (e.key === 'c' && !e.metaKey && !e.ctrlKey) {
+                e.preventDefault();
+                setCurrentView('calendar');
+            }
             if (e.key === 's' && !e.metaKey && !e.ctrlKey) {
                 e.preventDefault();
                 setCurrentView('subscribers');
@@ -104,6 +109,7 @@ export default function AdminLayout({ children }: Props) {
     const [DashboardView, setDashboardView] = useState<React.ComponentType | null>(null);
     const [ToursView, setToursView] = useState<React.ComponentType | null>(null);
     const [BookingsView, setBookingsView] = useState<React.ComponentType | null>(null);
+    const [CalendarView, setCalendarView] = useState<React.ComponentType | null>(null);
     const [SubscribersView, setSubscribersView] = useState<React.ComponentType | null>(null);
     const [GalleryView, setGalleryView] = useState<React.ComponentType | null>(null);
     const [TeamView, setTeamView] = useState<React.ComponentType | null>(null);
@@ -135,6 +141,7 @@ export default function AdminLayout({ children }: Props) {
         import('./DashboardStats').then((m) => setDashboardView(() => m.default));
         import('./TourList').then((m) => setToursView(() => m.default));
         import('./BookingsTable').then((m) => setBookingsView(() => m.default));
+        import('./CalendarView').then((m) => setCalendarView(() => m.default));
         import('./SubscribersTable').then((m) => setSubscribersView(() => m.default));
         import('./MediaGallery').then((m) => setGalleryView(() => m.default));
         import('./TeamManager').then((m) => setTeamView(() => m.default));
@@ -164,11 +171,12 @@ export default function AdminLayout({ children }: Props) {
     const ActiveView = currentView === 'dashboard' ? DashboardView
         : currentView === 'tours' ? ToursView
             : currentView === 'bookings' ? BookingsView
-                : currentView === 'subscribers' ? SubscribersView
-                    : currentView === 'team' ? TeamView
-                        : currentView === 'website' ? WebsiteComponentsView
-                            : currentView === 'emails' ? EmailsView
-                                : GalleryView;
+                : currentView === 'calendar' ? CalendarView
+                    : currentView === 'subscribers' ? SubscribersView
+                        : currentView === 'team' ? TeamView
+                            : currentView === 'website' ? WebsiteComponentsView
+                                : currentView === 'emails' ? EmailsView
+                                    : GalleryView;
 
 return (
         <div className="min-h-screen font-sans text-gray-900 dark:text-white bg-gray-50 dark:bg-dark flex transition-premium">
@@ -203,7 +211,7 @@ return (
 
                 {/* Navigation */}
                 <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-                    {getNavItems(t as any).filter(item => 
+                    {getNavItems(t as any, $language).filter(item => 
                         item.label.toLowerCase().includes(searchQuery.toLowerCase())
                     ).map((item) => (
                         <button
@@ -223,7 +231,7 @@ return (
                             {item.label}
                         </button>
                     ))}
-                    {getNavItems(t as any).filter(item => item.label.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
+                    {getNavItems(t as any, $language).filter(item => item.label.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
                         <div className="px-4 py-2 text-xs text-gray-500 italic">No sections found</div>
                     )}
                 </nav>
@@ -303,7 +311,7 @@ return (
                             <input 
                                 type="text" 
                                 placeholder={t.common.search} 
-                                className="bg-transparent border-none outline-none text-sm text-gray-900 dark:text-white ml-3 w-full placeholder-gray-400 dark:placeholder-gray-500 font-bold uppercase tracking-widest text-[10px]" 
+                                className="bg-transparent border-none outline-none text-sm text-gray-900 dark:text-white ml-3 w-full placeholder-gray-400 dark:placeholder-gray-500" 
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 onFocus={() => setIsSearchFocused(true)}

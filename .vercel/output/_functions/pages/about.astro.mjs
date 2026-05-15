@@ -1,12 +1,12 @@
-import { f as createComponent, l as renderComponent, r as renderTemplate, m as maybeRenderHead, h as addAttribute } from '../chunks/astro/server_DYRfXif5.mjs';
+import { f as createComponent, l as renderComponent, r as renderTemplate, m as maybeRenderHead, h as addAttribute } from '../chunks/astro/server_DbvMU4yw.mjs';
 import 'piccolore';
-import { l as language, $ as $$Layout } from '../chunks/Layout_DvX-58aZ.mjs';
-import { f as fetchWPAPI, A as AboutSection, T as TeamSection, a as TrustBar, F as FaqSection } from '../chunks/wp_fBMgaIju.mjs';
+import { l as language, $ as $$Layout } from '../chunks/Layout_CqeA3e2m.mjs';
+import { f as fetchWPAPI, A as AboutSection, T as TeamSection, a as TrustBar, F as FaqSection } from '../chunks/wp_o87XWEap.mjs';
 import { jsx, jsxs } from 'react/jsx-runtime';
 import { useState, useEffect } from 'react';
 import { useStore } from '@nanostores/react';
 import { Instagram } from 'lucide-react';
-import { N as NewsletterSection } from '../chunks/NewsletterSection_DbWiMEMZ.mjs';
+import { N as NewsletterSection } from '../chunks/NewsletterSection_CnGJ5L8Q.mjs';
 import { S as ScrollReveal } from '../chunks/ScrollReveal_CEJ16IzC.mjs';
 import { g as getTeamMembers } from '../chunks/supabase-team_Dc6PVDSG.mjs';
 import { g as getOrganizationSchema, a as getBreadcrumbSchema, b as getFAQSchema } from '../chunks/seo-schemas_BdYtPc9Z.mjs';

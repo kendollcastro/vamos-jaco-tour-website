@@ -1,10 +1,10 @@
-import { e as createAstro, f as createComponent, l as renderComponent, n as renderScript, r as renderTemplate, m as maybeRenderHead, h as addAttribute } from '../../chunks/astro/server_DYRfXif5.mjs';
+import { e as createAstro, f as createComponent, l as renderComponent, n as renderScript, r as renderTemplate, m as maybeRenderHead, h as addAttribute } from '../../chunks/astro/server_DbvMU4yw.mjs';
 import 'piccolore';
-import { l as language, $ as $$Layout } from '../../chunks/Layout_DvX-58aZ.mjs';
+import { l as language, $ as $$Layout } from '../../chunks/Layout_CqeA3e2m.mjs';
 import { a as getTourById, g as getAllTours } from '../../chunks/tours__JEStAIi.mjs';
 import { d as getTourSchema, a as getBreadcrumbSchema } from '../../chunks/seo-schemas_BdYtPc9Z.mjs';
-import { T as TourCard } from '../../chunks/TourCard_CQBw6Z-c.mjs';
-import { N as NewsletterSection } from '../../chunks/NewsletterSection_DbWiMEMZ.mjs';
+import { T as TourCard } from '../../chunks/TourCard_DPdCagYo.mjs';
+import { N as NewsletterSection } from '../../chunks/NewsletterSection_CnGJ5L8Q.mjs';
 import { jsx, Fragment, jsxs } from 'react/jsx-runtime';
 import React, { useState, useEffect, useMemo } from 'react';
 import { useStore } from '@nanostores/react';
