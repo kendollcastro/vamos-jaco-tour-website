@@ -101,121 +101,77 @@ export async function sendBookingNotifications(data: BookingEmailData, logoOverr
                 <head>
                     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
                     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                    <meta name="color-scheme" content="light dark" />
-                    <meta name="supported-color-schemes" content="light dark" />
-                    <title>${tourName}</title>
-                    <style type="text/css">
-                        :root { color-scheme: light dark; supported-color-schemes: light dark; }
-                        @media (prefers-color-scheme: dark) {
-                            .email-bg { background-color: #1a1a1a !important; }
-                            .content-bg { background-color: #242424 !important; }
-                            .text-main { color: #f0f0f0 !important; }
-                            .text-sec { color: #bbbbbb !important; }
-                            .box-bg { background-color: #2d2d2d !important; border-color: #444444 !important; }
-                            .cta-btn { background-color: #03A696 !important; color: #ffffff !important; }
-                        }
-                    </style>
-                    <!--[if mso]>
-                    <style type="text/css">
-                        body, table, td {font-family: Arial, sans-serif !important;}
-                    </style>
-                    <![endif]-->
                 </head>
-                <body style="margin: 0; padding: 0; background-color: #e5e5e5;">
-                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #e5e5e5;">
+                <body style="margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; font-size: 16px; line-height: 1.5; color: #333333; background-color: #ffffff;">
+                    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #ffffff;">
                         <tr>
-                            <td align="center" style="padding: 20px;">
-                                <table role="presentation" width="100%" max-width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #fafafa; border-radius: 16px; overflow: hidden; border: 1px solid #cccccc;">
-                                    <!-- Header -->
+                            <td style="padding: 20px;">
+                                <table width="100%" max-width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto;">
+                                    <!-- Logo -->
                                     <tr>
-                                        <td style="background: #0B0F19; padding: 40px 20px; text-align: center;">
-                                            <img src="${resolvedLogo}" alt="Vamos Jacó Tours" width="180" style="display: inline-block; max-width: 180px; height: auto; border: 0; background: #0B0F19; border-radius: 8px; padding: 10px;" />
+                                        <td style="text-align: center; padding: 20px 0;">
+                                            <img src="${resolvedLogo}" alt="Vamos Jacó Tours" width="160" style="display: inline-block; max-width: 160px; height: auto;" />
                                         </td>
                                     </tr>
-                                    <!-- Content -->
+                                    <!-- Titulo -->
                                     <tr>
-                                        <td style="padding: 40px 30px;">
-                                            <h2 style="margin: 0 0 20px 0; color: #1a1a1a; font-size: 28px; font-weight: 800; text-align: center; font-family: Arial, sans-serif;">
-                                                ${isEs ? '¡Costa Rica te espera!' : 'Costa Rica is Calling!'}
-                                            </h2>
-                                            <p style="margin: 0 0 20px 0; font-size: 18px; color: #444444; text-align: center; font-family: Arial, sans-serif;">
-                                                ${isEs ? '¡Pura Vida' : 'Pura Vida'}, <strong style="color: #1a1a1a;">${customerName}</strong>!
-                                            </p>
-                                            <p style="margin: 0 0 30px 0; font-size: 16px; color: #666666; text-align: center; font-family: Arial, sans-serif; line-height: 1.5;">
+                                        <td style="text-align: center; padding: 20px 0;">
+                                            <h1 style="margin: 0; font-size: 24px; font-weight: bold; color: #111111;">
+                                                ${isEs ? '¡Tu aventura está confirmada!' : 'Your Adventure is Confirmed!'}
+                                            </h1>
+                                        </td>
+                                    </tr>
+                                    <!-- Saludo -->
+                                    <tr>
+                                        <td style="padding: 10px 0;">
+                                            <p style="margin: 0;">${isEs ? 'Hola' : 'Hello'} <strong>${customerName}</strong>!</p>
+                                            <p style="margin: 10px 0 0 0;">
                                                 ${isEs 
-                                                    ? 'Hemos recibido tu reserva en <strong>Vamos Jacó Tours</strong>. Prepárate para una experiencia inolvidable en el paraíso.'
-                                                    : "We've received your booking at <strong>Vamos Jacó Tours</strong>. Prepare yourself for an unforgettable experience in paradise."}
+                                                    ? 'Tu reserva en Vamos Jacó Tours ha sido confirmada. Nos vemos pronto en Jacó Beach!'
+                                                    : 'Your booking at Vamos Jacó Tours is confirmed. See you soon at Jacó Beach!'}
                                             </p>
-                                            
-                                            <!-- Booking Details Box - Dark box for visibility in both modes -->
-                                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background: #1a1a1a; border-radius: 12px; margin: 0 0 30px 0; border: 1px solid #333333;">
+                                        </td>
+                                    </tr>
+                                    <!-- Detalles -->
+                                    <tr>
+                                        <td style="padding: 20px 0;">
+                                            <table width="100%" cellpadding="10" cellspacing="0" style="border: 1px solid #dddddd;">
+                                                <tr style="background-color: #f9f9f9;">
+                                                    <td style="font-weight: bold; border-bottom: 1px solid #dddddd;">${isEs ? 'Tour' : 'Tour'}</td>
+                                                    <td style="text-align: right; border-bottom: 1px solid #dddddd;">${tourName}</td>
+                                                </tr>
                                                 <tr>
-                                                    <td style="padding: 25px;">
-                                                        <h3 style="margin: 0 0 15px 0; color: #ffffff; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; font-family: Arial, sans-serif; text-align: center;">
-                                                            ${isEs ? 'Detalles de tu Reserva' : 'Booking Details'}
-                                                        </h3>
-                                                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                                                            <tr>
-                                                                <td style="padding: 8px 0; color: #aaaaaa; font-size: 14px; font-family: Arial, sans-serif;">${isEs ? 'Tour' : 'Tour'}</td>
-                                                                <td style="padding: 8px 0; text-align: right; font-weight: bold; color: #ffffff; font-size: 14px; font-family: Arial, sans-serif;">${tourName}</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td style="padding: 8px 0; color: #aaaaaa; font-size: 14px; font-family: Arial, sans-serif;">${isEs ? 'Fecha' : 'Date'}</td>
-                                                                <td style="padding: 8px 0; text-align: right; font-weight: bold; color: #ffffff; font-size: 14px; font-family: Arial, sans-serif;">${new Date(tourDate).toLocaleDateString(isEs ? 'es-ES' : 'en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td style="padding: 8px 0; color: #aaaaaa; font-size: 14px; font-family: Arial, sans-serif;">${isEs ? 'Invitados' : 'Guests'}</td>
-                                                                <td style="padding: 8px 0; text-align: right; font-weight: bold; color: #ffffff; font-size: 14px; font-family: Arial, sans-serif;">
-                                                                    ${isEs 
-                                                                        ? `${adults} Adultos${children > 0 ? ', ' + children + ' Niños' : ''}`
-                                                                        : `${adults} Adults${children > 0 ? ', ' + children + ' Children' : ''}`}
-                                                                </td>
-                                                            </tr>
-                                                            <tr style="border-top: 2px solid #444444;">
-                                                                <td style="padding: 15px 0 0 0; font-weight: bold; color: #ff6b6b; font-size: 16px; font-family: Arial, sans-serif;">${isEs ? 'Total' : 'Total'}</td>
-                                                                <td style="padding: 15px 0 0 0; text-align: right; font-weight: bold; color: #ff6b6b; font-size: 20px; font-family: Arial, sans-serif;">$${totalAmount.toFixed(2)}</td>
-                                                            </tr>
-                                                        </table>
-                                                    </td>
+                                                    <td style="font-weight: bold; border-bottom: 1px solid #dddddd;">${isEs ? 'Fecha' : 'Date'}</td>
+                                                    <td style="text-align: right; border-bottom: 1px solid #dddddd;">${new Date(tourDate).toLocaleDateString(isEs ? 'es-ES' : 'en-US')}</td>
+                                                </tr>
+                                                <tr style="background-color: #f9f9f9;">
+                                                    <td style="font-weight: bold; border-bottom: 1px solid #dddddd;">${isEs ? 'Personas' : 'Guests'}</td>
+                                                    <td style="text-align: right; border-bottom: 1px solid #dddddd;">${adults + children}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="font-weight: bold;">${isEs ? 'Total' : 'Total'}</td>
+                                                    <td style="text-align: right; font-weight: bold; font-size: 18px;">$${totalAmount.toFixed(2)}</td>
                                                 </tr>
                                             </table>
-
-                                            <!-- What's Next Box -->
-                                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #fff8e6; border-radius: 12px; margin: 0 0 30px 0;">
-                                                <tr>
-                                                    <td style="padding: 20px;">
-                                                        <p style="margin: 0; font-size: 15px; color: #664d03; font-family: Arial, sans-serif; line-height: 1.5;">
-                                                            <strong>${isEs ? '¿Qué sigue?' : "What's Next?"}</strong><br />
-                                                            ${isEs 
-                                                                ? 'Nuestro equipo te contactará por WhatsApp para coordinar la hora de recogida.'
-                                                                : 'Our team will reach out via WhatsApp to finalize your pickup time.'}
-                                                        </p>
-                                                    </td>
-                                                </tr>
-                                            </table>
-
-                                            <!-- CTA Button -->
-                                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                                                <tr>
-                                                    <td align="center">
-                                                        <a href="https://wa.me/50687747250" class="cta-btn" style="display: inline-block; background-color: ${ACCENT_COLOR}; color: #ffffff; padding: 16px 32px; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 14px; font-family: Arial, sans-serif; text-transform: uppercase;">
-                                                            ${isEs ? 'Chatea con Nosotros' : 'Chat with Us'}
-                                                        </a>
-                                                    </td>
-                                                </tr>
-                                            </table>
+                                        </td>
+                                    </tr>
+                                    <!-- Contacto -->
+                                    <tr>
+                                        <td style="padding: 20px 0; text-align: center;">
+                                            <p style="margin: 0 0 10px 0;">
+                                                ${isEs ? '¿Tienes preguntas? Chatea con nosotros:' : 'Have questions? Chat with us:'}
+                                            </p>
+                                            <a href="https://wa.me/50687747250" style="display: inline-block; padding: 12px 24px; background-color: #25D366; color: #ffffff; text-decoration: none; font-weight: bold; border-radius: 5px;">
+                                                WhatsApp
+                                            </a>
                                         </td>
                                     </tr>
                                     <!-- Footer -->
                                     <tr>
-                                        <td style="background-color: #2a2a2a; padding: 30px 20px; text-align: center;">
-                                            <p style="margin: 0 0 10px 0; color: #cccccc; font-size: 13px; font-family: Arial, sans-serif;">
-                                                <strong style="color: #ffffff;">Vamos Jacó Tours</strong><br />
-                                                ${isEs ? 'Jacó Beach, Puntarenas, Costa Rica' : 'Jacó Beach, Puntarenas, Costa Rica'}
-                                            </p>
-                                            <a href="https://wa.me/50687747250" style="color: ${ACCENT_COLOR}; text-decoration: none; font-size: 13px; font-family: Arial, sans-serif;">WhatsApp</a>
-                                            <p style="margin: 20px 0 0 0; color: #999999; font-size: 11px; font-family: Arial, sans-serif; text-transform: uppercase; letter-spacing: 1px;">
-                                                © ${new Date().getFullYear()} Vamos Jacó Tours
+                                        <td style="padding: 30px 0; text-align: center; border-top: 1px solid #eeeeee;">
+                                            <p style="margin: 0; font-size: 12px; color: #888888;">
+                                                <strong>Vamos Jacó Tours</strong><br />
+                                                ${isEs ? 'Jacó Beach, Costa Rica' : 'Jacó Beach, Costa Rica'}
                                             </p>
                                         </td>
                                     </tr>
@@ -239,53 +195,47 @@ export async function sendBookingNotifications(data: BookingEmailData, logoOverr
                 <html>
                 <head>
                     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-                    <meta name="color-scheme" content="light dark" />
-                    <meta name="supported-color-schemes" content="light dark" />
                 </head>
-                <body style="margin: 0; padding: 0; background-color: #e5e5e5;">
-                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #e5e5e5;">
+                <body style="margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; background-color: #ffffff;">
+                    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #ffffff;">
                         <tr>
-                            <td align="center" style="padding: 20px;">
-                                <table role="presentation" width="100%" max-width="550" cellpadding="0" cellspacing="0" style="max-width: 550px; background-color: #fafafa; border-radius: 16px; overflow: hidden; border: 1px solid #cccccc;">
+                            <td style="padding: 20px;">
+                                <table width="100%" max-width="500" cellpadding="0" cellspacing="0" style="max-width: 500px; margin: 0 auto;">
                                     <tr>
-                                        <td style="background-color: ${ACCENT_COLOR}; padding: 30px; color: white; text-align: center;">
-                                            <p style="margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 2px; font-size: 11px; opacity: 0.9;">New Booking</p>
-                                            <h2 style="margin: 0; font-size: 26px; font-weight: 900;">💰 Nueva Reserva</h2>
+                                        <td style="background-color: #03A696; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;">
+                                            <h2 style="margin: 0; color: #ffffff; font-size: 22px;">💰 Nueva Reserva</h2>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td style="padding: 30px;">
-                                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background: #f0f0f0; border-radius: 12px; margin-bottom: 25px;">
+                                        <td style="padding: 20px; border: 1px solid #dddddd; border-top: none;">
+                                            <table width="100%" cellpadding="8" cellspacing="0">
                                                 <tr>
-                                                    <td style="padding: 20px;">
-                                                        <p style="margin: 0 0 5px 0; color: #666666; font-size: 11px; font-weight: bold; text-transform: uppercase;">Cliente</p>
-                                                        <p style="margin: 0; font-size: 18px; font-weight: 800; color: #1a1a1a;">${customerName}</p>
-                                                        <p style="margin: 5px 0 0 0; color: #555555; font-size: 14px;">${customerEmail} • ${data.customerPhone}</p>
-                                                    </td>
+                                                    <td style="font-weight: bold; color: #333333;">Cliente</td>
+                                                    <td style="text-align: right;">${customerName}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="color: #666666;">Email / Tel</td>
+                                                    <td style="text-align: right;">${customerEmail} / ${data.customerPhone}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="font-weight: bold; color: #333333;">Tour</td>
+                                                    <td style="text-align: right;">${tourName}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="color: #666666;">Fecha</td>
+                                                    <td style="text-align: right;">${tourDate}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="color: #666666;">Personas</td>
+                                                    <td style="text-align: right;">${adults + children}</td>
+                                                </tr>
+                                                <tr style="border-top: 2px solid #dddddd;">
+                                                    <td style="font-weight: bold; font-size: 18px; padding-top: 10px;">Total</td>
+                                                    <td style="text-align: right; font-weight: bold; font-size: 18px; color: #D92818; padding-top: 10px;">$${totalAmount.toFixed(2)}</td>
                                                 </tr>
                                             </table>
-                                            
-                                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                                                <tr>
-                                                    <td style="padding: 10px 0; color: #555555; font-size: 14px;">Tour</td>
-                                                    <td style="padding: 10px 0; font-weight: bold; text-align: right; color: #1a1a1a; font-size: 14px;">${tourName}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td style="padding: 10px 0; color: #555555; font-size: 14px;">Fecha</td>
-                                                    <td style="padding: 10px 0; font-weight: bold; text-align: right; color: #1a1a1a; font-size: 14px;">${tourDate}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td style="padding: 10px 0; color: #555555; font-size: 14px;">Personas</td>
-                                                    <td style="padding: 10px 0; font-weight: bold; text-align: right; color: #1a1a1a; font-size: 14px;">${adults + children}</td>
-                                                </tr>
-                                                <tr style="border-top: 1px solid #bbbbbb;">
-                                                    <td style="padding: 15px 0 0 0; font-weight: 900; color: ${BRAND_COLOR}; font-size: 16px;">Total</td>
-                                                    <td style="padding: 15px 0 0 0; font-weight: 900; text-align: right; color: ${BRAND_COLOR}; font-size: 22px;">$${totalAmount.toFixed(2)}</td>
-                                                </tr>
-                                            </table>
-
-                                            <div style="margin-top: 30px; text-align: center;">
-                                                <a href="https://www.vamosjacotours.com/admin" style="background: #111111; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 13px; display: inline-block;">Ver en Dashboard</a>
+                                            <div style="text-align: center; margin-top: 20px;">
+                                                <a href="https://www.vamosjacotours.com/admin" style="display: inline-block; padding: 12px 24px; background-color: #111111; color: #ffffff; text-decoration: none; font-weight: bold; border-radius: 5px;">Ver en Dashboard</a>
                                             </div>
                                         </td>
                                     </tr>
