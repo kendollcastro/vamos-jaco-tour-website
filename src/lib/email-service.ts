@@ -124,20 +124,20 @@ export async function sendBookingNotifications(data: BookingEmailData, logoOverr
                                     <!-- Content -->
                                     <tr>
                                         <td style="padding: 40px 30px;">
-                                            <h2 style="margin: 0 0 20px 0; color: #111827; font-size: 28px; font-weight: 800; text-align: center; font-family: Arial, sans-serif;">
+                                            <h2 style="margin: 0 0 20px 0; color: #000000; font-size: 28px; font-weight: 800; text-align: center; font-family: Arial, sans-serif;">
                                                 ${isEs ? '¡Costa Rica te espera!' : 'Costa Rica is Calling!'}
                                             </h2>
-                                            <p style="margin: 0 0 20px 0; font-size: 18px; color: #4b5563; text-align: center; font-family: Arial, sans-serif;">
-                                                ${isEs ? '¡Pura Vida' : 'Pura Vida'}, <strong style="color: #111827;">${customerName}</strong>!
+                                            <p style="margin: 0 0 20px 0; font-size: 18px; color: #333333; text-align: center; font-family: Arial, sans-serif;">
+                                                ${isEs ? '¡Pura Vida' : 'Pura Vida'}, <strong style="color: #000000;">${customerName}</strong>!
                                             </p>
-                                            <p style="margin: 0 0 30px 0; font-size: 16px; color: #6b7280; text-align: center; font-family: Arial, sans-serif; line-height: 1.5;">
+                                            <p style="margin: 0 0 30px 0; font-size: 16px; color: #555555; text-align: center; font-family: Arial, sans-serif; line-height: 1.5;">
                                                 ${isEs 
                                                     ? 'Hemos recibido tu reserva en <strong>Vamos Jacó Tours</strong>. Prepárate para una experiencia inolvidable en el paraíso.'
                                                     : "We've received your booking at <strong>Vamos Jacó Tours</strong>. Prepare yourself for an unforgettable experience in paradise."}
                                             </p>
                                             
                                             <!-- Booking Details Box -->
-                                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background: linear-gradient(180deg, #fefefe 0%, #fef9f9 100%); border: 1px solid #f3f4f6; border-radius: 12px; margin: 0 0 30px 0;">
+                                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background: #f8f8f8; border: 1px solid #dddddd; border-radius: 12px; margin: 0 0 30px 0;">
                                                 <tr>
                                                     <td style="padding: 25px;">
                                                         <h3 style="margin: 0 0 15px 0; color: ${BRAND_COLOR}; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; font-family: Arial, sans-serif; text-align: center;">
@@ -145,22 +145,22 @@ export async function sendBookingNotifications(data: BookingEmailData, logoOverr
                                                         </h3>
                                                         <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                                                             <tr>
-                                                                <td style="padding: 8px 0; color: #6b7280; font-size: 14px; font-family: Arial, sans-serif;">${isEs ? 'Tour' : 'Tour'}</td>
-                                                                <td style="padding: 8px 0; text-align: right; font-weight: bold; color: #111827; font-size: 14px; font-family: Arial, sans-serif;">${tourName}</td>
+                                                                <td style="padding: 8px 0; color: #555555; font-size: 14px; font-family: Arial, sans-serif;">${isEs ? 'Tour' : 'Tour'}</td>
+                                                                <td style="padding: 8px 0; text-align: right; font-weight: bold; color: #000000; font-size: 14px; font-family: Arial, sans-serif;">${tourName}</td>
                                                             </tr>
                                                             <tr>
-                                                                <td style="padding: 8px 0; color: #6b7280; font-size: 14px; font-family: Arial, sans-serif;">${isEs ? 'Fecha' : 'Date'}</td>
-                                                                <td style="padding: 8px 0; text-align: right; font-weight: bold; color: #111827; font-size: 14px; font-family: Arial, sans-serif;">${new Date(tourDate).toLocaleDateString(isEs ? 'es-ES' : 'en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</td>
+                                                                <td style="padding: 8px 0; color: #555555; font-size: 14px; font-family: Arial, sans-serif;">${isEs ? 'Fecha' : 'Date'}</td>
+                                                                <td style="padding: 8px 0; text-align: right; font-weight: bold; color: #000000; font-size: 14px; font-family: Arial, sans-serif;">${new Date(tourDate).toLocaleDateString(isEs ? 'es-ES' : 'en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</td>
                                                             </tr>
                                                             <tr>
-                                                                <td style="padding: 8px 0; color: #6b7280; font-size: 14px; font-family: Arial, sans-serif;">${isEs ? 'Invitados' : 'Guests'}</td>
-                                                                <td style="padding: 8px 0; text-align: right; font-weight: bold; color: #111827; font-size: 14px; font-family: Arial, sans-serif;">
+                                                                <td style="padding: 8px 0; color: #555555; font-size: 14px; font-family: Arial, sans-serif;">${isEs ? 'Invitados' : 'Guests'}</td>
+                                                                <td style="padding: 8px 0; text-align: right; font-weight: bold; color: #000000; font-size: 14px; font-family: Arial, sans-serif;">
                                                                     ${isEs 
                                                                         ? `${adults} Adultos${children > 0 ? ', ' + children + ' Niños' : ''}`
                                                                         : `${adults} Adults${children > 0 ? ', ' + children + ' Children' : ''}`}
                                                                 </td>
                                                             </tr>
-                                                            <tr style="border-top: 2px solid #e5e7eb;">
+                                                            <tr style="border-top: 2px solid #cccccc;">
                                                                 <td style="padding: 15px 0 0 0; font-weight: bold; color: ${BRAND_COLOR}; font-size: 16px; font-family: Arial, sans-serif;">${isEs ? 'Total' : 'Total'}</td>
                                                                 <td style="padding: 15px 0 0 0; text-align: right; font-weight: bold; color: ${BRAND_COLOR}; font-size: 20px; font-family: Arial, sans-serif;">$${totalAmount.toFixed(2)}</td>
                                                             </tr>
@@ -170,10 +170,10 @@ export async function sendBookingNotifications(data: BookingEmailData, logoOverr
                                             </table>
 
                                             <!-- What's Next Box -->
-                                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #fffbeb; border-radius: 12px; margin: 0 0 30px 0;">
+                                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #fff8e6; border-radius: 12px; margin: 0 0 30px 0;">
                                                 <tr>
                                                     <td style="padding: 20px;">
-                                                        <p style="margin: 0; font-size: 15px; color: #92400e; font-family: Arial, sans-serif; line-height: 1.5;">
+                                                        <p style="margin: 0; font-size: 15px; color: #664d03; font-family: Arial, sans-serif; line-height: 1.5;">
                                                             <strong>${isEs ? '¿Qué sigue?' : "What's Next?"}</strong><br />
                                                             ${isEs 
                                                                 ? 'Nuestro equipo te contactará por WhatsApp para coordinar la hora de recogida.'
@@ -197,13 +197,13 @@ export async function sendBookingNotifications(data: BookingEmailData, logoOverr
                                     </tr>
                                     <!-- Footer -->
                                     <tr>
-                                        <td style="background-color: #0B0F19; padding: 30px 20px; text-align: center;">
-                                            <p style="margin: 0 0 10px 0; color: #9ca3af; font-size: 13px; font-family: Arial, sans-serif;">
+                                        <td style="background-color: #1a1a1a; padding: 30px 20px; text-align: center;">
+                                            <p style="margin: 0 0 10px 0; color: #bbbbbb; font-size: 13px; font-family: Arial, sans-serif;">
                                                 <strong style="color: #ffffff;">Vamos Jacó Tours</strong><br />
                                                 ${isEs ? 'Jacó Beach, Puntarenas, Costa Rica' : 'Jacó Beach, Puntarenas, Costa Rica'}
                                             </p>
                                             <a href="https://wa.me/50687747250" style="color: ${ACCENT_COLOR}; text-decoration: none; font-size: 13px; font-family: Arial, sans-serif;">WhatsApp</a>
-                                            <p style="margin: 20px 0 0 0; color: #6b7280; font-size: 11px; font-family: Arial, sans-serif; text-transform: uppercase; letter-spacing: 1px;">
+                                            <p style="margin: 20px 0 0 0; color: #888888; font-size: 11px; font-family: Arial, sans-serif; text-transform: uppercase; letter-spacing: 1px;">
                                                 © ${new Date().getFullYear()} Vamos Jacó Tours
                                             </p>
                                         </td>
@@ -231,8 +231,8 @@ export async function sendBookingNotifications(data: BookingEmailData, logoOverr
                     <meta name="color-scheme" content="light" />
                     <meta name="supported-color-schemes" content="light" />
                 </head>
-                <body style="margin: 0; padding: 0; background-color: #f3f4f6;">
-                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #f3f4f6;">
+                <body style="margin: 0; padding: 0; background-color: #e5e5e5;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #e5e5e5;">
                         <tr>
                             <td align="center" style="padding: 20px;">
                                 <table role="presentation" width="100%" max-width="550" cellpadding="0" cellspacing="0" style="max-width: 550px; background-color: #ffffff; border-radius: 16px; overflow: hidden;">
@@ -244,37 +244,37 @@ export async function sendBookingNotifications(data: BookingEmailData, logoOverr
                                     </tr>
                                     <tr>
                                         <td style="padding: 30px;">
-                                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background: #f9fafb; border-radius: 12px; margin-bottom: 25px;">
+                                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background: #f5f5f5; border-radius: 12px; margin-bottom: 25px;">
                                                 <tr>
                                                     <td style="padding: 20px;">
-                                                        <p style="margin: 0 0 5px 0; color: #6b7280; font-size: 11px; font-weight: bold; text-transform: uppercase;">Cliente</p>
-                                                        <p style="margin: 0; font-size: 18px; font-weight: 800; color: #111827;">${customerName}</p>
-                                                        <p style="margin: 5px 0 0 0; color: #4b5563; font-size: 14px;">${customerEmail} • ${data.customerPhone}</p>
+                                                        <p style="margin: 0 0 5px 0; color: #666666; font-size: 11px; font-weight: bold; text-transform: uppercase;">Cliente</p>
+                                                        <p style="margin: 0; font-size: 18px; font-weight: 800; color: #000000;">${customerName}</p>
+                                                        <p style="margin: 5px 0 0 0; color: #555555; font-size: 14px;">${customerEmail} • ${data.customerPhone}</p>
                                                     </td>
                                                 </tr>
                                             </table>
                                             
                                             <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                                                 <tr>
-                                                    <td style="padding: 10px 0; color: #6b7280; font-size: 14px;">Tour</td>
-                                                    <td style="padding: 10px 0; font-weight: bold; text-align: right; color: #111827; font-size: 14px;">${tourName}</td>
+                                                    <td style="padding: 10px 0; color: #555555; font-size: 14px;">Tour</td>
+                                                    <td style="padding: 10px 0; font-weight: bold; text-align: right; color: #000000; font-size: 14px;">${tourName}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td style="padding: 10px 0; color: #6b7280; font-size: 14px;">Fecha</td>
-                                                    <td style="padding: 10px 0; font-weight: bold; text-align: right; color: #111827; font-size: 14px;">${tourDate}</td>
+                                                    <td style="padding: 10px 0; color: #555555; font-size: 14px;">Fecha</td>
+                                                    <td style="padding: 10px 0; font-weight: bold; text-align: right; color: #000000; font-size: 14px;">${tourDate}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td style="padding: 10px 0; color: #6b7280; font-size: 14px;">Personas</td>
-                                                    <td style="padding: 10px 0; font-weight: bold; text-align: right; color: #111827; font-size: 14px;">${adults + children}</td>
+                                                    <td style="padding: 10px 0; color: #555555; font-size: 14px;">Personas</td>
+                                                    <td style="padding: 10px 0; font-weight: bold; text-align: right; color: #000000; font-size: 14px;">${adults + children}</td>
                                                 </tr>
-                                                <tr style="border-top: 1px solid #e5e7eb;">
+                                                <tr style="border-top: 1px solid #cccccc;">
                                                     <td style="padding: 15px 0 0 0; font-weight: 900; color: ${BRAND_COLOR}; font-size: 16px;">Total</td>
                                                     <td style="padding: 15px 0 0 0; font-weight: 900; text-align: right; color: ${BRAND_COLOR}; font-size: 22px;">$${totalAmount.toFixed(2)}</td>
                                                 </tr>
                                             </table>
 
                                             <div style="margin-top: 30px; text-align: center;">
-                                                <a href="https://www.vamosjacotours.com/admin" style="background: #111827; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 13px; display: inline-block;">Ver en Dashboard</a>
+                                                <a href="https://www.vamosjacotours.com/admin" style="background: #111111; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 13px; display: inline-block;">Ver en Dashboard</a>
                                             </div>
                                         </td>
                                     </tr>
