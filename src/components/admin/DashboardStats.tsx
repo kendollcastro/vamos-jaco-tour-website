@@ -68,6 +68,7 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
     const [recentBookings, setRecentBookings] = useState<any[]>([]);
     const [recentTours, setRecentTours] = useState<any[]>([]);
     const [activities, setActivities] = useState<any[]>([]);
+    const [overbookings, setOverbookings] = useState<any[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const isDemo = !supabase;
 
@@ -137,6 +138,14 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
                 .limit(2);
 
             setRecentTours(tours || []);
+
+            const { data: overbooked } = await supabase
+                .from('bookings')
+                .select('*, tours:tour_id(name_en, name_es)')
+                .eq('status', 'overbooked')
+                .order('created_at', { ascending: false });
+
+            setOverbookings(overbooked || []);
         } catch (err) {
             console.error('Error fetching stats:', err);
         }
@@ -236,6 +245,46 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
                 onClose={() => setIsModalOpen(false)} 
                 onSuccess={() => fetchStats()} 
             />
+
+            {/* Overbooking Alert */}
+            {overbookings.length > 0 && (
+                <div className="bg-red-50 dark:bg-red-900/20 border-2 border-red-500 dark:border-red-500 rounded-xl p-4 animate-pulse">
+                    <div className="flex items-start gap-3">
+                        <div className="flex-shrink-0 w-10 h-10 bg-red-500 rounded-full flex items-center justify-center">
+                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </div>
+                        <div className="flex-1">
+                            <h3 className="text-red-800 dark:text-red-400 font-bold text-lg">
+                                {$language === 'en' ? '⚠️ OVERBOOKING ALERT' : '⚠️ ALERTA DE SOBREBOOKING'}
+                            </h3>
+                            <div className="mt-2 space-y-1">
+                                {overbookings.slice(0, 3).map((b: any) => (
+                                    <div key={b.id} className="text-sm text-red-700 dark:text-red-300">
+                                        <span className="font-bold">{b.tours?.name_en || b.tours?.name_es || 'Tour'}</span>
+                                        {' - '} 
+                                        {new Date(b.booking_date).toLocaleDateString()}
+                                        {' - '}
+                                        <span className="font-bold">{b.customer_name}</span>
+                                    </div>
+                                ))}
+                                {overbookings.length > 3 && (
+                                    <p className="text-sm text-red-600 dark:text-red-400 font-medium">
+                                        +{overbookings.length - 3} {$language === 'en' ? 'more' : 'más'}
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+                        <button 
+                            onClick={() => onNavigate?.('bookings')}
+                            className="flex-shrink-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition-colors text-sm"
+                        >
+                            {$language === 'en' ? 'View All' : 'Ver Todos'}
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* Demo banner */}
             {isDemo && (

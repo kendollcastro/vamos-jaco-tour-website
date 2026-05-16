@@ -247,13 +247,8 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                     <div className="flex p-1.5 bg-gray-100 dark:bg-black/20 rounded-lg border border-gray-200 dark:border-white/5 w-full sm:w-auto overflow-x-auto hide-scrollbar">
                         {[
                             { key: 'all', en: 'All', es: 'Todos' },
-                            { key: 'pending', en: 'Pending', es: 'Pendiente' },
-                            { key: 'paid', en: 'Paid', es: 'Pagado' },
-                            { key: 'office', en: 'Office', es: 'Oficina' },
                             { key: 'confirmed', en: 'Confirmed', es: 'Confirmado' },
-                            { key: 'completed', en: 'Completed', es: 'Completado' },
-                            { key: 'cancelled', en: 'Cancelled', es: 'Cancelado' },
-                            { key: 'overbooked', en: 'Overbooked', es: 'Sobrebooking' }
+                            { key: 'cancelled', en: 'Cancelled', es: 'Cancelado' }
                         ].map((s) => (
                             <button
                                 key={s.key}

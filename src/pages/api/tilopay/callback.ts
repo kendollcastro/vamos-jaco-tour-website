@@ -129,7 +129,7 @@ async function handleCallback(context: any): Promise<Response> {
                 .select('adults, children, status')
                 .eq('tour_id', booking.tour_id)
                 .eq('booking_date', booking.booking_date)
-                .in('status', ['confirmed', 'paid', 'pending'])
+                .in('status', ['confirmed', 'paid', 'pending', 'office'])
                 .neq('id', bookingId); // Exclude current booking
             
             const totalBooked = (existingBookings || []).reduce((sum: number, b: any) => {
