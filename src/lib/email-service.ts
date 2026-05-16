@@ -147,33 +147,33 @@ export async function sendBookingNotifications(data: BookingEmailData, logoOverr
                                                     : "We've received your booking at <strong>Vamos Jacó Tours</strong>. Prepare yourself for an unforgettable experience in paradise."}
                                             </p>
                                             
-                                            <!-- Booking Details Box -->
-                                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background: #f0f0f0; border: 1px solid #cccccc; border-radius: 12px; margin: 0 0 30px 0;">
+                                            <!-- Booking Details Box - Dark box for visibility in both modes -->
+                                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background: #1a1a1a; border-radius: 12px; margin: 0 0 30px 0; border: 1px solid #333333;">
                                                 <tr>
                                                     <td style="padding: 25px;">
-                                                        <h3 style="margin: 0 0 15px 0; color: ${BRAND_COLOR}; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; font-family: Arial, sans-serif; text-align: center;">
+                                                        <h3 style="margin: 0 0 15px 0; color: #ffffff; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; font-family: Arial, sans-serif; text-align: center;">
                                                             ${isEs ? 'Detalles de tu Reserva' : 'Booking Details'}
                                                         </h3>
                                                         <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                                                             <tr>
-                                                                <td style="padding: 8px 0; color: #666666; font-size: 14px; font-family: Arial, sans-serif;">${isEs ? 'Tour' : 'Tour'}</td>
-                                                                <td style="padding: 8px 0; text-align: right; font-weight: bold; color: #1a1a1a; font-size: 14px; font-family: Arial, sans-serif;">${tourName}</td>
+                                                                <td style="padding: 8px 0; color: #aaaaaa; font-size: 14px; font-family: Arial, sans-serif;">${isEs ? 'Tour' : 'Tour'}</td>
+                                                                <td style="padding: 8px 0; text-align: right; font-weight: bold; color: #ffffff; font-size: 14px; font-family: Arial, sans-serif;">${tourName}</td>
                                                             </tr>
                                                             <tr>
-                                                                <td style="padding: 8px 0; color: #666666; font-size: 14px; font-family: Arial, sans-serif;">${isEs ? 'Fecha' : 'Date'}</td>
-                                                                <td style="padding: 8px 0; text-align: right; font-weight: bold; color: #1a1a1a; font-size: 14px; font-family: Arial, sans-serif;">${new Date(tourDate).toLocaleDateString(isEs ? 'es-ES' : 'en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</td>
+                                                                <td style="padding: 8px 0; color: #aaaaaa; font-size: 14px; font-family: Arial, sans-serif;">${isEs ? 'Fecha' : 'Date'}</td>
+                                                                <td style="padding: 8px 0; text-align: right; font-weight: bold; color: #ffffff; font-size: 14px; font-family: Arial, sans-serif;">${new Date(tourDate).toLocaleDateString(isEs ? 'es-ES' : 'en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</td>
                                                             </tr>
                                                             <tr>
-                                                                <td style="padding: 8px 0; color: #666666; font-size: 14px; font-family: Arial, sans-serif;">${isEs ? 'Invitados' : 'Guests'}</td>
-                                                                <td style="padding: 8px 0; text-align: right; font-weight: bold; color: #1a1a1a; font-size: 14px; font-family: Arial, sans-serif;">
+                                                                <td style="padding: 8px 0; color: #aaaaaa; font-size: 14px; font-family: Arial, sans-serif;">${isEs ? 'Invitados' : 'Guests'}</td>
+                                                                <td style="padding: 8px 0; text-align: right; font-weight: bold; color: #ffffff; font-size: 14px; font-family: Arial, sans-serif;">
                                                                     ${isEs 
                                                                         ? `${adults} Adultos${children > 0 ? ', ' + children + ' Niños' : ''}`
                                                                         : `${adults} Adults${children > 0 ? ', ' + children + ' Children' : ''}`}
                                                                 </td>
                                                             </tr>
-                                                            <tr style="border-top: 2px solid #bbbbbb;">
-                                                                <td style="padding: 15px 0 0 0; font-weight: bold; color: ${BRAND_COLOR}; font-size: 16px; font-family: Arial, sans-serif;">${isEs ? 'Total' : 'Total'}</td>
-                                                                <td style="padding: 15px 0 0 0; text-align: right; font-weight: bold; color: ${BRAND_COLOR}; font-size: 20px; font-family: Arial, sans-serif;">$${totalAmount.toFixed(2)}</td>
+                                                            <tr style="border-top: 2px solid #444444;">
+                                                                <td style="padding: 15px 0 0 0; font-weight: bold; color: #ff6b6b; font-size: 16px; font-family: Arial, sans-serif;">${isEs ? 'Total' : 'Total'}</td>
+                                                                <td style="padding: 15px 0 0 0; text-align: right; font-weight: bold; color: #ff6b6b; font-size: 20px; font-family: Arial, sans-serif;">$${totalAmount.toFixed(2)}</td>
                                                             </tr>
                                                         </table>
                                                     </td>
