@@ -158,6 +158,11 @@ async function handleCallback(context: any): Promise<Response> {
 
             // 7. Send confirmation emails immediately
             if (booking) {
+                console.log(`📧 EMAIL DEBUG: About to send email for booking ${bookingId}`, {
+                    customerEmail: booking.customer_email,
+                    customerName: booking.customer_name,
+                    tourName: booking.tour_name
+                });
                 try {
                     const { sendBookingNotifications } = await import('../../../lib/email-service');
                     console.log(`Triggering email notification for booking ${bookingId}`);
