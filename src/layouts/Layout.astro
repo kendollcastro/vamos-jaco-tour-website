@@ -31,10 +31,11 @@ const canonicalURL = new URL(
 	Astro.site || "https://www.vamosjacotours.com"
 );
 
-// Ensure image is absolute for OG
+// Ensure image is absolute for OG (avoid double slash)
+const baseSite = (Astro.site || "https://www.vamosjacotours.com").toString().replace(/\/+$/, '');
 const ogImage = image?.startsWith("http")
 	? image
-	: `${Astro.site || "https://www.vamosjacotours.com"}${image}`;
+	: `${baseSite}${image?.startsWith('/') ? image : '/' + image}`;
 
 // Build JSON-LD array
 const schemas = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [];
