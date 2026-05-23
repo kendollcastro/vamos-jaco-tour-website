@@ -42,16 +42,16 @@ export default function HeroSlider() {
     const content = {
         en: {
             tagline: 'COSTA RICA\'S #1 ADVENTURE COMPANY',
-            titleLine1: 'UNLEASH YOUR',
-            titleAccent: 'WILD SIDE',
-            subtitle: 'ATV trails through the jungle • Zipline overtest the canopy • Surf the Pacific waves',
+            titleLine1: 'DISCOVER COSTA RICA',
+            titleAccent: 'ADVENTURE TOURS',
+            subtitle: 'ATV trails through the jungle • Zipline over the canopy • Surf the Pacific waves',
             cta: 'Explore Adventures',
             scrollText: 'Scroll to discover'
         },
         es: {
             tagline: 'LA #1 EMPRESA DE AVENTURA EN COSTA RICA',
-            titleLine1: 'LIBERA TU',
-            titleAccent: 'LADO SALVAJE',
+            titleLine1: 'DESCUBRE COSTA RICA',
+            titleAccent: 'TOURS DE AVENTURA',
             subtitle: 'Senderos ATV por la jungla • Tirolesa sobre el dosel • Surfing en el Pacífico',
             cta: 'Explorar Aventuras',
             scrollText: 'Desliza para descubrir'
