@@ -28,13 +28,13 @@ const {
 
 const canonicalURL = new URL(
 	Astro.url.pathname,
-	Astro.site || "https://vamosjacotoursdev.com"
+	Astro.site || "https://www.vamosjacotours.com"
 );
 
 // Ensure image is absolute for OG
 const ogImage = image?.startsWith("http")
 	? image
-	: `${Astro.site || "https://vamosjacotoursdev.com"}${image}`;
+	: `${Astro.site || "https://www.vamosjacotours.com"}${image}`;
 
 // Build JSON-LD array
 const schemas = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [];

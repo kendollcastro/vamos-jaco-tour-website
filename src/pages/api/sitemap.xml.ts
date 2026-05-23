@@ -3,7 +3,7 @@ import { getAllTours } from '../../data/tours';
 
 export const prerender = false;
 
-const SITE_URL = 'https://vamosjacotoursdev.com';
+const SITE_URL = 'https://www.vamosjacotours.com';
 
 export const GET: APIRoute = async () => {
   let tours: any[] = [];
