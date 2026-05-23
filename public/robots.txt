@@ -1,7 +1,7 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.vamosjacotours.com/sitemap-index.xml
+Sitemap: https://www.vamosjacotours.com/api/sitemap.xml
 
 # Admin and private areas
 Disallow: /admin/
