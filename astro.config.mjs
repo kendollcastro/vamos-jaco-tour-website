@@ -8,6 +8,7 @@ import vercel from '@astrojs/vercel';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://www.vamosjacotours.com',
+  trailingSlash: 'always',
   output: 'server',
   adapter: vercel(),
 
