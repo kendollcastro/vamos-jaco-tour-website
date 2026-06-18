@@ -41,14 +41,6 @@ const testimonials = [
         quote: "As a solo traveler, I felt safe and welcomed. The guides were friendly and very knowledgeable. It was the perfect mix of relaxation and adventure.",
         rating: 5
     },
-    {
-        id: 5,
-        name: "David Wilson",
-        role: "Nature Lover",
-        image: "/images/testimonials/testimonial-5.webp",
-        quote: "The wildlife tours were incredible. Seeing monkeys and sloths in their natural habitat was a highlight. Thank you for an amazing value experience.",
-        rating: 5
-    }
 ];
 
 export default function TestimonialsSection() {

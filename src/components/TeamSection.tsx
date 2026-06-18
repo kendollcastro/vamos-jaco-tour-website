@@ -26,38 +26,38 @@ interface TeamMember {
 const fallbackTeamMembers: TeamMember[] = [
     {
         id: 1,
-        name: "Carlos Rodríguez",
-        position_en: "CEO & Founder",
-        position_es: "CEO y Fundador",
-        position: "CEO & Founder",
-        image: "/images/team/carlos-rodriguez.png",
+        name: "Abner Sánchez",
+        position_en: "Tour Guide",
+        position_es: "Guía Turístico",
+        position: "Tour Guide",
+        image: "/images/team/tour-guide-abner-sanchez-vamos-jaco-tours.jpg",
         social: { instagram: "https://www.instagram.com/vamosjacotours" }
     },
     {
         id: 2,
-        name: "María Fernández",
-        position_en: "Tour Operations Manager",
-        position_es: "Gerente de Operaciones",
-        position: "Tour Operations Manager",
-        image: "/images/team/maria-fernandez.png",
+        name: "Anthony Lacayo",
+        position_en: "Adventure Guide",
+        position_es: "Guía de Aventura",
+        position: "Adventure Guide",
+        image: "/images/team/tour-guide-anthony-lacayo.jpg",
         social: { instagram: "https://www.instagram.com/vamosjacotours" }
     },
     {
         id: 3,
-        name: "José Herrera",
-        position_en: "Lead Adventure Guide",
-        position_es: "Guía de Aventura Principal",
-        position: "Lead Adventure Guide",
-        image: "/images/team/jose-herrera.png",
+        name: "Allison Quirós",
+        position_en: "Operations Coordinator",
+        position_es: "Coordinadora de Operaciones",
+        position: "Operations Coordinator",
+        image: "/images/team/secretaria-allison-quiros-vamos-jaco-tours.jpg",
         social: { instagram: "https://www.instagram.com/vamosjacotours" }
     },
     {
         id: 4,
-        name: "Andrea Mora",
-        position_en: "Customer Experience",
-        position_es: "Experiencia del Cliente",
-        position: "Customer Experience",
-        image: "/images/team/andrea-mora.png",
+        name: "Francisco",
+        position_en: "Lead Adventure Guide",
+        position_es: "Guía de Aventura Principal",
+        position: "Lead Adventure Guide",
+        image: "/images/team/tour-guide-francisco-vamos-jaco-tour.jpg",
         social: { instagram: "https://www.instagram.com/vamosjacotours" }
     },
 ];
