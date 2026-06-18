@@ -20,6 +20,7 @@ export interface TourSEO {
     category?: string;
     rating?: number;
     reviewCount?: number;
+    telephone?: string;
 }
 
 export interface FAQItem {
@@ -29,10 +30,10 @@ export interface FAQItem {
 
 const SITE_URL = 'https://www.vamosjacotours.com';
 const BUSINESS_NAME = 'Vamos Jacó Tours';
-const BUSINESS_PHONE = '+506 8774-7250';
-const BUSINESS_EMAIL = 'info@vamosjaco.com';
+const BUSINESS_PHONE = '+50687747250';
+const BUSINESS_EMAIL = 'info@vamosjacotours.com';
 const BUSINESS_ADDRESS = {
-    streetAddress: 'Avenida Pastor Díaz',
+    streetAddress: 'Jacó',
     addressLocality: 'Jacó',
     addressRegion: 'Puntarenas',
     postalCode: '61101',
@@ -79,62 +80,79 @@ export function getOrganizationSchema() {
 }
 
 /**
- * LocalBusiness schema for Contact page
+ * LocalBusiness + TouristInformationCenter schema (included on every page)
  */
 export function getLocalBusinessSchema() {
     return {
         '@context': 'https://schema.org',
-        '@type': 'LocalBusiness',
-        '@id': `${SITE_URL}/#business`,
+        '@type': ['LocalBusiness', 'TouristInformationCenter'],
         name: BUSINESS_NAME,
         url: SITE_URL,
         telephone: BUSINESS_PHONE,
         email: BUSINESS_EMAIL,
         address: {
             '@type': 'PostalAddress',
-            ...BUSINESS_ADDRESS,
+            streetAddress: 'Jacó',
+            addressLocality: 'Jacó',
+            addressRegion: 'Puntarenas',
+            addressCountry: 'CR',
         },
         geo: {
             '@type': 'GeoCoordinates',
             latitude: 9.6151,
             longitude: -84.6368,
         },
-        openingHoursSpecification: [
-            {
-                '@type': 'OpeningHoursSpecification',
-                dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-                opens: '07:00',
-                closes: '18:00',
-            },
+        openingHours: 'Mo-Su 08:00-17:00',
+        priceRange: '$$',
+        currenciesAccepted: 'USD',
+        paymentAccepted: 'Cash, Credit Card, PayPal',
+        sameAs: [
+            'https://www.instagram.com/vamosjacotours',
+            'https://www.facebook.com/vamosjacotours',
         ],
-        priceRange: '$60 - $350',
-        image: `${SITE_URL}/images/contact-hero.png`,
+        aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: 4.5,
+            bestRating: 5,
+            ratingCount: 50,
+            reviewCount: 50,
+        },
     };
 }
 
 /**
- * Tour/Product schema for individual tour pages
+ * TouristAttraction + Offer schema for individual tour pages
  */
 export function getTourSchema(tour: TourSEO) {
+    const telephone = tour.telephone || BUSINESS_PHONE.replace(/[\s-]/g, '');
+
     const schema: Record<string, any> = {
         '@context': 'https://schema.org',
-        '@type': 'TouristTrip',
+        '@type': 'TouristAttraction',
         name: tour.name,
         description: tour.description,
-        image: tour.image,
         url: tour.url,
         touristType: tour.category || 'Adventure',
-        provider: {
-            '@type': 'TravelAgency',
-            name: BUSINESS_NAME,
-            url: SITE_URL,
+        location: {
+            '@type': 'Place',
+            name: 'Jacó, Costa Rica',
+            geo: {
+                '@type': 'GeoCoordinates',
+                latitude: 9.6151,
+                longitude: -84.6368,
+            },
         },
         offers: {
             '@type': 'Offer',
             price: tour.price,
             priceCurrency: tour.currency || 'USD',
             availability: 'https://schema.org/InStock',
-            validFrom: new Date().toISOString().split('T')[0],
+        },
+        provider: {
+            '@type': 'LocalBusiness',
+            name: BUSINESS_NAME,
+            telephone,
+            url: SITE_URL,
         },
     };
 
@@ -145,26 +163,6 @@ export function getTourSchema(tour: TourSEO) {
             bestRating: 5,
             worstRating: 1,
             ratingCount: tour.reviewCount,
-        };
-    }
-
-    if (tour.duration) {
-        schema.itinerary = {
-            '@type': 'ItemList',
-            description: `Duration: ${tour.duration}`,
-        };
-    }
-
-    if (tour.location) {
-        schema.contentLocation = {
-            '@type': 'Place',
-            name: tour.location,
-            address: {
-                '@type': 'PostalAddress',
-                addressLocality: 'Jacó',
-                addressRegion: 'Puntarenas',
-                addressCountry: 'CR',
-            },
         };
     }
 

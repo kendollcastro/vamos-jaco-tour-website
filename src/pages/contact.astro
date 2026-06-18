@@ -4,12 +4,10 @@ import ContactHero from "../components/ContactHero";
 import ContactForm from "../components/ContactForm";
 import NewsletterSection from "../components/NewsletterSection";
 import {
-    getLocalBusinessSchema,
     getBreadcrumbSchema,
 } from "../lib/seo-schemas";
 
 const schemas = [
-    getLocalBusinessSchema(),
     getBreadcrumbSchema([
         { name: "Home", url: "/" },
         { name: "Contact", url: "/contact" },

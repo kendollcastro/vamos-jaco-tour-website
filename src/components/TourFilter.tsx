@@ -29,13 +29,10 @@ export default function TourFilter({
 }: TourFilterProps) {
     const $language = useStore(language);
     const [activeCategory, setActiveCategory] = useState<TourCategory | 'all'>('all');
-    const [mounted, setMounted] = useState(false);
     const [displayLimit, setDisplayLimit] = useState(defaultLimit); // Limit initial display
     const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
-        setMounted(true);
-        // Parse URL params
         const params = new URLSearchParams(window.location.search);
         const q = params.get('q');
         if (q) {
@@ -80,10 +77,6 @@ export default function TourFilter({
 
         return sortedTours;
     }, [initialTours, activeCategory, searchQuery, featuredSlugs]);
-
-    if (!mounted) {
-        return <div className="min-h-[400px]"></div>; // Prevent hydration mismatch
-    }
 
     const displayedTours = filteredTours.slice(0, displayLimit);
     const hasMore = displayLimit < filteredTours.length;

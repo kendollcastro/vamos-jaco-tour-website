@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
+import { Button } from '../ui/button';
 
 interface DayData {
     label: string;
@@ -116,9 +117,9 @@ export default function SalesChart({ onToast }: { onToast?: (message: string) =>
 
                 {/* Tabs */}
                 <div className="flex p-1 bg-gray-100 dark:bg-black/20 rounded-xl max-w-fit border border-gray-200 dark:border-white/5">
-                    <button className="px-4 py-1.5 text-xs font-semibold rounded-lg bg-white dark:bg-dark shadow-sm text-gray-900 dark:text-white transition-colors">Week</button>
-                    <button onClick={() => onToast ? onToast('Monthly charting requires Pro Analytics.') : alert('Pro Add-on Required')} className="px-4 py-1.5 text-xs font-medium rounded-lg text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">Month</button>
-                    <button onClick={() => onToast ? onToast('Yearly charting requires Pro Analytics.') : alert('Pro Add-on Required')} className="px-4 py-1.5 text-xs font-medium rounded-lg text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">Year</button>
+                    <Button variant="ghost" className="px-4 py-1.5 text-xs font-semibold rounded-lg bg-white dark:bg-dark shadow-sm text-gray-900 dark:text-white h-auto">Week</Button>
+                    <Button variant="ghost" onClick={() => onToast ? onToast('Monthly charting requires Pro Analytics.') : alert('Pro Add-on Required')} className="px-4 py-1.5 text-xs font-medium rounded-lg text-gray-500 hover:text-gray-900 dark:hover:text-white h-auto">Month</Button>
+                    <Button variant="ghost" onClick={() => onToast ? onToast('Yearly charting requires Pro Analytics.') : alert('Pro Add-on Required')} className="px-4 py-1.5 text-xs font-medium rounded-lg text-gray-500 hover:text-gray-900 dark:hover:text-white h-auto">Year</Button>
                 </div>
             </div>
 

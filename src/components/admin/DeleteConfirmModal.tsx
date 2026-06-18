@@ -2,6 +2,10 @@ import { useState } from 'react';
 import { useStore } from '@nanostores/react';
 import { language } from '../../store';
 import { adminTranslations } from '../../lib/admin-translations';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { Trash2, AlertCircle } from 'lucide-react';
 
 interface DeleteConfirmModalProps {
     isOpen: boolean;
@@ -44,9 +48,7 @@ export default function DeleteConfirmModal({ isOpen, onClose, onConfirm, booking
                 <div className="p-6">
                     <div className="flex items-center gap-4 mb-6">
                         <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center shrink-0">
-                            <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
+                            <Trash2 className="w-6 h-6 text-red-500" />
                         </div>
                         <div>
                             <h3 className="text-lg font-bold text-gray-900 dark:text-white">
@@ -72,46 +74,44 @@ export default function DeleteConfirmModal({ isOpen, onClose, onConfirm, booking
                     </div>
 
                     <div className="mb-4">
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             {$language === 'en' 
                                 ? `Type "${expectedText}" to confirm:` 
                                 : `Escribe "${expectedText}" para confirmar:`}
-                        </label>
-                        <input
+                        </Label>
+                        <Input
                             type="text"
                             value={confirmText}
                             onChange={(e) => { setConfirmText(e.target.value); setError(''); }}
                             placeholder={$language === 'en' ? 'Type to confirm...' : 'Escribe para confirmar...'}
-                            className="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-red-500 focus:ring-1 focus:ring-red-500/50 outline-none transition-colors"
+                            className="w-full bg-gray-50 dark:bg-black/20 border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 h-auto focus:border-red-500 focus:ring-1 focus:ring-red-500/50"
                             autoFocus
                         />
                         {error && (
                             <p className="text-red-500 text-xs mt-2 flex items-center gap-1">
-                                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                                </svg>
+                                <AlertCircle className="w-3 h-3" />
                                 {error}
                             </p>
                         )}
                     </div>
 
                     <div className="flex gap-3">
-                        <button
+                        <Button
+                            variant="ghost"
                             onClick={onClose}
-                            className="flex-1 px-4 py-3 bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-300 font-bold rounded-xl hover:bg-gray-200 dark:hover:bg-white/10 transition-colors"
+                            className="flex-1 px-4 py-3 bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-300 font-bold rounded-xl hover:bg-gray-200 dark:hover:bg-white/10 h-auto"
                         >
                             {$language === 'en' ? 'Cancel' : 'Cancelar'}
-                        </button>
-                        <button
+                        </Button>
+                        <Button
+                            variant="destructive"
                             onClick={handleConfirm}
                             disabled={confirmText.toLowerCase().trim() !== expectedText}
-                            className="flex-1 px-4 py-3 bg-red-500 text-white font-bold rounded-xl hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                            className="flex-1 px-4 py-3 font-bold rounded-xl h-auto disabled:opacity-50 disabled:cursor-not-allowed gap-2"
                         >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
+                            <Trash2 className="w-4 h-4" />
                             {$language === 'en' ? 'Delete' : 'Eliminar'}
-                        </button>
+                        </Button>
                     </div>
                 </div>
             </div>

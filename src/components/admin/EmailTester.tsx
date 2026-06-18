@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Mail, Send, AlertCircle, CheckCircle } from 'lucide-react';
+import { Mail, Send, AlertCircle, CheckCircle, Save } from 'lucide-react';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 export default function EmailTester() {
     const [email, setEmail] = useState('');
@@ -8,7 +12,6 @@ export default function EmailTester() {
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [message, setMessage] = useState('');
 
-    // Fetch global logo on mount
     useEffect(() => {
         fetch('/api/admin/settings')
             .then(res => res.json())
@@ -98,26 +101,23 @@ export default function EmailTester() {
                 </div>
             </div>
 
-            <form onSubmit={handleSendTest} className="space-y-4">
-                <div>
-                    <label htmlFor="testEmail" className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">
-                        Recipient Email Address
-                    </label>
+            <form onSubmit={handleSendTest} className="space-y-5">
+                <div className="space-y-2">
+                    <Label htmlFor="testEmail">Recipient Email Address</Label>
                     <div className="flex gap-3">
-                        <input
+                        <Input
                             type="email"
                             id="testEmail"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="e.g. your-resend-email@gmail.com"
-                            className="flex-1 px-4 py-3 border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-black/20 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all shadow-sm"
                             required
                             disabled={status === 'loading'}
+                            className="flex-1 h-10"
                         />
-                        <button
+                        <Button
                             type="submit"
                             disabled={status === 'loading' || !email}
-                            className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-6 py-2 rounded-xl font-bold transition-all disabled:opacity-50"
                         >
                             {status === 'loading' ? (
                                 <span className="animate-pulse">Sending...</span>
@@ -127,67 +127,66 @@ export default function EmailTester() {
                                     Send Test
                                 </>
                             )}
-                        </button>
+                        </Button>
                     </div>
                 </div>
 
-                <div className="pt-2">
-                    <label htmlFor="logoUrl" className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">
-                        Brand Logo Override URL (Optional)
-                    </label>
+                <div className="space-y-2">
+                    <Label htmlFor="logoUrl">Brand Logo Override URL (Optional)</Label>
                     <div className="flex gap-3">
-                        <input
+                        <Input
                             type="url"
                             id="logoUrl"
                             value={logoUrl}
                             onChange={(e) => setLogoUrl(e.target.value)}
                             placeholder="https://example.com/custom-logo.png"
-                            className="flex-1 px-4 py-3 border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-black/20 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all shadow-sm"
                             disabled={status === 'loading'}
+                            className="flex-1 h-10"
                         />
-                        <button
+                        <Button
                             type="button"
+                            variant="outline"
                             onClick={handleSaveGlobalLogo}
                             disabled={status === 'loading' || !logoUrl}
-                            className="bg-white dark:bg-dark-soft border border-gray-200 dark:border-white/10 hover:border-primary/50 text-gray-700 dark:text-gray-300 px-5 py-2 rounded-xl font-bold transition-all disabled:opacity-50 text-xs uppercase tracking-wider"
                         >
-                            {status === 'loading' ? 'Saving...' : 'Save as Global Default'}
-                        </button>
+                            {status === 'loading' ? (
+                                'Saving...'
+                            ) : (
+                                <>
+                                    <Save className="w-4 h-4" />
+                                    Save as Default
+                                </>
+                            )}
+                        </Button>
                     </div>
-                    <p className="text-xs text-gray-500 mt-2 font-medium">Leave blank to use the default Vamos Jacó Tours brand logo.</p>
+                    <p className="text-xs text-gray-500 font-medium">Leave blank to use the default Vamos Jacó Tours brand logo.</p>
                 </div>
 
-                <div>
-                    <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                        Email Language
-                    </label>
-                    <div className="flex p-1 bg-gray-100 dark:bg-black/20 rounded-xl max-w-fit border border-gray-200 dark:border-white/5">
-                        <button 
-                            type="button"
-                            onClick={() => setSelectedLang('en')}
-                            className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition-all ${selectedLang === 'en' ? 'bg-white dark:bg-dark shadow-sm text-gray-900 dark:text-white' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}
-                        >
-                            English
-                        </button>
-                        <button 
-                            type="button"
-                            onClick={() => setSelectedLang('es')}
-                            className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition-all ${selectedLang === 'es' ? 'bg-white dark:bg-dark shadow-sm text-gray-900 dark:text-white' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}
-                        >
-                            Spanish
-                        </button>
-                    </div>
+                <div className="space-y-2">
+                    <Label>Email Language</Label>
+                    <Select
+                        value={selectedLang}
+                        onValueChange={(v: 'en' | 'es') => setSelectedLang(v)}
+                    >
+                        <SelectTrigger className="w-40">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="en">English</SelectItem>
+                            <SelectItem value="es">Spanish</SelectItem>
+                        </SelectContent>
+                    </Select>
                 </div>
                 
                 {status === 'success' && (
-                    <div className="flex items-center gap-2 text-green-600 dark:text-green-400 text-sm font-medium animate-fade-in">
+                    <div className="flex items-center gap-2 text-green-600 dark:text-green-400 text-sm font-medium">
                         <CheckCircle className="w-4 h-4" />
                         {message}
                     </div>
                 )}
                 
                 {status === 'error' && (
-                    <div className="flex items-center gap-2 text-red-600 dark:text-red-400 text-sm font-medium animate-fade-in">
+                    <div className="flex items-center gap-2 text-red-600 dark:text-red-400 text-sm font-medium">
                         <AlertCircle className="w-4 h-4" />
                         {message}
                     </div>

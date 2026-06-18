@@ -3,6 +3,7 @@ import "../styles/global.css";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import ParallaxBg from "../components/ParallaxBg";
+import { getLocalBusinessSchema } from "../lib/seo-schemas";
 
 interface Props {
 	title?: string;
@@ -37,8 +38,9 @@ const ogImage = image?.startsWith("http")
 	? image
 	: `${baseSite}${image?.startsWith('/') ? image : '/' + image}`;
 
-// Build JSON-LD array
-const schemas = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [];
+// Build JSON-LD array — LocalBusiness always first, then page-specific schemas
+const pageSchemas = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [];
+const schemas = [getLocalBusinessSchema(), ...pageSchemas];
 ---
 
 <!DOCTYPE html>

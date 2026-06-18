@@ -11,6 +11,7 @@ export const adminTranslations = {
       team: 'Team',
       components: 'Components',
       emailTests: 'Email Tests',
+      commissions: 'Commissions',
     },
     common: {
       search: 'Search sections, tours...',
@@ -82,6 +83,7 @@ export const adminTranslations = {
       team: 'Equipo',
       components: 'Componentes',
       emailTests: 'Pruebas Email',
+      commissions: 'Comisiones',
     },
     common: {
       search: 'Buscar secciones, tours...',

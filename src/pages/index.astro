@@ -1,9 +1,9 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import { getAllTours } from "../data/tours";
-import { fetchWPAPI } from "../lib/wp";
 import { getTeamMembers } from "../lib/supabase-team";
 import { getWebsiteComponent } from "../lib/supabase-components";
+import { faqs } from "../data/faqs";
 import {
     getOrganizationSchema,
     getWebsiteSchema,
@@ -26,10 +26,9 @@ import NewsletterSection from "../components/NewsletterSection";
 import ScrollReveal from "../components/ScrollReveal";
 
 // Parallelize all data fetching for faster server response
-const [toursData, membersData, rawFaqsData, trustBarData] = await Promise.all([
+const [toursData, membersData, trustBarData] = await Promise.all([
     getAllTours().catch((e) => { console.error("Failed to load Tours:", e); return []; }),
     getTeamMembers().catch((e) => { console.error("Failed to load Team Members:", e); return null; }),
-    fetchWPAPI("faq").catch((e) => { console.error("Failed to load WP FAQs:", e); return null; }),
     getWebsiteComponent("trust_bar").catch((e) => { console.error("Failed to load Trust Bar:", e); return null; }),
 ]);
 
@@ -55,15 +54,6 @@ if (membersData && membersData.length > 0) {
     }));
 }
 
-// Process FAQs
-let wpFaqs: any[] = [];
-if (rawFaqsData && Array.isArray(rawFaqsData)) {
-    wpFaqs = rawFaqsData.map((f: any) => ({
-        question: f.title.rendered,
-        answer: f.excerpt.rendered.replace(/<\/?p>/g, "").trim(),
-    }));
-}
-
 // Process Trust Bar Items
 let trustBarItems: any[] = [];
 if (trustBarData && trustBarData.data) {
@@ -83,7 +73,7 @@ const seo = {
 const schemas = [
     getOrganizationSchema(),
     getWebsiteSchema(),
-    ...(wpFaqs.length > 0 ? [getFAQSchema(wpFaqs)] : []),
+    getFAQSchema(faqs.en),
 ].filter(Boolean);
 ---
 

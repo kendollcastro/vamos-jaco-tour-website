@@ -7,6 +7,8 @@ import SalesChart from './SalesChart';
 import AddBookingModal from './AddBookingModal';
 import CalendarView from './CalendarView';
 import { cardClasses, statusBadge } from '../../lib/admin-design-tokens';
+import { Button } from '../ui/button';
+import { RefreshCw, Plus, AlertTriangle, Info, Zap, ClipboardList, Image, Mail, Calendar, Layers, Star, Edit } from 'lucide-react';
 
 interface Stats {
     todayBookings: number;
@@ -223,20 +225,22 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
                     </p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <button 
-                        className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-white dark:bg-[#111111] border border-gray-200 dark:border-white/10 rounded-xl text-sm font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/5 transition-all shadow-sm"
+                    <Button
+                        variant="outline"
                         onClick={() => fetchStats()}
+                        className="flex-1 md:flex-none gap-2 shadow-sm"
                     >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                        <RefreshCw className="w-4 h-4" />
                         {t.common.refresh}
-                    </button>
-                    <button 
-                        className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-white rounded-xl text-sm font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
+                    </Button>
+                    <Button
+                        variant="default"
                         onClick={() => setIsModalOpen(true)}
+                        className="flex-1 md:flex-none gap-2 shadow-lg shadow-primary/20"
                     >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+                        <Plus className="w-4 h-4" />
                         {t.common.addBooking}
-                    </button>
+                    </Button>
                 </div>
             </div>
 
@@ -251,9 +255,7 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
                 <div className="bg-red-50 dark:bg-red-900/20 border-2 border-red-500 dark:border-red-500 rounded-xl p-4 animate-pulse">
                     <div className="flex items-start gap-3">
                         <div className="flex-shrink-0 w-10 h-10 bg-red-500 rounded-full flex items-center justify-center">
-                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                            </svg>
+                            <AlertTriangle className="w-6 h-6 text-white" />
                         </div>
                         <div className="flex-1">
                             <h3 className="text-red-800 dark:text-red-400 font-bold text-lg">
@@ -276,12 +278,13 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
                                 )}
                             </div>
                         </div>
-                        <button 
+                        <Button
+                            variant="destructive"
                             onClick={() => onNavigate?.('bookings')}
-                            className="flex-shrink-0 px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition-colors text-sm"
+                            className="flex-shrink-0 text-sm"
                         >
                             {$language === 'en' ? 'View All' : 'Ver Todos'}
-                        </button>
+                        </Button>
                     </div>
                 </div>
             )}
@@ -290,9 +293,7 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
             {isDemo && (
                 <div className="bg-brand-teal/5 border border-brand-teal/20 dark:border-brand-teal/10 rounded-[20px] px-5 py-4 flex items-center gap-3">
                     <div className="w-8 h-8 rounded-xl bg-brand-teal/20 flex items-center justify-center shrink-0">
-                        <svg className="w-4 h-4 text-brand-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
+                        <Info className="w-4 h-4 text-brand-teal" />
                     </div>
                     <div>
                         <p className="text-brand-teal font-semibold text-sm leading-tight dark:text-emerald-400">{t.dashboard.demoMode}</p>
@@ -361,7 +362,7 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
                                     <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                                     {t.dashboard.liveActivity}
                                 </h3>
-                                <button onClick={() => onNavigate?.('bookings')} className="text-primary text-[10px] font-black uppercase tracking-widest hover:underline">{t.common.viewAll}</button>
+                                <Button variant="link" onClick={() => onNavigate?.('bookings')} className="text-[10px] uppercase tracking-widest">{t.common.viewAll}</Button>
                             </div>
                             
                             {activities.length === 0 ? (
@@ -390,7 +391,7 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
                     <div className="bg-gradient-to-br from-primary/10 to-brand-orange/10 dark:from-primary/20 dark:to-brand-orange/20 rounded-3xl p-6 border border-primary/10">
                         <div className="flex items-center gap-3 mb-4">
                             <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
-                                <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                                <Zap className="w-5 h-5 text-primary" />
                             </div>
                             <span className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wider">{t.dashboard.quickStats}</span>
                         </div>
@@ -411,30 +412,28 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
             {/* Quick Actions Bar */}
             <div className="flex flex-wrap items-center gap-3 p-4 bg-white dark:bg-[#0A0A0A] rounded-2xl border border-gray-200/50 dark:border-white/5 shadow-sm">
                 <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest px-2">{t.quickActions.title}</span>
-                <button onClick={() => onNavigate?.('tours')} className="px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary dark:text-primary-400 text-xs font-bold rounded-xl transition-all flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+                <Button variant="ghost" onClick={() => onNavigate?.('tours')} className="px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary dark:text-primary-400 text-xs font-bold rounded-xl gap-2 h-auto">
+                    <Plus className="w-4 h-4" />
                     {t.quickActions.newTour}
-                </button>
-                <button onClick={() => setIsModalOpen(true)} className="px-4 py-2 bg-brand-orange/10 hover:bg-brand-orange/20 text-brand-orange text-xs font-bold rounded-xl transition-all flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+                </Button>
+                <Button variant="ghost" onClick={() => setIsModalOpen(true)} className="px-4 py-2 bg-brand-orange/10 hover:bg-brand-orange/20 text-brand-orange text-xs font-bold rounded-xl gap-2 h-auto">
+                    <ClipboardList className="w-4 h-4" />
                     {t.quickActions.addBooking}
-                </button>
-                <button onClick={() => onNavigate?.('gallery')} className="px-4 py-2 bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 dark:text-purple-400 text-xs font-bold rounded-xl transition-all flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                </Button>
+                <Button variant="ghost" onClick={() => onNavigate?.('gallery')} className="px-4 py-2 bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 dark:text-purple-400 text-xs font-bold rounded-xl gap-2 h-auto">
+                    <Image className="w-4 h-4" />
                     {t.quickActions.uploadMedia}
-                </button>
-                <button onClick={() => onNavigate?.('subscribers')} className="px-4 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 text-xs font-bold rounded-xl transition-all flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                </Button>
+                <Button variant="ghost" onClick={() => onNavigate?.('subscribers')} className="px-4 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 text-xs font-bold rounded-xl gap-2 h-auto">
+                    <Mail className="w-4 h-4" />
                     {t.quickActions.sendNewsletter}
-                </button>
+                </Button>
             </div>
 
             {/* Calendar View Section */}
             <div className="mt-8 space-y-6">
                 <div className="flex items-center gap-3">
-                    <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
+                    <Calendar className="w-6 h-6 text-primary" />
                     <h2 className="text-xl font-heading font-black text-gray-900 dark:text-white tracking-tight">
                         {$language === 'en' ? 'Booking Calendar' : 'Calendario de Reservas'}
                     </h2>
@@ -446,12 +445,12 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
             <div className="mt-8 space-y-6">
                 <div className="flex items-center justify-between">
                     <h2 className="text-xl font-heading font-black text-gray-900 dark:text-white tracking-tight flex items-center gap-3">
-                        <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
+                        <Layers className="w-6 h-6 text-primary" />
                         {t.dashboard.manageTours}
                     </h2>
                     <div className="flex items-center gap-2">
-                        <button className="px-4 py-2 rounded-full text-[11px] font-bold text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5 transition-all">{t.common.allCategories}</button>
-                        <button className="px-4 py-2 rounded-full text-[11px] font-bold text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5 transition-all">{t.common.filter}</button>
+                        <Button variant="outline" className="px-4 py-2 rounded-full text-[11px] font-bold h-auto">{t.common.allCategories}</Button>
+                        <Button variant="outline" className="px-4 py-2 rounded-full text-[11px] font-bold h-auto">{t.common.filter}</Button>
                     </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -470,22 +469,22 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
                                 <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between">
                                     <span className="font-black text-2xl text-white">${tour.price_base}</span>
                                     <div className="flex items-center gap-1 bg-white/20 backdrop-blur-md px-2 py-1 rounded-lg">
-                                        <svg className="w-3.5 h-3.5 text-yellow-400 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                                        <Star className="w-3.5 h-3.5 text-yellow-400 fill-current" />
                                         <span className="text-white font-bold text-xs">{tour.rating || '4.9'}</span>
                                     </div>
                                 </div>
                             </div>
                             <div className="p-5 flex-1 flex items-center justify-between">
                                 <h4 className="text-gray-900 dark:text-white font-bold text-base">{tour.name_en}</h4>
-                                <button className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-400 hover:text-primary hover:bg-primary/10 transition-all">
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
-                                </button>
+                                <Button variant="ghost" size="icon" className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-white/5 text-gray-400 hover:text-primary hover:bg-primary/10">
+                                    <Edit className="w-5 h-5" />
+                                </Button>
                             </div>
                         </div>
                     ))}
                     <div onClick={() => onNavigate?.('tours')} className="group cursor-pointer bg-gradient-to-br from-gray-50 to-blue-50/30 dark:from-[#0A0A0A] dark:to-blue-950/10 border-2 border-dashed border-gray-300/50 dark:border-white/10 hover:border-primary dark:hover:border-primary/50 rounded-3xl flex flex-col items-center justify-center h-72 transition-all duration-500">
                         <div className="w-16 h-16 rounded-2xl border-2 border-gray-300 dark:border-white/20 group-hover:bg-primary/10 group-hover:text-primary group-hover:border-primary/30 text-gray-400 flex items-center justify-center mb-4 transition-all duration-300 group-hover:scale-110">
-                            <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+                            <Plus className="w-7 h-7" />
                         </div>
                         <span className="text-gray-500 dark:text-gray-400 font-bold text-base tracking-wide">Add New Tour</span>
                         <span className="text-gray-400 dark:text-gray-500 text-xs mt-1">Create a new adventure</span>

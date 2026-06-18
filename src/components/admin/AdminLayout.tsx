@@ -4,92 +4,126 @@ import { useStore } from '@nanostores/react';
 import { theme, toggleTheme, initTheme, language, setLanguage, initLanguage } from '../../store';
 import { adminTranslations } from '../../lib/admin-translations';
 import AdminLogin from './AdminLogin';
-import { cardClasses, buttonVariant, background, text } from '../../lib/admin-design-tokens';
+import { cn } from '../../lib/utils';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Avatar, AvatarFallback } from '../ui/avatar';
+import { Separator } from '../ui/separator';
+import { ScrollArea } from '../ui/scroll-area';
+import {
+    Sheet,
+    SheetContent,
+} from '../ui/sheet';
+import {
+    LayoutDashboard,
+    Mountain,
+    Calendar,
+    Mail,
+    Image,
+    Users,
+    Code,
+    Monitor,
+    DollarSign,
+    Menu,
+    Search,
+    Bell,
+    Plus,
+    Sun,
+    Moon,
+    Globe,
+    ExternalLink,
+    LogOut,
+    BookOpen,
+} from 'lucide-react';
 
-type AdminView = 'dashboard' | 'tours' | 'bookings' | 'calendar' | 'subscribers' | 'gallery' | 'team' | 'website' | 'emails';
+type AdminView = 'dashboard' | 'tours' | 'bookings' | 'calendar' | 'subscribers' | 'gallery' | 'team' | 'website' | 'emails' | 'commissions';
 
 interface Props {
     children?: ReactNode;
 }
 
-const getNavItems = (t: typeof adminTranslations.en, lang: 'en' | 'es') => [
-    { id: 'dashboard' as AdminView, label: t.nav.dashboard, icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
-    { id: 'tours' as AdminView, label: t.nav.tours, icon: 'M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7' },
-    { id: 'bookings' as AdminView, label: t.nav.bookings, icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01' },
-    { id: 'calendar' as AdminView, label: lang === 'en' ? 'Calendar' : 'Calendario', icon: 'M8 7V3m8 4V3m-9 8h10M5 21h10a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' },
-    { id: 'subscribers' as AdminView, label: t.nav.subscribers, icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
-    { id: 'gallery' as AdminView, label: t.nav.gallery, icon: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z' },
-    { id: 'team' as AdminView, label: t.nav.team, icon: 'M17 20h5V4H2v16h5m10 0v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5m10 0H7M12 11a4 4 0 100-8 4 4 0 000 8z' },
-    { id: 'website' as AdminView, label: t.nav.components, icon: 'M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z' },
-    { id: 'emails' as AdminView, label: t.nav.emailTests, icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
+const NAV_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+    dashboard: LayoutDashboard,
+    tours: Mountain,
+    bookings: BookOpen,
+    calendar: Calendar,
+    subscribers: Mail,
+    gallery: Image,
+    team: Users,
+    website: Code,
+    emails: Monitor,
+    commissions: DollarSign,
+};
+
+const getNavItems = (t: typeof adminTranslations.en) => [
+    { id: 'dashboard' as AdminView, label: t.nav.dashboard },
+    { id: 'tours' as AdminView, label: t.nav.tours },
+    { id: 'bookings' as AdminView, label: t.nav.bookings },
+    { id: 'calendar' as AdminView, label: 'Calendar' },
+    { id: 'subscribers' as AdminView, label: t.nav.subscribers },
+    { id: 'gallery' as AdminView, label: t.nav.gallery },
+    { id: 'team' as AdminView, label: t.nav.team },
+    { id: 'website' as AdminView, label: t.nav.components },
+    { id: 'emails' as AdminView, label: t.nav.emailTests },
+    { id: 'commissions' as AdminView, label: t.nav.commissions },
 ];
+
+const VALID_VIEWS = getNavItems({ nav: {} } as any).map(i => i.id);
 
 export default function AdminLayout({ children }: Props) {
     const [authenticated, setAuthenticated] = useState<boolean | null>(null);
     const [currentView, setCurrentView] = useState<AdminView>(() => {
         if (typeof window !== 'undefined') {
             const saved = localStorage.getItem('admin_view');
-            if (saved && ['dashboard', 'tours', 'bookings', 'calendar', 'subscribers', 'gallery', 'team', 'website', 'emails'].includes(saved)) {
+            if (saved && (VALID_VIEWS as string[]).includes(saved)) {
                 return saved as AdminView;
             }
         }
         return 'dashboard';
     });
-    const [sidebarOpen, setSidebarOpen] = useState(false);
     const [userEmail, setUserEmail] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
-    const [toast, setToast] = useState<{message: string, type?: 'info' | 'success'} | null>(null);
+    const [toast, setToast] = useState<{ message: string; type?: 'info' | 'success' } | null>(null);
     const [isSearchFocused, setIsSearchFocused] = useState(false);
+    const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
     const showToast = (message: string, type: 'info' | 'success' = 'info') => {
         setToast({ message, type });
         setTimeout(() => setToast(null), 3000);
     };
+
     const $theme = useStore(theme);
     const $language = useStore(language);
     const t = adminTranslations[$language];
 
+    useEffect(() => {
+        initTheme();
+        initLanguage();
+    }, []);
+
     // Keyboard shortcuts
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            // Ignore if typing in input
-            if ((e.target as HTMLElement).tagName === 'INPUT' || (e.target as HTMLElement).tagName === 'TEXTAREA') {
-                return;
-            }
+            if ((e.target as HTMLElement).tagName === 'INPUT' || (e.target as HTMLElement).tagName === 'TEXTAREA') return;
 
             if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
                 e.preventDefault();
                 const searchInput = document.querySelector('input[placeholder*="Search"]') as HTMLInputElement;
                 searchInput?.focus();
             }
-            if (e.key === 'Escape') {
-                setSidebarOpen(false);
-                setSearchQuery('');
-            }
+            if (e.key === 'Escape') setSearchQuery('');
             if ((e.metaKey || e.ctrlKey) && e.key === 'b') {
                 e.preventDefault();
-                setSidebarOpen(prev => !prev);
+                setMobileSidebarOpen(prev => !prev);
             }
-            // Quick navigation shortcuts
-            if (e.key === 'g' && !e.metaKey && !e.ctrlKey) {
+
+            const keyMap: Record<string, AdminView> = {
+                g: 'dashboard', t: 'tours', r: 'bookings',
+                c: 'calendar', s: 'subscribers', m: 'commissions',
+            };
+            if (e.key in keyMap && !e.metaKey && !e.ctrlKey) {
                 e.preventDefault();
-                setCurrentView('dashboard');
-            }
-            if (e.key === 't' && !e.metaKey && !e.ctrlKey) {
-                e.preventDefault();
-                setCurrentView('tours');
-            }
-            if (e.key === 'r' && !e.metaKey && !e.ctrlKey) {
-                e.preventDefault();
-                setCurrentView('bookings');
-            }
-            if (e.key === 'c' && !e.metaKey && !e.ctrlKey) {
-                e.preventDefault();
-                setCurrentView('calendar');
-            }
-            if (e.key === 's' && !e.metaKey && !e.ctrlKey) {
-                e.preventDefault();
-                setCurrentView('subscribers');
+                setCurrentView(keyMap[e.key]);
             }
             if (e.key === 'g' && (e.metaKey || e.ctrlKey)) {
                 e.preventDefault();
@@ -100,9 +134,21 @@ export default function AdminLayout({ children }: Props) {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, []);
 
+    // Auth
     useEffect(() => {
-        initTheme();
-        initLanguage();
+        if (!supabase) {
+            setAuthenticated(false);
+            return;
+        }
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            setAuthenticated(!!session);
+            if (session?.user?.email) setUserEmail(session.user.email);
+        });
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            setAuthenticated(!!session);
+            if (session?.user?.email) setUserEmail(session.user.email);
+        });
+        return () => subscription.unsubscribe();
     }, []);
 
     // Lazy-import view components
@@ -115,28 +161,8 @@ export default function AdminLayout({ children }: Props) {
     const [TeamView, setTeamView] = useState<React.ComponentType | null>(null);
     const [WebsiteComponentsView, setWebsiteComponentsView] = useState<React.ComponentType | null>(null);
     const [EmailsView, setEmailsView] = useState<React.ComponentType | null>(null);
+    const [CommissionsView, setCommissionsView] = useState<React.ComponentType | null>(null);
 
-    useEffect(() => {
-        // If Supabase is not configured, skip auth and show login
-        if (!supabase) {
-            setAuthenticated(false);
-            return;
-        }
-
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            setAuthenticated(!!session);
-            if (session?.user?.email) setUserEmail(session.user.email);
-        });
-
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            setAuthenticated(!!session);
-            if (session?.user?.email) setUserEmail(session.user.email);
-        });
-
-        return () => subscription.unsubscribe();
-    }, []);
-
-    // Load view components
     useEffect(() => {
         import('./DashboardStats').then((m) => setDashboardView(() => m.default));
         import('./TourList').then((m) => setToursView(() => m.default));
@@ -147,18 +173,17 @@ export default function AdminLayout({ children }: Props) {
         import('./TeamManager').then((m) => setTeamView(() => m.default));
         import('./WebsiteComponents').then((m) => setWebsiteComponentsView(() => m.default));
         import('./EmailTester').then((m) => setEmailsView(() => m.default));
+        import('./CommissionsTable').then((m) => setCommissionsView(() => m.default));
     }, []);
 
     async function handleLogout() {
-        if (supabase) {
-            await supabase.auth.signOut();
-        }
+        if (supabase) await supabase.auth.signOut();
         setAuthenticated(false);
     }
 
     if (authenticated === null) {
         return (
-            <div className="min-h-screen bg-gray-50 dark:bg-dark flex items-center justify-center transition-colors duration-300">
+            <div className="min-h-screen bg-background flex items-center justify-center">
                 <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
             </div>
         );
@@ -176,242 +201,265 @@ export default function AdminLayout({ children }: Props) {
                         : currentView === 'team' ? TeamView
                             : currentView === 'website' ? WebsiteComponentsView
                                 : currentView === 'emails' ? EmailsView
-                                    : GalleryView;
+                                    : currentView === 'commissions' ? CommissionsView
+                                        : GalleryView;
 
-return (
-        <div className="min-h-screen font-sans text-gray-900 dark:text-white bg-gray-50 dark:bg-dark flex transition-premium">
-            {/* Mobile overlay */}
-            {sidebarOpen && (
-                <div
-                    className="fixed inset-0 bg-black/60 z-40 lg:hidden"
-                    onClick={() => setSidebarOpen(false)}
-                />
-            )}
+    const navItems = getNavItems(t as any).filter(item =>
+        item.label.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
-            {/* Sidebar */}
-            <aside className={`
-                fixed lg:static inset-y-0 left-0 z-50
-                w-72 bg-white dark:bg-[#0A0A0A] border-r border-gray-200 dark:border-white/5
-                transform transition-premium
-                ${sidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0'}
-                flex flex-col
-            `}>
-                {/* Brand */}
-                <div className="px-8 py-8 border-b border-gray-200 dark:border-white/5">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center shadow-2xl shadow-primary/40 ring-4 ring-primary/10">
-                            <span className="text-white font-extrabold text-lg">VJ</span>
-                        </div>
-                        <div>
-                            <h2 className="text-gray-900 dark:text-white font-heading font-extrabold text-lg leading-tight tracking-tight uppercase">Vamos Jacó</h2>
-                            <p className="text-primary font-bold text-[10px] uppercase tracking-widest">Administrator</p>
-                        </div>
-                    </div>
+    const NavContent = ({ onNavigate }: { onNavigate?: (view: AdminView) => void }) => (
+        <>
+            {/* Brand */}
+            <div className="px-6 py-6 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center shadow-lg shadow-primary/30">
+                    <span className="text-primary-foreground font-extrabold text-sm">VJ</span>
                 </div>
+                <div className="flex flex-col">
+                    <h2 className="font-bold text-sm leading-tight text-foreground uppercase">Vamos Jacó</h2>
+                    <p className="text-[10px] font-bold text-primary uppercase tracking-widest">Administrator</p>
+                </div>
+            </div>
 
-                {/* Navigation */}
-                <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-                    {getNavItems(t as any, $language).filter(item => 
-                        item.label.toLowerCase().includes(searchQuery.toLowerCase())
-                    ).map((item) => (
-                        <button
-                            key={item.id}
-                            onClick={() => { setCurrentView(item.id); setSidebarOpen(false); localStorage.setItem('admin_view', item.id); }}
-                            className={`
-                        w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300
-                        ${currentView === item.id
-                                ? 'bg-primary/10 text-primary translate-x-1'
-                                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 hover:translate-x-1'
-                            }
-                        `}
-                        >
-                            <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={item.icon} />
-                            </svg>
-                            {item.label}
-                        </button>
-                    ))}
-                    {getNavItems(t as any, $language).filter(item => item.label.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
-                        <div className="px-4 py-2 text-xs text-gray-500 italic">No sections found</div>
+            <Separator />
+
+            {/* Search */}
+            <div className="px-4 py-4">
+                <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                        placeholder={t.common.search}
+                        className="pl-9 h-9 text-xs"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onFocus={() => setIsSearchFocused(true)}
+                        onBlur={() => setIsSearchFocused(false)}
+                    />
+                </div>
+            </div>
+
+            {/* Navigation */}
+            <ScrollArea className="flex-1 px-3">
+                <div className="space-y-1 pb-4">
+                    {navItems.map((item) => {
+                        const Icon = NAV_ICONS[item.id];
+                        const isActive = currentView === item.id;
+                        return (
+                            <Button
+                                key={item.id}
+                                variant="ghost"
+                                size="sm"
+                                className={cn(
+                                    'w-full justify-start gap-3 h-10 text-sm font-medium',
+                                    isActive
+                                        ? 'bg-primary/10 text-primary hover:bg-primary/15 hover:text-primary'
+                                        : 'text-muted-foreground hover:text-foreground hover:bg-accent',
+                                )}
+                                onClick={() => {
+                                    setCurrentView(item.id);
+                                    localStorage.setItem('admin_view', item.id);
+                                    onNavigate?.(item.id);
+                                }}
+                            >
+                                {Icon && <Icon className="h-4 w-4 shrink-0" />}
+                                {item.label}
+                            </Button>
+                        );
+                    })}
+                    {navItems.length === 0 && (
+                        <p className="px-4 py-2 text-xs text-muted-foreground italic">
+                            {t.common.noData}
+                        </p>
                     )}
-                </nav>
-
-                {/* User Profile */}
-                <div className="px-4 py-6 border-t border-gray-200 dark:border-white/5">
-                    <div className="flex items-center gap-3 mb-4 px-2">
-                        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-brand-orange/20 to-primary/20 flex items-center justify-center text-brand-orange text-sm font-bold shadow-sm border border-brand-orange/10">
-                            {userEmail?.charAt(0)?.toUpperCase() || 'A'}
-                        </div>
-                        <div className="flex flex-col min-w-0">
-                            <span className="text-gray-900 dark:text-white text-sm font-bold truncate">{userEmail.split('@')[0] || 'Admin'}</span>
-                            <span className="text-gray-500 dark:text-gray-400 text-[10px] truncate font-bold uppercase tracking-widest">{t.sidebar.administrator}</span>
-                        </div>
-                    </div>
-
-                    {/* Theme & Language Switchers */}
-                    <div className="flex items-center gap-2">
-                        <button
-                            onClick={toggleTheme}
-                            className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 text-xs font-medium transition-all hover:-translate-y-0.5 active:scale-95"
-                            title="Toggle theme"
-                        >
-                            {theme === 'dark' ? (
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3V1m0 2a9 9 0 1 0 9 9m-9-9a9 9 0 0 0 0-9 9m9-9a9 9 0 0 0 9 9m-18 0a9 9 0 1 0 9-9m-9 9a9 9 0 0 0 0-9 9m9-9a9 9 0 0 0-9 9" />
-                                </svg>
-                            ) : (
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 0 1 18.657 4m-1.323 0A9 9 0 1 0 20.354 15.354z" />
-                                </svg>
-                            )}
-                            {theme === 'dark' ? 'Light' : 'Dark'}
-                        </button>
-                        <button
-                            onClick={() => setLanguage(language === 'en' ? 'es' : 'en')}
-                            className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 text-xs font-medium transition-all hover:-translate-y-0.5 active:scale-95"
-                            title="Switch language"
-                        >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m-6 2a14 14 0 1 1 6 3.76M10 14a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
-                            </svg>
-                            {language === 'en' ? 'ES' : 'EN'}
-                        </button>
-                    </div>
-
-                    {/* Logout */}
-                    <button
-                        onClick={handleLogout}
-                        className="mt-3 w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 border border-red-200 dark:border-red-500/20 hover:border-red-300 dark:hover:border-red-500/30 transition-all hover:-translate-y-0.5 active:scale-95"
-                    >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 20v-1a3 3 0 0 0-3-3H5a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1" />
-                        </svg>
-                        {t.sidebar.logout}
-                    </button>
                 </div>
+            </ScrollArea>
+
+            <Separator />
+
+            {/* User */}
+            <div className="p-4 space-y-3">
+                <div className="flex items-center gap-3 px-2">
+                    <Avatar className="h-9 w-9 rounded-lg">
+                        <AvatarFallback className="rounded-lg bg-gradient-to-br from-orange-500/20 to-primary/20 text-orange-600 text-xs font-bold">
+                            {userEmail?.charAt(0)?.toUpperCase() || 'A'}
+                        </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col min-w-0">
+                        <span className="text-sm font-bold text-foreground truncate">
+                            {userEmail.split('@')[0] || 'Admin'}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">
+                            {t.sidebar.administrator}
+                        </span>
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={toggleTheme}
+                        className="flex-1 gap-2 h-9 text-xs font-medium"
+                    >
+                        {$theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                        {$theme === 'dark' ? 'Light' : 'Dark'}
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setLanguage($language === 'en' ? 'es' : 'en')}
+                        className="flex-1 gap-2 h-9 text-xs font-medium"
+                    >
+                        <Globe className="h-4 w-4" />
+                        {$language === 'en' ? 'ES' : 'EN'}
+                    </Button>
+                </div>
+
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleLogout}
+                    className="w-full gap-2 h-9 text-xs font-medium text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/20"
+                >
+                    <LogOut className="h-4 w-4" />
+                    {t.sidebar.logout || 'Logout'}
+                </Button>
+            </div>
+        </>
+    );
+
+    return (
+        <div className="min-h-screen bg-background text-foreground flex">
+            {/* Desktop Sidebar */}
+            <aside className="hidden lg:flex lg:flex-col lg:w-64 border-r bg-card">
+                <NavContent />
             </aside>
 
-            {/* Main Content */}
-            <main className="flex-1 flex flex-col h-screen overflow-hidden transition-colors duration-300 bg-gray-50 dark:bg-[#050505]">
-                {/* Top Bar */}
-                <header className="sticky top-0 z-30 bg-white/95 dark:bg-[#050505]/95 backdrop-blur-xl border-b border-gray-200 dark:border-white/5 px-6 lg:px-12 py-5 flex items-center justify-between transition-premium">
-                    <div className="flex items-center gap-4 flex-1">
-                        <button
-                            onClick={() => setSidebarOpen(true)}
-                            className="lg:hidden w-10 h-10 rounded-lg bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition"
-                        >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                            </svg>
-                        </button>
+            {/* Mobile Sidebar */}
+            <Sheet open={mobileSidebarOpen} onOpenChange={setMobileSidebarOpen}>
+                <SheetContent side="left" className="w-72 p-0">
+                    <NavContent onNavigate={() => setMobileSidebarOpen(false)} />
+                </SheetContent>
+            </Sheet>
 
-                        {/* Search Bar with Keyboard Shortcut */}
-                        <div className="hidden md:flex items-center bg-gray-50 dark:bg-[#111111] rounded-full px-5 py-2.5 w-80 border border-gray-200 dark:border-white/5 focus-within:border-primary transition-all duration-300 hover:bg-gray-100 dark:hover:bg-white/5 focus-within:w-96 shadow-sm group">
-                            <svg className="w-4 h-4 text-gray-400 group-focus-within:text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                            <input 
-                                type="text" 
-                                placeholder={t.common.search} 
-                                className="bg-transparent border-none outline-none text-sm text-gray-900 dark:text-white ml-3 w-full placeholder-gray-400 dark:placeholder-gray-500" 
+            {/* Main Content */}
+            <main className="flex-1 flex flex-col h-screen overflow-hidden">
+                {/* Top Bar */}
+                <header className="sticky top-0 z-30 bg-background/95 backdrop-blur-xl border-b px-4 lg:px-8 py-3 flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-4 flex-1">
+                        <Button variant="ghost" size="icon" onClick={() => setMobileSidebarOpen(true)} className="lg:hidden">
+                            <Menu className="h-5 w-5" />
+                        </Button>
+
+                        <div className="hidden md:flex relative w-72">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input
+                                placeholder={t.common.search}
+                                className="pl-9 h-9"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 onFocus={() => setIsSearchFocused(true)}
                                 onBlur={() => setIsSearchFocused(false)}
                             />
-                            <kbd className={`hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-gray-200 dark:bg-white/10 text-gray-500 dark:text-gray-400 text-[10px] font-medium transition-opacity ${isSearchFocused ? 'opacity-0' : 'opacity-100'}`}>
-                                <span className="text-xs">⌘</span>K
+                            <kbd className={cn(
+                                'absolute right-3 top-1/2 -translate-y-1/2 hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-muted text-muted-foreground text-[10px] font-medium transition-opacity',
+                                isSearchFocused ? 'opacity-0' : 'opacity-100',
+                            )}>
+                                ⌘K
                             </kbd>
                         </div>
                     </div>
-                    <div className="flex items-center gap-4">
-                        <button onClick={() => showToast(t.notifications.noAlerts)} className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 dark:bg-[#111111] border border-gray-200 dark:border-white/5 text-gray-500 dark:text-gray-400 hover:text-primary transition-all" aria-label="Notifications">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
-                        </button>
-                        
-                        <button onClick={() => setCurrentView('tours')} className="hidden sm:flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all shadow-lg hover:-translate-y-0.5 shadow-primary/20 hover:shadow-primary/40 active:scale-95 leading-none">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
-                            </svg>
-                            {t.common.createTour}
-                        </button>
 
-                        <div className="w-px h-6 bg-gray-200 dark:bg-white/10 hidden sm:block"></div>
+                    <div className="flex items-center gap-2">
+                        <Button variant="ghost" size="icon" onClick={() => showToast(t.notifications.noAlerts)} className="hidden sm:flex">
+                            <Bell className="h-4 w-4" />
+                        </Button>
 
-                        {/* Theme Toggle */}
-                        <button
-                            onClick={toggleTheme}
-                            className={`
-                                flex items-center gap-2 p-1.5 pr-3 rounded-full border transition-all duration-300
-                                ${$theme === 'dark' 
-                                    ? 'bg-primary/20 border-primary/20 text-primary shadow-inner' 
-                                    : 'bg-white border-gray-200 text-gray-700 shadow-sm'}
-                            `}
-                            aria-label="Toggle Theme"
-                            title={$theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                        <Button
+                            size="sm"
+                            onClick={() => setCurrentView('tours')}
+                            className="hidden sm:inline-flex gap-2 h-9 text-xs font-bold uppercase tracking-widest"
                         >
-                            <div className={`w-7 h-7 rounded-full flex items-center justify-center transition-all duration-500 ${$theme === 'dark' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-500'}`}>
-                                {$theme === 'dark' ? (
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg> // Moon for Dark mode (current state)
-                                ) : (
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg> // Sun for Light mode (current state)
-                                )}
+                            <Plus className="h-4 w-4" strokeWidth={3} />
+                            {t.common.createTour}
+                        </Button>
+
+                        <div className="h-5 w-px bg-border hidden sm:block" />
+
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={toggleTheme}
+                            className="hidden sm:inline-flex gap-2 h-9 px-3 text-xs font-medium"
+                        >
+                            <div className={cn(
+                                'w-7 h-7 rounded-full flex items-center justify-center transition-all',
+                                $theme === 'dark' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground',
+                            )}>
+                                {$theme === 'dark' ? <Moon className="h-3.5 w-3.5" /> : <Sun className="h-3.5 w-3.5" />}
                             </div>
-                            <span className="text-[10px] font-bold uppercase tracking-widest translate-y-[0.5px]">
+                            <span className="text-[10px] font-bold uppercase tracking-widest">
                                 {$theme === 'dark' ? 'Dark' : 'Light'}
                             </span>
-                        </button>
+                        </Button>
 
-                        {/* Language Toggle */}
-                        <button
+                        <Button
+                            variant="ghost"
+                            size="sm"
                             onClick={() => setLanguage($language === 'en' ? 'es' : 'en')}
-                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-200 dark:border-white/10 bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-300 hover:text-primary transition-all text-xs font-bold uppercase tracking-widest"
-                            title={$language === 'en' ? 'Cambiar a Español' : 'Switch to English'}
+                            className="hidden sm:inline-flex gap-1.5 h-9 px-3 text-xs font-bold uppercase tracking-widest"
                         >
-                            <span>{$language === 'en' ? '🇺🇸 EN' : '🇨🇷 ES'}</span>
-                        </button>
+                            <Globe className="h-3.5 w-3.5" />
+                            {$language === 'en' ? 'EN' : 'ES'}
+                        </Button>
 
-                        <a
-                            href="/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-xs text-gray-500 dark:text-gray-500 hover:text-brand-teal transition flex items-center gap-1 font-medium bg-gray-100 dark:bg-white/5 px-3 py-1.5 rounded-full"
-                        >
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                            </svg>
-                            {t.common.viewSite}
-                        </a>
+                        <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex gap-1.5 h-9 px-3 text-xs font-medium">
+                            <a href="/" target="_blank" rel="noopener noreferrer">
+                                <ExternalLink className="h-3.5 w-3.5" />
+                                {t.common.viewSite}
+                            </a>
+                        </Button>
                     </div>
                 </header>
 
                 {/* Page Content */}
                 <div className="flex-1 p-4 lg:p-8 overflow-auto">
                     {ActiveView ? (
-                        // @ts-ignore: Dynamic views may or may not accept onNavigate/onToast
-                        <ActiveView onNavigate={setCurrentView} onToast={showToast} /> 
+                        <div className="mx-auto max-w-7xl">
+                            <ActiveView onNavigate={setCurrentView} onToast={showToast} />
+                        </div>
                     ) : (
                         <div className="flex items-center justify-center h-64">
                             <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                         </div>
                     )}
                 </div>
-                
-                {/* Global Toast Notification */}
-                <div className={`fixed bottom-6 right-6 z-[100] transition-all duration-300 transform ${toast ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0 pointer-events-none'}`}>
+
+                {/* Global Toast */}
+                <div className={cn(
+                    'fixed bottom-6 right-6 z-[100] transition-all duration-300',
+                    toast ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0 pointer-events-none',
+                )}>
                     {toast && (
-                        <div className="flex items-center gap-3 px-5 py-4 bg-gray-900 dark:bg-[#111111] border border-gray-700 dark:border-white/10 shadow-2xl rounded-lg">
-                            {toast.type === 'success' ? (
-                                <div className="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center shrink-0">
-                                    <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                                </div>
-                            ) : (
-                                <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center shrink-0">
-                                    <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                </div>
-                            )}
-                            <p className="text-white text-sm font-medium tracking-wide">{toast.message}</p>
-                            <button onClick={() => setToast(null)} className="ml-2 text-gray-500 hover:text-white transition-colors">
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-                            </button>
+                        <div className="flex items-center gap-3 px-5 py-4 rounded-lg border bg-card text-card-foreground shadow-2xl">
+                            <div className={cn(
+                                'w-8 h-8 rounded-full flex items-center justify-center shrink-0',
+                                toast.type === 'success' ? 'bg-emerald-500/10' : 'bg-blue-500/10',
+                            )}>
+                                <svg className={cn(
+                                    'w-4 h-4',
+                                    toast.type === 'success' ? 'text-emerald-500' : 'text-blue-500',
+                                )} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                        d={toast.type === 'success' ? 'M5 13l4 4L19 7' : 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'} />
+                                </svg>
+                            </div>
+                            <p className="text-sm font-medium">{toast.message}</p>
+                            <Button variant="ghost" size="icon" onClick={() => setToast(null)} className="ml-2 h-8 w-8">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </Button>
                         </div>
                     )}
                 </div>

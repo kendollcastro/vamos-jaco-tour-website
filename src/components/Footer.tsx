@@ -220,10 +220,10 @@ export default function Footer() {
                     <div>
                         <h3 className="text-lg font-bold mb-8">{content.cols.destinations}</h3>
                         <ul className="space-y-4 text-gray-400 text-sm">
-                            <li><a href="/tours" className="hover:text-primary transition-colors">Jacó Beach</a></li>
-                            <li><a href="/tours" className="hover:text-primary transition-colors">Herradura</a></li>
-                            <li><a href="/tours" className="hover:text-primary transition-colors">Los Sueños</a></li>
-                            <li><a href="/tours" className="hover:text-primary transition-colors">Hermosa Beach</a></li>
+                            <li><a href="/tours?q=Jac%C3%B3+Beach" className="hover:text-primary transition-colors">Jacó Beach</a></li>
+                            <li><a href="/tours?q=Herradura" className="hover:text-primary transition-colors">Herradura</a></li>
+                            <li><a href="/tours?q=Vista+Los+Suenos" className="hover:text-primary transition-colors">Los Sueños</a></li>
+                            <li><a href="/tours?q=Hermosa+Beach" className="hover:text-primary transition-colors">Hermosa Beach</a></li>
                         </ul>
                     </div>
 
@@ -231,11 +231,11 @@ export default function Footer() {
                     <div>
                         <h3 className="text-lg font-bold mb-8">{content.cols.search}</h3>
                         <ul className="space-y-4 text-gray-400 text-sm">
-                            <li><a href="/tours" className="hover:text-primary transition-colors">ATV Tours</a></li>
-                            <li><a href="/tours" className="hover:text-primary transition-colors">Side by Side (Buggy)</a></li>
-                            <li><a href="/tours" className="hover:text-primary transition-colors">Jet Ski</a></li>
-                            <li><a href="/tours" className="hover:text-primary transition-colors">Zipline Canopy</a></li>
-                            <li><a href="/tours" className="hover:text-primary transition-colors">Surfing Lessons</a></li>
+                            <li><a href="/tours/jaco-atv-adventure" className="hover:text-primary transition-colors">ATV Tours</a></li>
+                            <li><a href="/tours/side-by-side-tour" className="hover:text-primary transition-colors">Side by Side (Buggy)</a></li>
+                            <li><a href="/tours/jet-ski-tour" className="hover:text-primary transition-colors">Jet Ski</a></li>
+                            <li><a href="/tours/canopy-zipline" className="hover:text-primary transition-colors">Zipline Canopy</a></li>
+                            <li><a href="/tours/surf-class" className="hover:text-primary transition-colors">Surfing Lessons</a></li>
                         </ul>
                     </div>
 
