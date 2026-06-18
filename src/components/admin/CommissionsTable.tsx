@@ -83,6 +83,7 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
 
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editingCommission, setEditingCommission] = useState<Commission | null>(null);
+    const [deleteTarget, setDeleteTarget] = useState<Commission | null>(null);
 
     const [formDate, setFormDate] = useState('');
     const [formTour, setFormTour] = useState('');
@@ -272,8 +273,14 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
         setFormSaving(false);
     }
 
-    async function handleDelete(id: string) {
-        if (!window.confirm($language === 'en' ? 'Delete this commission entry?' : '¿Eliminar esta comisión?')) return;
+    function handleDeleteClick(c: Commission) {
+        setDeleteTarget(c);
+    }
+
+    async function confirmDelete() {
+        if (!deleteTarget) return;
+        const id = deleteTarget.id;
+        setDeleteTarget(null);
         if (isDemo) {
             setCommissions(prev => prev.filter(c => c.id !== id));
             onToast?.($language === 'en' ? 'Commission deleted' : 'Comisión eliminada');
@@ -488,7 +495,7 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                                             <Button variant="ghost" size="icon" onClick={() => openEditModal(c)}>
                                                 <Pencil className="h-4 w-4" />
                                             </Button>
-                                            <Button variant="ghost" size="icon" onClick={() => handleDelete(c.id)}>
+                                            <Button variant="ghost" size="icon" onClick={() => handleDeleteClick(c)}>
                                                 <Trash2 className="h-4 w-4" />
                                             </Button>
                                         </div>
@@ -499,6 +506,40 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                     </Table>
                 )}
             </div>
+
+            {/* Delete Confirmation Dialog */}
+            <Dialog open={!!deleteTarget} onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>
+                            {$language === 'en' ? 'Delete Commission' : 'Eliminar Comisión'}
+                        </DialogTitle>
+                    </DialogHeader>
+                    {deleteTarget && (
+                        <div className="space-y-4">
+                            <p className="text-muted-foreground">
+                                {$language === 'en'
+                                    ? 'Are you sure you want to delete this commission entry? This action cannot be undone.'
+                                    : '¿Estás seguro de eliminar esta comisión? Esta acción no se puede deshacer.'}
+                            </p>
+                            <div className="rounded-lg border bg-muted/50 p-4 space-y-1 text-sm">
+                                <p><span className="font-medium">{$language === 'en' ? 'Customer' : 'Cliente'}:</span> {deleteTarget.customer_name}</p>
+                                <p><span className="font-medium">{$language === 'en' ? 'Tour' : 'Tour'}:</span> {deleteTarget.tour_name}</p>
+                                <p><span className="font-medium">{$language === 'en' ? 'Date' : 'Fecha'}:</span> {new Date(deleteTarget.date).toLocaleDateString()}</p>
+                            </div>
+                        </div>
+                    )}
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setDeleteTarget(null)}>
+                            {$language === 'en' ? 'Cancel' : 'Cancelar'}
+                        </Button>
+                        <Button variant="destructive" onClick={confirmDelete}>
+                            <Trash2 className="h-4 w-4" />
+                            {$language === 'en' ? 'Delete' : 'Eliminar'}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
 
             {/* Add/Edit Dialog */}
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
