@@ -23,7 +23,8 @@ export const POST: APIRoute = async ({ request }) => {
             paymentMethod = 'card',
             language = 'en',
             variationId,
-            pricePerAdult
+            pricePerAdult,
+            duration
         } = body;
 
         // 1. Validation
@@ -92,6 +93,7 @@ export const POST: APIRoute = async ({ request }) => {
         }
 
         // 5. Check availability before proceeding (overbooking prevention)
+        let maxParticipants = 10;
         if (supabaseAdmin) {
             const { data: tourData } = await supabaseAdmin
                 .from('tours')
@@ -99,10 +101,9 @@ export const POST: APIRoute = async ({ request }) => {
                 .eq('id', tourUuid)
                 .single();
             
-            const maxParticipants = tourData?.max_participants || 10;
+            maxParticipants = tourData?.max_participants || 10;
             const requestedGuests = (adults || 1) + (children || 0);
             
-            // Get existing bookings for that date/tour
             const { data: existingBookings } = await supabaseAdmin
                 .from('bookings')
                 .select('adults, children, status')
@@ -126,7 +127,28 @@ export const POST: APIRoute = async ({ request }) => {
             }
         }
 
-        // 6. Handle TiloPay Gateway for Card Payments
+        // 6. Create booking BEFORE payment (so callback can find it)
+        const formattedDate = new Date(date).toISOString().split('T')[0];
+        if (supabaseAdmin) {
+            await supabaseAdmin.from('bookings').insert([{
+                id: orderId,
+                tour_id: tourUuid,
+                tour_name: tourName || tourId,
+                customer_name: sanitizedName,
+                customer_email: sanitizedEmail,
+                customer_phone: sanitizedPhone,
+                booking_date: formattedDate,
+                adults: adults || 1,
+                children: children || 0,
+                total_amount: priceResult.total,
+                duration: duration || '',
+                status: 'pending',
+            }]).then(({ error }) => {
+                if (error) console.error('Error creating booking in initiate:', error);
+            });
+        }
+
+        // 7. Handle TiloPay Gateway for Card Payments
         if (paymentMethod === 'card') {
             try {
                 const paymentUrl = await createPaymentSession({
@@ -151,7 +173,7 @@ export const POST: APIRoute = async ({ request }) => {
                         tourId: tourUuid,
                         tourName: tourName || tourId,
                         date,
-                        formattedDate: new Date(date).toISOString().split('T')[0],
+                        formattedDate,
                         adults: adults || 1,
                         children: children || 0,
                         extraPassengers: extraPassengers || 0,

@@ -24,7 +24,8 @@ export default function AddBookingModal({ isOpen, onClose, onSuccess, prefillDat
         total_amount: 0,
         status: 'confirmed',
         adults: 1,
-        children: 0
+        children: 0,
+        duration: ''
     });
 
     // Update form date when prefillDate changes
@@ -124,6 +125,16 @@ export default function AddBookingModal({ isOpen, onClose, onSuccess, prefillDat
                                 <SelectItem value="Surf Lessons">Surf Lessons</SelectItem>
                             </SelectContent>
                         </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label className="text-xs font-bold text-gray-500 uppercase">Duration</Label>
+                        <Input
+                            className="w-full bg-gray-50 dark:bg-black/20 border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 h-auto"
+                            value={formData.duration}
+                            onChange={e => setFormData({ ...formData, duration: e.target.value })}
+                            placeholder="e.g. 2 Hours"
+                        />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">

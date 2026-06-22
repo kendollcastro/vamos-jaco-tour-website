@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS commissions (
     price           NUMERIC DEFAULT 0,
     guide_name      TEXT DEFAULT '',
     commission_10   NUMERIC DEFAULT 0,
+    location        TEXT DEFAULT '',
     provider_name   TEXT DEFAULT '',
     commission_20   NUMERIC DEFAULT 0,
     tax             NUMERIC DEFAULT 0,

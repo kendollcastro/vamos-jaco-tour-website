@@ -39,7 +39,8 @@ export const POST: APIRoute = async ({ request }) => {
             paymentMethod = 'card',
             language = 'en',
             variationId,
-            pricePerAdult
+            pricePerAdult,
+            duration
         } = body;
 
 
@@ -128,6 +129,7 @@ export const POST: APIRoute = async ({ request }) => {
                     tour_name: tourName || tourId,
                     booking_date: formattedDate,
                     total_amount: priceResult.total, // Use server-calculated price
+                    duration: duration || '',
                     status: 'pending',
                     adults: adults || 1,
                     children: children || 0,

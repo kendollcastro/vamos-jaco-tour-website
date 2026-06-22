@@ -28,9 +28,9 @@ export const borderWidth = {
 
 // ─── Border Colors (Light Mode / Dark Mode) ────────────────────
 export const borderColor = {
-  subtle: { light: 'border-gray-200', dark: 'dark:border-white/5' },
-  default: { light: 'border-gray-300', dark: 'dark:border-white/10' },
-  strong: { light: 'border-gray-400', dark: 'dark:border-white/20' },
+  subtle: { light: 'border-gray-200', dark: 'dark:border-white/10' },
+  default: { light: 'border-gray-300', dark: 'dark:border-white/15' },
+  strong: { light: 'border-gray-400', dark: 'dark:border-white/25' },
   primary: { light: 'border-primary', dark: 'dark:border-primary/20' },
 } as const;
 
@@ -120,7 +120,7 @@ export const transition = {
 
 // ─── Helper: Build card class with consistent styling ─────────
 export function cardClasses(extraClasses?: string): string {
-  const base = 'rounded-[24px] border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0A0A0A] shadow-sm';
+  const base = 'rounded-[24px] border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0A0A0A] shadow-sm';
   const hover = 'hover:border-primary/50 transition-all duration-300';
   return [base, hover, extraClasses].filter(Boolean).join(' ');
 }
@@ -131,7 +131,7 @@ export function buttonVariant(variant: 'primary' | 'secondary' | 'ghost' | 'dang
     case 'primary':
       return 'bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest text-[10px] px-6 py-2.5 rounded-full shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all hover:-translate-y-0.5 active:scale-95';
     case 'secondary':
-      return 'bg-white dark:bg-[#111111] border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 font-bold text-xs px-4 py-2 rounded-full hover:bg-gray-50 dark:hover:bg-white/5 transition-all shadow-sm';
+      return 'bg-white dark:bg-[#111111] border border-gray-200 dark:border-white/15 text-gray-700 dark:text-gray-300 font-bold text-xs px-4 py-2 rounded-full hover:bg-gray-50 dark:hover:bg-white/5 transition-all shadow-sm';
     case 'ghost':
       return 'text-gray-500 hover:text-gray-900 dark:hover:text-white font-medium text-xs px-3 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 transition-all';
     case 'danger':

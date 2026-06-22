@@ -104,6 +104,7 @@ async function handleCallback(context: any): Promise<Response> {
                     tour_name: params.tourName || 'Tour',
                     booking_date: params.date || new Date().toISOString().split('T')[0],
                     total_amount: parseFloat(params.total_amount || params.amount || '0'),
+                    duration: params.duration || '',
                     status: 'confirmed',
                     tilopay_order_id: params.tpt || params.auth || 'TILOPAY'
                 });

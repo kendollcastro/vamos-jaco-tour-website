@@ -29,7 +29,7 @@ export default function BookingSidebar({ tourId, tourTitle, price, durationOptio
         import('react-datepicker').then(mod => {
             import('react-datepicker/dist/react-datepicker.css');
             setDatePickerComp(() => mod.default);
-        }).catch(() => {});
+        }).catch(e => console.error('Failed to load react-datepicker:', e));
     }, []);
 
     const rawOptions = durationOptions && durationOptions.length > 0
@@ -99,13 +99,13 @@ export default function BookingSidebar({ tourId, tourTitle, price, durationOptio
 
     useEffect(() => {
         if (packages && packages.length > 0) {
-            setBookingTour(tourId, tourTitle, packages[0].adultPrice, packages[0].childPrice, packages[0].variation_id);
+            setBookingTour(tourId, tourTitle, packages[0].adultPrice, packages[0].childPrice, packages[0].variation_id, packages[0].duration);
         }
     }, [tourId, tourTitle, price, packages]);
 
     const handleDurationChange = (index: number) => {
         setSelectedDurationIdx(index);
-        setBookingTour(tourId, tourTitle, packages[index].adultPrice, packages[index].childPrice, packages[index].variation_id);
+        setBookingTour(tourId, tourTitle, packages[index].adultPrice, packages[index].childPrice, packages[index].variation_id, packages[index].duration);
         
         // Clear selected time if it's no longer available with new duration
         const newAvailableTimes = getAvailableTimesForDuration(index);
@@ -390,7 +390,7 @@ export default function BookingSidebar({ tourId, tourTitle, price, durationOptio
                     </div>
 
                     <a
-                        href={`/checkout?product_id=${tourId}&variation_id=${packages[selectedDurationIdx]?.variation_id || ''}&date=${$booking.date || ''}&adults=${$booking.adults}&children=${$booking.children}&extra_pax=${$booking.extraPassengers}`}
+                        href={`/checkout?product_id=${tourId}&variation_id=${packages[selectedDurationIdx]?.variation_id || ''}&date=${$booking.date || ''}&adults=${$booking.adults}&children=${$booking.children}&extra_pax=${$booking.extraPassengers}&duration=${encodeURIComponent(packages[selectedDurationIdx]?.duration || '')}`}
                         className={`w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl transition-all shadow-lg hover:shadow-primary/20 ${!$booking.date ? 'opacity-50 cursor-not-allowed' : ''}`}
                         onClick={(e) => {
                             if (!$booking.date) {

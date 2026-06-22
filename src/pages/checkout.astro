@@ -521,12 +521,13 @@ import Layout from "../layouts/Layout.astro";
 
             // Update Main Summary List
             summaryContainer.innerHTML = `
-                <div class="flex gap-3 mb-4">
-                    <div class="flex-1">
-                        <h4 class="text-white font-bold leading-tight mb-1">${state.tourTitle || "Selected Tour"}</h4>
-                        <p class="text-xs text-gray-400">Date: ${state.date ? new Date(state.date).toLocaleDateString() : "Not selected"}</p>
+                    <div class="flex gap-3 mb-4">
+                        <div class="flex-1">
+                            <h4 class="text-white font-bold leading-tight mb-1">${state.tourTitle || "Selected Tour"}</h4>
+                            <p class="text-xs text-gray-400">Date: ${state.date ? new Date(state.date).toLocaleDateString() : "Not selected"}</p>
+                            ${state.duration ? `<p class="text-xs text-primary font-medium mt-0.5">Duration: ${state.duration}</p>` : ''}
+                        </div>
                     </div>
-                </div>
                 <div class="flex justify-between text-sm mb-4">
                     <span class="text-gray-300">Selection</span>
                     <span class="text-white font-medium">${guestsHtml}</span>
@@ -585,7 +586,8 @@ import Layout from "../layouts/Layout.astro";
                     paymentMethod: 'card',
                     language: currentLang,
                     pricePerAdult: state.pricePerAdult,
-                    variationId: state.variationId
+                    variationId: state.variationId,
+                    duration: state.duration
                 }),
             });
 

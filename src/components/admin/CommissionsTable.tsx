@@ -57,18 +57,20 @@ interface Commission {
     commission_20: number;
     tax: number;
     payment_method: string;
+    location: string;
     created_at: string;
 }
 
 const DEMO_COMMISSIONS: Commission[] = [
-    { id: '1', date: new Date().toISOString().split('T')[0], tour_name: 'ATV Mountain Adventure', customer_name: 'Sarah Johnson', time: '09:00', machines: 2, pax: 2, discount: 0, price: 180, guide_name: 'Carlos R.', commission_10: 18, provider_name: 'ATV Rentals CR', commission_20: 36, tax: 27.14, payment_method: 'Cash', created_at: new Date().toISOString() },
-    { id: '2', date: new Date().toISOString().split('T')[0], tour_name: 'Jet Ski Ocean Thrill', customer_name: 'Mike Chen', time: '11:00', machines: 2, pax: 2, discount: 10, price: 230, guide_name: 'Andrea M.', commission_10: 23, provider_name: 'Jet Ski Jacó', commission_20: 46, tax: 34.56, payment_method: 'Card', created_at: new Date().toISOString() },
-    { id: '3', date: new Date(Date.now() + 86400000).toISOString().split('T')[0], tour_name: 'Side by Side Buggy', customer_name: 'Ana García', time: '14:00', machines: 2, pax: 4, discount: 0, price: 600, guide_name: 'Carlos R.', commission_10: 60, provider_name: 'Buggy Tours CR', commission_20: 120, tax: 90.72, payment_method: 'Transfer', created_at: new Date(Date.now() - 3600000).toISOString() },
-    { id: '4', date: new Date(Date.now() - 86400000).toISOString().split('T')[0], tour_name: 'Surf Lessons', customer_name: 'James Wilson', time: '08:00', machines: 1, pax: 1, discount: 0, price: 70, guide_name: 'Sofia L.', commission_10: 7, provider_name: '', commission_20: 0, tax: 10.58, payment_method: 'Cash', created_at: new Date(Date.now() - 86400000).toISOString() },
-    { id: '5', date: new Date(Date.now() - 172800000).toISOString().split('T')[0], tour_name: 'Flyboard Experience', customer_name: 'Laura Rodríguez', time: '15:00', machines: 2, pax: 2, discount: 0, price: 160, guide_name: 'Andrea M.', commission_10: 16, provider_name: 'Flyboard CR', commission_20: 32, tax: 24.19, payment_method: 'Card', created_at: new Date(Date.now() - 172800000).toISOString() },
-    { id: '6', date: new Date().toISOString().split('T')[0], tour_name: 'Slingshot Rental', customer_name: 'Carlos Méndez', time: '10:00', machines: 1, pax: 1, discount: 15, price: 335, guide_name: 'Carlos R.', commission_10: 33.50, provider_name: 'Slingshot Jacó', commission_20: 67, tax: 50.56, payment_method: 'Cash', created_at: new Date(Date.now() - 7200000).toISOString() },
+    { id: '1', date: new Date().toISOString().split('T')[0], tour_name: 'ATV', customer_name: 'Sarah Johnson', time: '09:00', machines: 2, pax: 2, discount: 0, price: 180, guide_name: 'Carlos R.', commission_10: 18, provider_name: 'ATV Rentals CR', commission_20: 36, tax: 27.14, payment_method: 'Cash', location: 'Centro', created_at: new Date().toISOString() },
+    { id: '2', date: new Date().toISOString().split('T')[0], tour_name: 'Jetski', customer_name: 'Mike Chen', time: '11:00', machines: 2, pax: 2, discount: 10, price: 230, guide_name: 'Andrea M.', commission_10: 23, provider_name: 'Jet Ski Jacó', commission_20: 46, tax: 34.56, payment_method: 'Card', location: 'Centro', created_at: new Date().toISOString() },
+    { id: '3', date: new Date(Date.now() + 86400000).toISOString().split('T')[0], tour_name: 'Mulas', customer_name: 'Ana García', time: '14:00', machines: 2, pax: 4, discount: 0, price: 600, guide_name: 'Carlos R.', commission_10: 60, provider_name: 'Buggy Tours CR', commission_20: 120, tax: 90.72, payment_method: 'Transfer', location: 'Madrigales', created_at: new Date(Date.now() - 3600000).toISOString() },
+    { id: '4', date: new Date(Date.now() - 86400000).toISOString().split('T')[0], tour_name: 'Surf', customer_name: 'James Wilson', time: '08:00', machines: 1, pax: 1, discount: 0, price: 70, guide_name: 'Sofia L.', commission_10: 7, provider_name: '', commission_20: 0, tax: 10.58, payment_method: 'Cash', location: 'Centro', created_at: new Date(Date.now() - 86400000).toISOString() },
+    { id: '5', date: new Date(Date.now() - 172800000).toISOString().split('T')[0], tour_name: 'Flyboard', customer_name: 'Laura Rodríguez', time: '15:00', machines: 2, pax: 2, discount: 0, price: 160, guide_name: 'Andrea M.', commission_10: 16, provider_name: 'Flyboard CR', commission_20: 32, tax: 24.19, payment_method: 'Card', location: 'Madrigales', created_at: new Date(Date.now() - 172800000).toISOString() },
+    { id: '6', date: new Date().toISOString().split('T')[0], tour_name: 'Slingshot', customer_name: 'Carlos Méndez', time: '10:00', machines: 1, pax: 1, discount: 15, price: 335, guide_name: 'Carlos R.', commission_10: 33.50, provider_name: 'Slingshot Jacó', commission_20: 67, tax: 50.56, payment_method: 'Cash', location: 'Centro', created_at: new Date(Date.now() - 7200000).toISOString() },
 ];
 
+const LOCATION_OPTIONS = ['', 'Centro', 'Madrigales'];
 const PAYMENT_OPTIONS = ['Cash', 'Card', 'Transfer', 'Synapay', 'Tilopay'];
 
 export default function CommissionsTable({ onToast }: { onToast?: (message: string) => void }) {
@@ -80,6 +82,8 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
     const [refreshing, setRefreshing] = useState(false);
     const [dateFrom, setDateFrom] = useState('');
     const [dateTo, setDateTo] = useState('');
+    const [guideFilter, setGuideFilter] = useState('__all__');
+    const [locationFilter, setLocationFilter] = useState('__all__');
 
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editingCommission, setEditingCommission] = useState<Commission | null>(null);
@@ -98,6 +102,7 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
     const [formProvider, setFormProvider] = useState('');
     const [formCommission20, setFormCommission20] = useState('');
     const [formTax, setFormTax] = useState('');
+    const [formLocation, setFormLocation] = useState('');
     const [formPaymentMethod, setFormPaymentMethod] = useState('Cash');
     const [formSaving, setFormSaving] = useState(false);
     const [formError, setFormError] = useState('');
@@ -149,9 +154,12 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
     async function fetchToursList() {
         if (!supabase) {
             setTourOptions([
-                { id: '1', name_en: 'ATV Mountain Adventure', name_es: 'Aventura ATV Montaña' },
-                { id: '2', name_en: 'Jet Ski Ocean Thrill', name_es: 'Jet Ski Emoción Oceánica' },
-                { id: '3', name_en: 'Side by Side Buggy', name_es: 'Buggy Side by Side' },
+                { id: '1', name_en: 'ATV', name_es: 'ATV' },
+                { id: '2', name_en: 'Jetski', name_es: 'Jetski' },
+                { id: '3', name_en: 'Mulas', name_es: 'Mulas' },
+                { id: '4', name_en: 'Surf', name_es: 'Surf' },
+                { id: '5', name_en: 'Flyboard', name_es: 'Flyboard' },
+                { id: '6', name_en: 'Slingshot', name_es: 'Slingshot' },
             ]);
             return;
         }
@@ -184,6 +192,7 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
         setFormProvider('');
         setFormCommission20('');
         setFormTax('');
+        setFormLocation('');
         setFormPaymentMethod('Cash');
         setFormError('');
         setDialogOpen(true);
@@ -204,6 +213,7 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
         setFormProvider(c.provider_name);
         setFormCommission20(c.commission_20.toString());
         setFormTax(c.tax.toString());
+        setFormLocation(c.location || '');
         setFormPaymentMethod(c.payment_method);
         setFormError('');
         setDialogOpen(true);
@@ -237,6 +247,7 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
             commission_20: parseFloat(formCommission20) || 0,
             tax: parseFloat(formTax) || 0,
             payment_method: formPaymentMethod,
+            location: formLocation,
         };
 
         if (isDemo) {
@@ -302,6 +313,7 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
             $language === 'en' ? 'Time' : 'Hora',
             '# M',
             '# PAX',
+            $language === 'en' ? 'Location' : 'Ubicación',
             $language === 'en' ? 'Discount' : 'Descuento',
             $language === 'en' ? 'Price' : 'Precio',
             $language === 'en' ? 'Guide' : 'Guía',
@@ -312,8 +324,8 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
             $language === 'en' ? 'Payment' : 'Pago',
         ];
         const rows = filtered.map(c => [
-            c.date, c.tour_name, c.customer_name, c.time, c.machines,
-            c.pax, c.discount, c.price, c.guide_name, c.commission_10,
+            c.date, c.tour_name, c.customer_name, c.time, c.location,
+            c.machines, c.pax, c.discount, c.price, c.guide_name, c.commission_10,
             c.provider_name, c.commission_20, c.tax, c.payment_method,
         ]);
         const csvContent = [headers, ...rows].map(row => row.join(',')).join('\n');
@@ -332,12 +344,25 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
             c.guide_name.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesDateFrom = !dateFrom || new Date(c.date) >= new Date(dateFrom);
         const matchesDateTo = !dateTo || new Date(c.date) <= new Date(dateTo);
-        return matchesSearch && matchesDateFrom && matchesDateTo;
+        const matchesGuide = guideFilter === '__all__' || c.guide_name === guideFilter;
+        const matchesLocation = locationFilter === '__all__' || c.location === locationFilter;
+        return matchesSearch && matchesDateFrom && matchesDateTo && matchesGuide && matchesLocation;
     });
 
     const totalPrice = filtered.reduce((sum, c) => sum + c.price, 0);
     const totalCommission10 = filtered.reduce((sum, c) => sum + c.commission_10, 0);
     const totalCommission20 = filtered.reduce((sum, c) => sum + c.commission_20, 0);
+
+    const guideStats = Object.entries(
+        commissions.reduce<Record<string, { count: number; revenue: number; commission: number }>>((acc, c) => {
+            if (!c.guide_name) return acc;
+            if (!acc[c.guide_name]) acc[c.guide_name] = { count: 0, revenue: 0, commission: 0 };
+            acc[c.guide_name].count++;
+            acc[c.guide_name].revenue += c.price;
+            acc[c.guide_name].commission += c.commission_10;
+            return acc;
+        }, {})
+    ).sort((a, b) => b[1].revenue - a[1].revenue);
 
     const t = adminTranslations[$language];
 
@@ -361,26 +386,49 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
 
             {/* Summary Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="rounded-xl border bg-card p-5 text-card-foreground shadow-sm">
+                <div className="rounded-xl border border-border/60 bg-card p-5 text-card-foreground shadow-sm">
                     <div className="flex items-center gap-2 text-muted-foreground mb-1">
                         <DollarSign className="h-4 w-4" />
                         <p className="text-xs font-bold uppercase tracking-wider">{$language === 'en' ? 'Total Revenue' : 'Ingreso Total'}</p>
                     </div>
                     <p className="text-2xl font-black">${totalPrice.toLocaleString()}</p>
                 </div>
-                <div className="rounded-xl border bg-card p-5 text-card-foreground shadow-sm">
+                <div className="rounded-xl border border-border/60 bg-card p-5 text-card-foreground shadow-sm">
                     <div className="flex items-center gap-2 text-muted-foreground mb-1">
                         <PiggyBank className="h-4 w-4" />
                         <p className="text-xs font-bold uppercase tracking-wider">10% {$language === 'en' ? 'Guide' : 'Guía'}</p>
                     </div>
                     <p className="text-2xl font-black text-emerald-600">${totalCommission10.toLocaleString()}</p>
                 </div>
-                <div className="rounded-xl border bg-card p-5 text-card-foreground shadow-sm">
+                <div className="rounded-xl border border-border/60 bg-card p-5 text-card-foreground shadow-sm">
                     <div className="flex items-center gap-2 text-muted-foreground mb-1">
                         <Landmark className="h-4 w-4" />
                         <p className="text-xs font-bold uppercase tracking-wider">20% {$language === 'en' ? 'Provider' : 'Proveedor'}</p>
                     </div>
                     <p className="text-2xl font-black text-orange-600">${totalCommission20.toLocaleString()}</p>
+                </div>
+            </div>
+
+            {/* Guide Stats */}
+            <div className="rounded-xl border border-border/60 bg-card shadow-sm p-4">
+                <h3 className="text-sm font-bold text-foreground mb-3">
+                    {$language === 'en' ? 'Guide Performance' : 'Rendimiento por Guía'}
+                </h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                    {guideStats.length === 0 ? (
+                        <p className="text-sm text-muted-foreground col-span-full">
+                            {$language === 'en' ? 'No guide data available' : 'No hay datos de guías'}
+                        </p>
+                    ) : guideStats.map(([name, stats]) => (
+                        <div key={name} className="rounded-lg border border-border/40 bg-background p-3">
+                            <p className="text-sm font-bold text-foreground truncate">{name}</p>
+                            <div className="mt-1 space-y-0.5 text-[11px] text-muted-foreground">
+                                <p>{stats.count} {$language === 'en' ? 'tours' : 'tours'}</p>
+                                <p className="font-semibold text-foreground">${stats.revenue.toLocaleString()}</p>
+                                <p className="font-semibold text-emerald-600">${stats.commission.toFixed(2)}</p>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
 
@@ -396,6 +444,28 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                     />
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
+                    <Select value={guideFilter} onValueChange={setGuideFilter}>
+                        <SelectTrigger className="w-40">
+                            <SelectValue placeholder={$language === 'en' ? 'All guides' : 'Todos los guías'} />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="__all__">{$language === 'en' ? 'All guides' : 'Todos los guías'}</SelectItem>
+                            {guides.map(g => (
+                                <SelectItem key={g.id} value={g.name}>{g.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <Select value={locationFilter} onValueChange={setLocationFilter}>
+                        <SelectTrigger className="w-36">
+                            <SelectValue placeholder={$language === 'en' ? 'Location' : 'Ubicación'} />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="__all__">{$language === 'en' ? 'All locations' : 'Todas'}</SelectItem>
+                            {LOCATION_OPTIONS.filter(Boolean).map(l => (
+                                <SelectItem key={l} value={l}>{l}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                     <Button variant="outline" size="sm" onClick={handleRefresh} disabled={refreshing}>
                         <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
                         {$language === 'en' ? 'Refresh' : 'Actualizar'}
@@ -418,7 +488,7 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
             </div>
 
             {/* Table */}
-            <div className="rounded-xl border bg-card shadow-sm">
+            <div className="rounded-xl border border-border/60 bg-card shadow-sm">
                 {loading ? (
                     <div className="p-6 space-y-4">
                         {[1, 2, 3, 4, 5].map(i => (
@@ -447,8 +517,10 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                                 <TableHead>{$language === 'en' ? 'Tour' : 'Tour'}</TableHead>
                                 <TableHead>{$language === 'en' ? 'Customer' : 'Cliente'}</TableHead>
                                 <TableHead>{$language === 'en' ? 'Time' : 'Hora'}</TableHead>
+                                <TableHead>{$language === 'en' ? 'Location' : 'Ubicación'}</TableHead>
                                 <TableHead># M</TableHead>
                                 <TableHead># PAX</TableHead>
+                                <TableHead>{$language === 'en' ? 'Disc. %' : 'Desc. %'}</TableHead>
                                 <TableHead>{$language === 'en' ? 'Price' : 'Precio'}</TableHead>
                                 <TableHead>{$language === 'en' ? 'Guide' : 'Guía'}</TableHead>
                                 <TableHead>10%</TableHead>
@@ -466,19 +538,40 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                                     <TableCell>{c.tour_name}</TableCell>
                                     <TableCell>{c.customer_name}</TableCell>
                                     <TableCell className="text-muted-foreground">{c.time}</TableCell>
-                                    <TableCell className="font-bold">{c.machines}</TableCell>
-                                    <TableCell className="font-bold">{c.pax}</TableCell>
-                                    <TableCell className="font-black">
-                                        ${c.price.toLocaleString()}
-                                        {c.discount > 0 && (
-                                            <span className="ml-1 text-[10px] text-destructive">(-${c.discount})</span>
+                                    <TableCell>
+                                        {c.location ? (
+                                            <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                                                c.location === 'Madrigales'
+                                                    ? 'bg-amber-500/15 text-amber-600 dark:text-amber-500 border border-amber-500/25'
+                                                    : 'bg-blue-500/15 text-blue-600 dark:text-blue-500 border border-blue-500/25'
+                                            }`}>
+                                                {c.location}
+                                            </span>
+                                        ) : (
+                                            <span className="text-muted-foreground">-</span>
                                         )}
                                     </TableCell>
+                                    <TableCell className="font-bold">{c.machines}</TableCell>
+                                    <TableCell className="font-bold">{c.pax}</TableCell>
+                                    <TableCell className="font-bold text-destructive">
+                                        {c.discount > 0 ? `${c.discount}%` : '-'}
+                                    </TableCell>
+                                    <TableCell className="font-black">${c.price.toLocaleString()}</TableCell>
                                     <TableCell className="text-muted-foreground">{c.guide_name}</TableCell>
                                     <TableCell className="font-bold text-emerald-600">${c.commission_10.toFixed(2)}</TableCell>
                                     <TableCell className="text-muted-foreground">{c.provider_name || '-'}</TableCell>
                                     <TableCell className="font-bold text-orange-600">${c.commission_20.toFixed(2)}</TableCell>
                                     <TableCell className="text-muted-foreground">${c.tax.toFixed(2)}</TableCell>
+                                    <TableCell className="text-right">
+                                        {c.apuesta_pct > 0 ? (
+                                            <span className="font-bold text-purple-600 dark:text-purple-400">
+                                                ${(c.price * c.apuesta_pct / 100).toFixed(2)}
+                                                <span className="text-[10px] text-muted-foreground ml-1">({c.apuesta_pct}%)</span>
+                                            </span>
+                                        ) : (
+                                            <span className="text-muted-foreground">-</span>
+                                        )}
+                                    </TableCell>
                                     <TableCell>
                                         <span className={`inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                                             c.payment_method === 'Cash'
@@ -559,7 +652,7 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                     )}
 
                     <form onSubmit={handleSave} className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-3 gap-4">
                             <div className="space-y-2">
                                 <Label>{$language === 'en' ? 'Date' : 'Fecha'} *</Label>
                                 <Input type="date" required value={formDate} onChange={e => setFormDate(e.target.value)} />
@@ -567,6 +660,19 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                             <div className="space-y-2">
                                 <Label>{$language === 'en' ? 'Time' : 'Hora'}</Label>
                                 <Input type="time" value={formTime} onChange={e => setFormTime(e.target.value)} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>{$language === 'en' ? 'Location' : 'Ubicación'}</Label>
+                                <Select value={formLocation} onValueChange={setFormLocation}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder={$language === 'en' ? 'Select location' : 'Seleccionar ubicación'} />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {LOCATION_OPTIONS.filter(Boolean).map(l => (
+                                            <SelectItem key={l} value={l}>{l}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             </div>
                         </div>
 
@@ -612,8 +718,8 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                                 <Input type="number" min={1} value={formPax} onChange={e => setFormPax(e.target.value)} />
                             </div>
                             <div className="space-y-2">
-                                <Label>{$language === 'en' ? 'Discount' : 'Descuento'} ($)</Label>
-                                <Input type="number" min={0} step="0.01" value={formDiscount} onChange={e => setFormDiscount(e.target.value)} />
+                                <Label>{$language === 'en' ? 'Discount' : 'Descuento'} (%)</Label>
+                                <Input type="number" min={0} max={100} step="1" value={formDiscount} onChange={e => setFormDiscount(e.target.value)} />
                             </div>
                             <div className="space-y-2">
                                 <Label>{$language === 'en' ? 'Price' : 'Precio'} ($)</Label>

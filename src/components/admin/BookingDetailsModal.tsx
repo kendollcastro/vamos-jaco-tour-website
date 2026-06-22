@@ -1,10 +1,12 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useStore } from '@nanostores/react';
 import { language } from '../../store';
+import { supabase } from '../../lib/supabase';
 import { adminTranslations } from '../../lib/admin-translations';
 import { Button } from '../ui/button';
-import { X, Copy, Mail, MessageCircle } from 'lucide-react';
+import { X, Copy, Mail, MessageCircle, Clock } from 'lucide-react';
 
 interface BookingDetails {
     id: string;
@@ -40,6 +42,45 @@ const getBorderDivider = (isDark: boolean) => isDark ? 'border-white/10' : 'bord
 export default function BookingDetailsModal({ isOpen, onClose, booking }: BookingDetailsModalProps) {
     const $language = useStore(language);
     const isDarkMode = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
+    // Duration: first check stored booking.duration, fallback to tour's general duration
+    interface TourRow { duration: string; pricing_options?: any[]; }
+    const [tourDuration, setTourDuration] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (!isOpen) return;
+        // If booking already has a stored exact duration, use it
+        if ((booking as any)?.duration) {
+            setTourDuration((booking as any).duration);
+            return;
+        }
+        // Fallback: try to deduce from pricing_options using total_amount
+        if (!booking?.tour_id) return;
+        setTourDuration(null);
+        const fetchFallback = async () => {
+            if (!supabase) return;
+            const { data } = await supabase
+                .from('tours')
+                .select('duration, pricing_options')
+                .eq('id', booking.tour_id)
+                .single();
+            if (!data) return;
+            const tour = data as unknown as TourRow;
+            // Try to match exact price from pricing_options
+            if (tour.pricing_options && Array.isArray(tour.pricing_options)) {
+                const matched = tour.pricing_options.find((opt: any) => {
+                    const pricePerPerson = Number(booking.total_amount) / ((booking.adults || 1) + (booking.children || 0));
+                    return Math.abs(Number(opt.price) - pricePerPerson) < 1;
+                });
+                if (matched?.duration) {
+                    setTourDuration(matched.duration);
+                    return;
+                }
+            }
+            // Last fallback: tour's general duration
+            if (tour.duration) setTourDuration(tour.duration);
+        };
+        fetchFallback();
+    }, [isOpen, booking]);
 
     if (!isOpen || !booking) return null;
 
@@ -176,6 +217,12 @@ export default function BookingDetailsModal({ isOpen, onClose, booking }: Bookin
                             🏃 Tour
                         </h3>
                         <p className={`${getTextPrimary(isDarkMode)} font-bold text-xl`}>{booking.tour_name}</p>
+                        {tourDuration && (
+                            <div className="flex items-center gap-2 mt-2">
+                                <Clock className={`w-4 h-4 ${getTextSecondary(isDarkMode)}`} />
+                                <span className={`${getTextSecondary(isDarkMode)} text-sm font-medium`}>{tourDuration}</span>
+                            </div>
+                        )}
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">

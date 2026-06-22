@@ -11,6 +11,7 @@ export interface BookingState {
     pricePerAdult: number;
     pricePerChild: number;
     variationId: number | null;
+    duration: string | null;
     ivaAmount: number;
     totalPrice: number;
 }
@@ -26,6 +27,7 @@ const INITIAL_STATE: BookingState = {
     pricePerAdult: 0,
     pricePerChild: 0,
     variationId: null,
+    duration: null,
     ivaAmount: 0,
     totalPrice: 0,
 };
@@ -35,7 +37,7 @@ export const bookingStore = persistentAtom<BookingState>('booking_cart', INITIAL
     decode: JSON.parse,
 });
 
-export function setBookingTour(id: string, title: string, adultPrice: number, childPrice: number = 0, variationId?: number) {
+export function setBookingTour(id: string, title: string, adultPrice: number, childPrice: number = 0, variationId?: number, duration?: string) {
     const current = bookingStore.get();
     bookingStore.set({
         ...current,
@@ -44,6 +46,7 @@ export function setBookingTour(id: string, title: string, adultPrice: number, ch
         pricePerAdult: adultPrice,
         pricePerChild: childPrice,
         variationId: variationId || null,
+        duration: duration || null,
         extraPassengers: 0, // Reset extra passengers when switching tours
     });
     calculateTotal();
