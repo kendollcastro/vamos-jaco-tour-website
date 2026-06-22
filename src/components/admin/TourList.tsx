@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
+import { logAudit } from '../../lib/audit';
 import type { TourRow } from '../../lib/supabase-tours';
 import TourEditor from './TourEditor';
 import { Button } from '../ui/button';
@@ -47,7 +48,14 @@ export default function TourList() {
 
         if (!supabase) return;
         const { error } = await supabase.from('tours').delete().eq('id', id);
-        if (!error) fetchTours();
+        if (!error) {
+            await logAudit({
+                action: 'delete',
+                table_name: 'tours',
+                record_id: id,
+            });
+            fetchTours();
+        }
     }
 
     function handleEdit(tour: TourRow) {

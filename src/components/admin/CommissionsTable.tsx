@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
+import { logAudit } from '../../lib/audit';
 import { useStore } from '@nanostores/react';
 import { language } from '../../store';
 import { adminTranslations } from '../../lib/admin-translations';
@@ -273,14 +274,32 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
 
         if (!supabase) return;
         let error;
+        let newId: string | undefined;
         if (editingCommission) {
             ({ error } = await supabase.from('commissions').update(payload).eq('id', editingCommission.id));
         } else {
-            ({ error } = await supabase.from('commissions').insert([payload]));
+            const { data, error: insertError } = await supabase.from('commissions').insert([payload]).select();
+            error = insertError;
+            newId = data?.[0]?.id;
         }
         if (error) {
             setFormError(error.message);
         } else {
+            if (editingCommission) {
+                await logAudit({
+                    action: 'update',
+                    table_name: 'commissions',
+                    record_id: editingCommission.id,
+                    summary: `Updated commission: ${formTour} - ${formCustomer}`
+                });
+            } else if (newId) {
+                await logAudit({
+                    action: 'create',
+                    table_name: 'commissions',
+                    record_id: newId,
+                    summary: `Created commission: ${formTour} - ${formCustomer}`
+                });
+            }
             onToast?.(lang === 'en' ? 'Commission saved' : 'Comisión guardada');
             setDialogOpen(false);
             fetchCommissions();
@@ -304,6 +323,11 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
         if (!supabase) return;
         const { error } = await supabase.from('commissions').delete().eq('id', id);
         if (!error) {
+            await logAudit({
+                action: 'delete',
+                table_name: 'commissions',
+                record_id: id,
+            });
             fetchCommissions();
             onToast?.(lang === 'en' ? 'Commission deleted' : 'Comisión eliminada');
         }

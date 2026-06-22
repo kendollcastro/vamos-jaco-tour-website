@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
+import { logAudit } from '../../lib/audit';
 import { useStore } from '@nanostores/react';
 import { language } from '../../store';
 import { adminTranslations } from '../../lib/admin-translations';
@@ -129,6 +130,12 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
             .eq('id', id);
 
         if (!error) {
+            await logAudit({
+                action: 'update',
+                table_name: 'bookings',
+                record_id: id,
+                summary: `Updated booking ${id} status to ${newStatus}`
+            });
             fetchBookings();
             onToast?.(newStatus === 'confirmed' ? (lang === 'en' ? 'Booking confirmed!' : '¡Reserva confirmada!') : (lang === 'en' ? 'Booking cancelled' : 'Reserva cancelada'));
         }
@@ -162,6 +169,11 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
             .eq('id', id);
 
         if (!error) {
+            await logAudit({
+                action: 'delete',
+                table_name: 'bookings',
+                record_id: id,
+            });
             fetchBookings();
             onToast?.(lang === 'en' ? 'Booking deleted' : 'Reserva eliminada');
         }

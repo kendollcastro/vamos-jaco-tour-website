@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '../../lib/supabase';
+import { logAudit } from '../../lib/audit';
 import type { TourRow } from '../../lib/supabase-tours';
 import ImagePicker from './ImagePicker';
 import { Button } from '../ui/button';
@@ -107,12 +108,25 @@ export default function TourEditor({ tour, onClose }: Props) {
 
         try {
             if (isNew) {
-                const { error: dbError } = await supabase.from('tours').insert(form);
+                const { data, error: dbError } = await supabase.from('tours').insert(form).select();
                 if (dbError) throw dbError;
+                const newId = data?.[0]?.id;
+                await logAudit({
+                    action: 'create',
+                    table_name: 'tours',
+                    record_id: newId,
+                    summary: `Created tour: ${form.name_en}`
+                });
             } else {
                 const { id, created_at, updated_at, ...updates } = form as TourRow;
                 const { error: dbError } = await supabase.from('tours').update(updates).eq('id', id);
                 if (dbError) throw dbError;
+                await logAudit({
+                    action: 'update',
+                    table_name: 'tours',
+                    record_id: id,
+                    summary: `Updated tour: ${form.name_en}`
+                });
             }
             onClose();
         } catch (err: any) {

@@ -34,9 +34,11 @@ import {
     ExternalLink,
     LogOut,
     BookOpen,
+    History,
+    Shield,
 } from 'lucide-react';
 
-type AdminView = 'dashboard' | 'tours' | 'bookings' | 'calendar' | 'subscribers' | 'gallery' | 'team' | 'website' | 'emails' | 'commissions';
+type AdminView = 'dashboard' | 'tours' | 'bookings' | 'calendar' | 'subscribers' | 'gallery' | 'team' | 'website' | 'emails' | 'commissions' | 'auditLog' | 'users';
 
 interface Props {
     children?: ReactNode;
@@ -53,22 +55,29 @@ const NAV_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
     website: Code,
     emails: Monitor,
     commissions: DollarSign,
+    auditLog: History,
+    users: Shield,
 };
 
-const getNavItems = (t: typeof adminTranslations.en) => [
-    { id: 'dashboard' as AdminView, label: t.nav.dashboard },
-    { id: 'tours' as AdminView, label: t.nav.tours },
-    { id: 'bookings' as AdminView, label: t.nav.bookings },
-    { id: 'calendar' as AdminView, label: 'Calendar' },
-    { id: 'subscribers' as AdminView, label: t.nav.subscribers },
-    { id: 'gallery' as AdminView, label: t.nav.gallery },
-    { id: 'team' as AdminView, label: t.nav.team },
-    { id: 'website' as AdminView, label: t.nav.components },
-    { id: 'emails' as AdminView, label: t.nav.emailTests },
-    { id: 'commissions' as AdminView, label: t.nav.commissions },
+const ALL_NAV_ITEMS = (t: typeof adminTranslations.en) => [
+    { id: 'dashboard' as AdminView, label: t.nav.dashboard, adminOnly: false },
+    { id: 'tours' as AdminView, label: t.nav.tours, adminOnly: true },
+    { id: 'bookings' as AdminView, label: t.nav.bookings, adminOnly: false },
+    { id: 'calendar' as AdminView, label: 'Calendar', adminOnly: false },
+    { id: 'subscribers' as AdminView, label: t.nav.subscribers, adminOnly: true },
+    { id: 'gallery' as AdminView, label: t.nav.gallery, adminOnly: true },
+    { id: 'team' as AdminView, label: t.nav.team, adminOnly: true },
+    { id: 'website' as AdminView, label: t.nav.components, adminOnly: true },
+    { id: 'emails' as AdminView, label: t.nav.emailTests, adminOnly: true },
+    { id: 'commissions' as AdminView, label: t.nav.commissions, adminOnly: false },
+    { id: 'auditLog' as AdminView, label: t.nav.auditLog, adminOnly: true },
+    { id: 'users' as AdminView, label: t.nav.users, adminOnly: true },
 ];
 
-const VALID_VIEWS = getNavItems({ nav: {} } as any).map(i => i.id);
+const getNavItems = (t: typeof adminTranslations.en, role: string) =>
+    ALL_NAV_ITEMS(t).filter(item => !item.adminOnly || role === 'admin');
+
+const VALID_VIEWS = ALL_NAV_ITEMS({ nav: {} } as any).map(i => i.id);
 
 export default function AdminLayout({ children }: Props) {
     const [authenticated, setAuthenticated] = useState<boolean | null>(null);
@@ -82,6 +91,7 @@ export default function AdminLayout({ children }: Props) {
         return 'dashboard';
     });
     const [userEmail, setUserEmail] = useState('');
+    const [userRole, setUserRole] = useState<string>('admin');
     const [searchQuery, setSearchQuery] = useState('');
     const [toast, setToast] = useState<{ message: string; type?: 'info' | 'success' } | null>(null);
     const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -138,19 +148,56 @@ export default function AdminLayout({ children }: Props) {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, []);
 
-    // Auth
+    // Auth + Profile
     useEffect(() => {
         if (!supabase) {
             setAuthenticated(false);
             return;
         }
-        supabase.auth.getSession().then(({ data: { session } }) => {
+        supabase.auth.getSession().then(async ({ data: { session } }) => {
             setAuthenticated(!!session);
             if (session?.user?.email) setUserEmail(session.user.email);
+            if (session?.user) {
+                // Auto-create profile if missing
+                const { data: existing } = await supabase
+                    .from('profiles')
+                    .select('id, role')
+                    .eq('id', session.user.id)
+                    .single();
+                if (existing) {
+                    setUserRole((existing as any).role);
+                } else {
+                    await supabase.from('profiles').insert({
+                        id: session.user.id,
+                        email: session.user.email!,
+                        full_name: session.user.user_metadata?.full_name || '',
+                        role: 'admin',
+                    });
+                    setUserRole('admin');
+                }
+            }
         });
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
             setAuthenticated(!!session);
             if (session?.user?.email) setUserEmail(session.user.email);
+            if (session?.user) {
+                const { data: existing } = await supabase
+                    .from('profiles')
+                    .select('id, role')
+                    .eq('id', session.user.id)
+                    .single();
+                if (existing) {
+                    setUserRole((existing as any).role);
+                } else {
+                    await supabase.from('profiles').insert({
+                        id: session.user.id,
+                        email: session.user.email!,
+                        full_name: session.user.user_metadata?.full_name || '',
+                        role: 'admin',
+                    });
+                    setUserRole('admin');
+                }
+            }
         });
         return () => subscription.unsubscribe();
     }, []);
@@ -166,6 +213,8 @@ export default function AdminLayout({ children }: Props) {
     const [WebsiteComponentsView, setWebsiteComponentsView] = useState<React.ComponentType | null>(null);
     const [EmailsView, setEmailsView] = useState<React.ComponentType | null>(null);
     const [CommissionsView, setCommissionsView] = useState<React.ComponentType | null>(null);
+    const [AuditLogView, setAuditLogView] = useState<React.ComponentType | null>(null);
+    const [UserManagerView, setUserManagerView] = useState<React.ComponentType | null>(null);
 
     useEffect(() => {
         import('./DashboardStats').then((m) => setDashboardView(() => m.default));
@@ -178,6 +227,8 @@ export default function AdminLayout({ children }: Props) {
         import('./WebsiteComponents').then((m) => setWebsiteComponentsView(() => m.default));
         import('./EmailTester').then((m) => setEmailsView(() => m.default));
         import('./CommissionsTable').then((m) => setCommissionsView(() => m.default));
+        import('./AuditLogView').then((m) => setAuditLogView(() => m.default));
+        import('./UserManager').then((m) => setUserManagerView(() => m.default));
     }, []);
 
     async function handleLogout() {
@@ -206,9 +257,11 @@ export default function AdminLayout({ children }: Props) {
                             : currentView === 'website' ? WebsiteComponentsView
                                 : currentView === 'emails' ? EmailsView
                                     : currentView === 'commissions' ? CommissionsView
-                                        : GalleryView;
+                                        : currentView === 'auditLog' ? AuditLogView
+                                            : currentView === 'users' ? UserManagerView
+                                                : GalleryView;
 
-    const navItems = getNavItems(t as any).filter(item =>
+    const navItems = getNavItems(t as any, userRole).filter(item =>
         item.label.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
@@ -293,7 +346,7 @@ export default function AdminLayout({ children }: Props) {
                             {userEmail.split('@')[0] || 'Admin'}
                         </span>
                         <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">
-                            {t.sidebar.administrator}
+                            {userRole === 'admin' ? 'Admin' : 'Secretary'}
                         </span>
                     </div>
                 </div>

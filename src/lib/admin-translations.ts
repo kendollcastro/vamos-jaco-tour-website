@@ -12,6 +12,8 @@ export const adminTranslations = {
       components: 'Components',
       emailTests: 'Email Tests',
       commissions: 'Commissions',
+      auditLog: 'Audit Log',
+      users: 'Users',
     },
     common: {
       search: 'Search sections, tours...',
@@ -84,6 +86,8 @@ export const adminTranslations = {
       components: 'Componentes',
       emailTests: 'Pruebas Email',
       commissions: 'Comisiones',
+      auditLog: 'Registro de Actividad',
+      users: 'Usuarios',
     },
     common: {
       search: 'Buscar secciones, tours...',

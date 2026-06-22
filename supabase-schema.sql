@@ -149,3 +149,60 @@ CREATE POLICY "Public can insert subscribers" ON subscribers
 
 CREATE POLICY "Admins manage subscribers" ON subscribers
   FOR ALL USING (auth.role() = 'authenticated');
+
+-- ─── Profiles ────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS profiles (
+    id          UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    email       TEXT NOT NULL,
+    full_name   TEXT DEFAULT '',
+    role        TEXT NOT NULL DEFAULT 'secretary'
+                CHECK (role IN ('admin', 'secretary')),
+    created_at  TIMESTAMPTZ DEFAULT now(),
+    updated_at  TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TRIGGER profiles_updated_at
+  BEFORE UPDATE ON profiles
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users read own profile" ON profiles
+  FOR SELECT USING (auth.uid() = id);
+
+CREATE POLICY "Admins manage profiles" ON profiles
+  FOR ALL USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+  );
+
+-- ─── Audit Log ──────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS audit_log (
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id     UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+    user_email  TEXT DEFAULT '',
+    action      TEXT NOT NULL,
+    table_name  TEXT NOT NULL,
+    record_id   TEXT,
+    summary     TEXT DEFAULT '',
+    changes     JSONB,
+    created_at  TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_audit_log_created ON audit_log(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audit_log_user   ON audit_log(user_id);
+CREATE INDEX IF NOT EXISTS idx_audit_log_table  ON audit_log(table_name);
+
+ALTER TABLE audit_log ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Admins read audit log" ON audit_log
+  FOR SELECT USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+  );
+
+CREATE POLICY "Secretaries read own audit" ON audit_log
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Auth users insert audit log" ON audit_log
+  FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
+ALTER PUBLICATION supabase_realtime ADD TABLE audit_log;

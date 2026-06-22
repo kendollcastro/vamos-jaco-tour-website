@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { supabase } from '../../lib/supabase';
+import { logAudit } from '../../lib/audit';
 import { X, User, Mail, Tag } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -52,11 +53,21 @@ export default function AddBookingModal({ isOpen, onClose, onSuccess, prefillDat
             const { duration, ...rest } = formData;
             const bookingData: Record<string, any> = { ...rest, created_at: new Date().toISOString() };
             if (duration) bookingData.duration = duration;
-            const { error } = await supabase
+            const { data, error } = await supabase
                 .from('bookings')
-                .insert([bookingData]);
+                .insert([bookingData])
+                .select();
 
             if (error) throw error;
+            const bookingId = data?.[0]?.id;
+            if (bookingId) {
+                await logAudit({
+                    action: 'create',
+                    table_name: 'bookings',
+                    record_id: bookingId,
+                    summary: `Created booking for ${formData.customer_name} - ${formData.tour_name}`
+                });
+            }
             onSuccess();
             onClose();
         } catch (err) {
