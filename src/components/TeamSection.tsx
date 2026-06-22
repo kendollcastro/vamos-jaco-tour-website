@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules'; // Correct import for Swiper v12 might be slightly different depending on setup, but usually modules are correct. If v12 issues, will check. 
 // Actually v12 usually imports from 'swiper/modules'
@@ -68,6 +68,10 @@ interface TeamProps {
 
 export default function TeamSection({ members }: TeamProps) {
     const $language = useStore(language);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => { setMounted(true); }, []);
+    const lang = mounted ? $language : 'en';
 
     const displayMembers = members && members.length > 0 ? members : fallbackTeamMembers;
 
@@ -84,7 +88,7 @@ export default function TeamSection({ members }: TeamProps) {
         }
     };
 
-    const content = $language === 'en' ? t.en : t.es;
+    const content = lang === 'en' ? t.en : t.es;
 
     return (
         <section className="py-24 overflow-hidden">
@@ -108,13 +112,13 @@ export default function TeamSection({ members }: TeamProps) {
                     <div className="hidden md:flex gap-4">
                         <button 
                             className="swiper-button-prev-custom w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-gray-400 hover:bg-primary hover:text-white hover:border-primary transition-all duration-300"
-                            aria-label={$language === 'en' ? "Previous slide" : "Diapositiva anterior"}
+                            aria-label={lang === 'en' ? "Previous slide" : "Diapositiva anterior"}
                         >
                             <ChevronLeft className="w-6 h-6" />
                         </button>
                         <button 
                             className="swiper-button-next-custom w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-gray-400 hover:bg-primary hover:text-white hover:border-primary transition-all duration-300"
-                            aria-label={$language === 'en' ? "Next slide" : "Siguiente diapositiva"}
+                            aria-label={lang === 'en' ? "Next slide" : "Siguiente diapositiva"}
                         >
                             <ChevronRight className="w-6 h-6" />
                         </button>
@@ -148,7 +152,7 @@ export default function TeamSection({ members }: TeamProps) {
                     >
                         {displayMembers.map((member) => {
                             // Determine bilingual position
-                            const displayPosition = $language === 'en'
+                            const displayPosition = lang === 'en'
                                 ? (member.position_en || member.position)
                                 : (member.position_es || member.position);
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Zap, Shield, Mountain, ArrowRight, type LucideIcon } from 'lucide-react';
 import { useStore } from '@nanostores/react';
 import { language } from '../store';
@@ -11,6 +11,10 @@ const IconMap: Record<string, LucideIcon> = {
 
 export default function ServicesBanner() {
     const $language = useStore(language);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => { setMounted(true); }, []);
+    const lang = mounted ? $language : 'en';
 
     const t = {
         en: {
@@ -39,7 +43,7 @@ export default function ServicesBanner() {
         }
     };
 
-    const fallbackContent = $language === 'en' ? t.en : t.es;
+    const fallbackContent = lang === 'en' ? t.en : t.es;
 
     const titleBold = fallbackContent.titleBold;
     const titleScript = fallbackContent.titleScript;

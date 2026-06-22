@@ -95,6 +95,10 @@ export default function AdminLayout({ children }: Props) {
     const $theme = useStore(theme);
     const $language = useStore(language);
     const t = adminTranslations[$language];
+    
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => { setMounted(true); }, []);
+    const lang = mounted ? $language : 'en';
 
     useEffect(() => {
         initTheme();
@@ -307,11 +311,11 @@ export default function AdminLayout({ children }: Props) {
                     <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setLanguage($language === 'en' ? 'es' : 'en')}
+                        onClick={() => setLanguage(lang === 'en' ? 'es' : 'en')}
                         className="flex-1 gap-2 h-9 text-xs font-medium"
                     >
                         <Globe className="h-4 w-4" />
-                        {$language === 'en' ? 'ES' : 'EN'}
+                        {lang === 'en' ? 'ES' : 'EN'}
                     </Button>
                 </div>
 
@@ -406,11 +410,11 @@ export default function AdminLayout({ children }: Props) {
                         <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => setLanguage($language === 'en' ? 'es' : 'en')}
+                            onClick={() => setLanguage(lang === 'en' ? 'es' : 'en')}
                             className="hidden sm:inline-flex gap-1.5 h-9 px-3 text-xs font-bold uppercase tracking-widest"
                         >
                             <Globe className="h-3.5 w-3.5" />
-                            {$language === 'en' ? 'EN' : 'ES'}
+                            {lang === 'en' ? 'EN' : 'ES'}
                         </Button>
 
                         <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex gap-1.5 h-9 px-3 text-xs font-medium">

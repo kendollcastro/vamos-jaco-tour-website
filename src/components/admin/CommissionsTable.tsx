@@ -76,6 +76,10 @@ const PAYMENT_OPTIONS = ['Cash', 'Card', 'Transfer', 'Synapay', 'Tilopay'];
 export default function CommissionsTable({ onToast }: { onToast?: (message: string) => void }) {
     const $language = useStore(language);
 
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => { setMounted(true); }, []);
+    const lang = mounted ? $language : 'en';
+
     const [commissions, setCommissions] = useState<Commission[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
@@ -222,7 +226,7 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
     async function handleSave(e: React.FormEvent) {
         e.preventDefault();
         if (!formTour || !formCustomer || !formDate) {
-            setFormError($language === 'en' ? 'Tour, customer and date are required' : 'Tour, cliente y fecha son obligatorios');
+            setFormError(lang === 'en' ? 'Tour, customer and date are required' : 'Tour, cliente y fecha son obligatorios');
             return;
         }
         setFormSaving(true);
@@ -261,7 +265,7 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                 };
                 setCommissions(prev => [newEntry, ...prev]);
             }
-            onToast?.($language === 'en' ? 'Commission saved' : 'Comisión guardada');
+            onToast?.(lang === 'en' ? 'Commission saved' : 'Comisión guardada');
             setFormSaving(false);
             setDialogOpen(false);
             return;
@@ -277,7 +281,7 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
         if (error) {
             setFormError(error.message);
         } else {
-            onToast?.($language === 'en' ? 'Commission saved' : 'Comisión guardada');
+            onToast?.(lang === 'en' ? 'Commission saved' : 'Comisión guardada');
             setDialogOpen(false);
             fetchCommissions();
         }
@@ -294,34 +298,34 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
         setDeleteTarget(null);
         if (isDemo) {
             setCommissions(prev => prev.filter(c => c.id !== id));
-            onToast?.($language === 'en' ? 'Commission deleted' : 'Comisión eliminada');
+            onToast?.(lang === 'en' ? 'Commission deleted' : 'Comisión eliminada');
             return;
         }
         if (!supabase) return;
         const { error } = await supabase.from('commissions').delete().eq('id', id);
         if (!error) {
             fetchCommissions();
-            onToast?.($language === 'en' ? 'Commission deleted' : 'Comisión eliminada');
+            onToast?.(lang === 'en' ? 'Commission deleted' : 'Comisión eliminada');
         }
     }
 
     function exportToCSV() {
         const headers = [
-            $language === 'en' ? 'Date' : 'Fecha',
-            $language === 'en' ? 'Tour' : 'Tour',
-            $language === 'en' ? 'Customer' : 'Cliente',
-            $language === 'en' ? 'Time' : 'Hora',
+            lang === 'en' ? 'Date' : 'Fecha',
+            lang === 'en' ? 'Tour' : 'Tour',
+            lang === 'en' ? 'Customer' : 'Cliente',
+            lang === 'en' ? 'Time' : 'Hora',
             '# M',
             '# PAX',
-            $language === 'en' ? 'Location' : 'Ubicación',
-            $language === 'en' ? 'Discount' : 'Descuento',
-            $language === 'en' ? 'Price' : 'Precio',
-            $language === 'en' ? 'Guide' : 'Guía',
+            lang === 'en' ? 'Location' : 'Ubicación',
+            lang === 'en' ? 'Discount' : 'Descuento',
+            lang === 'en' ? 'Price' : 'Precio',
+            lang === 'en' ? 'Guide' : 'Guía',
             '10%',
-            $language === 'en' ? 'Provider' : 'Proveedor',
+            lang === 'en' ? 'Provider' : 'Proveedor',
             '20%',
             'IVA',
-            $language === 'en' ? 'Payment' : 'Pago',
+            lang === 'en' ? 'Payment' : 'Pago',
         ];
         const rows = filtered.map(c => [
             c.date, c.tour_name, c.customer_name, c.time, c.location,
@@ -334,7 +338,7 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
         link.href = URL.createObjectURL(blob);
         link.download = `commissions_${new Date().toISOString().split('T')[0]}.csv`;
         link.click();
-        onToast?.($language === 'en' ? `Exported ${filtered.length} commissions` : `Exportadas ${filtered.length} comisiones`);
+        onToast?.(lang === 'en' ? `Exported ${filtered.length} commissions` : `Exportadas ${filtered.length} comisiones`);
     }
 
     const filtered = commissions.filter(c => {
@@ -372,15 +376,15 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
                 <div>
                     <h2 className="text-2xl font-bold text-foreground">
-                        {$language === 'en' ? 'Commissions' : 'Comisiones'}
+                        {lang === 'en' ? 'Commissions' : 'Comisiones'}
                     </h2>
                     <p className="text-sm text-muted-foreground mt-1">
-                        {$language === 'en' ? 'Track guide commissions and provider payments' : 'Control de comisiones de guías y pagos a proveedores'}
+                        {lang === 'en' ? 'Track guide commissions and provider payments' : 'Control de comisiones de guías y pagos a proveedores'}
                     </p>
                 </div>
                 <Button onClick={openNewModal}>
                     <Plus className="h-4 w-4" />
-                    {$language === 'en' ? 'Add Entry' : 'Agregar Entrada'}
+                    {lang === 'en' ? 'Add Entry' : 'Agregar Entrada'}
                 </Button>
             </div>
 
@@ -389,21 +393,21 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                 <div className="rounded-xl border border-border/60 bg-card p-5 text-card-foreground shadow-sm">
                     <div className="flex items-center gap-2 text-muted-foreground mb-1">
                         <DollarSign className="h-4 w-4" />
-                        <p className="text-xs font-bold uppercase tracking-wider">{$language === 'en' ? 'Total Revenue' : 'Ingreso Total'}</p>
+                        <p className="text-xs font-bold uppercase tracking-wider">{lang === 'en' ? 'Total Revenue' : 'Ingreso Total'}</p>
                     </div>
                     <p className="text-2xl font-black">${totalPrice.toLocaleString()}</p>
                 </div>
                 <div className="rounded-xl border border-border/60 bg-card p-5 text-card-foreground shadow-sm">
                     <div className="flex items-center gap-2 text-muted-foreground mb-1">
                         <PiggyBank className="h-4 w-4" />
-                        <p className="text-xs font-bold uppercase tracking-wider">10% {$language === 'en' ? 'Guide' : 'Guía'}</p>
+                        <p className="text-xs font-bold uppercase tracking-wider">10% {lang === 'en' ? 'Guide' : 'Guía'}</p>
                     </div>
                     <p className="text-2xl font-black text-emerald-600">${totalCommission10.toLocaleString()}</p>
                 </div>
                 <div className="rounded-xl border border-border/60 bg-card p-5 text-card-foreground shadow-sm">
                     <div className="flex items-center gap-2 text-muted-foreground mb-1">
                         <Landmark className="h-4 w-4" />
-                        <p className="text-xs font-bold uppercase tracking-wider">20% {$language === 'en' ? 'Provider' : 'Proveedor'}</p>
+                        <p className="text-xs font-bold uppercase tracking-wider">20% {lang === 'en' ? 'Provider' : 'Proveedor'}</p>
                     </div>
                     <p className="text-2xl font-black text-orange-600">${totalCommission20.toLocaleString()}</p>
                 </div>
@@ -412,18 +416,18 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
             {/* Guide Stats */}
             <div className="rounded-xl border border-border/60 bg-card shadow-sm p-4">
                 <h3 className="text-sm font-bold text-foreground mb-3">
-                    {$language === 'en' ? 'Guide Performance' : 'Rendimiento por Guía'}
+                    {lang === 'en' ? 'Guide Performance' : 'Rendimiento por Guía'}
                 </h3>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
                     {guideStats.length === 0 ? (
                         <p className="text-sm text-muted-foreground col-span-full">
-                            {$language === 'en' ? 'No guide data available' : 'No hay datos de guías'}
+                            {lang === 'en' ? 'No guide data available' : 'No hay datos de guías'}
                         </p>
                     ) : guideStats.map(([name, stats]) => (
                         <div key={name} className="rounded-lg border border-border/40 bg-background p-3">
                             <p className="text-sm font-bold text-foreground truncate">{name}</p>
                             <div className="mt-1 space-y-0.5 text-[11px] text-muted-foreground">
-                                <p>{stats.count} {$language === 'en' ? 'tours' : 'tours'}</p>
+                                <p>{stats.count} {lang === 'en' ? 'tours' : 'tours'}</p>
                                 <p className="font-semibold text-foreground">${stats.revenue.toLocaleString()}</p>
                                 <p className="font-semibold text-emerald-600">${stats.commission.toFixed(2)}</p>
                             </div>
@@ -439,17 +443,17 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                     <Input
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder={$language === 'en' ? 'Search customer, tour or guide...' : 'Buscar cliente, tour o guía...'}
+                        placeholder={lang === 'en' ? 'Search customer, tour or guide...' : 'Buscar cliente, tour o guía...'}
                         className="pl-9"
                     />
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
                     <Select value={guideFilter} onValueChange={setGuideFilter}>
                         <SelectTrigger className="w-40">
-                            <SelectValue placeholder={$language === 'en' ? 'All guides' : 'Todos los guías'} />
+                            <SelectValue placeholder={lang === 'en' ? 'All guides' : 'Todos los guías'} />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="__all__">{$language === 'en' ? 'All guides' : 'Todos los guías'}</SelectItem>
+                            <SelectItem value="__all__">{lang === 'en' ? 'All guides' : 'Todos los guías'}</SelectItem>
                             {guides.map(g => (
                                 <SelectItem key={g.id} value={g.name}>{g.name}</SelectItem>
                             ))}
@@ -457,10 +461,10 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                     </Select>
                     <Select value={locationFilter} onValueChange={setLocationFilter}>
                         <SelectTrigger className="w-36">
-                            <SelectValue placeholder={$language === 'en' ? 'Location' : 'Ubicación'} />
+                            <SelectValue placeholder={lang === 'en' ? 'Location' : 'Ubicación'} />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="__all__">{$language === 'en' ? 'All locations' : 'Todas'}</SelectItem>
+                            <SelectItem value="__all__">{lang === 'en' ? 'All locations' : 'Todas'}</SelectItem>
                             {LOCATION_OPTIONS.filter(Boolean).map(l => (
                                 <SelectItem key={l} value={l}>{l}</SelectItem>
                             ))}
@@ -468,11 +472,11 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                     </Select>
                     <Button variant="outline" size="sm" onClick={handleRefresh} disabled={refreshing}>
                         <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
-                        {$language === 'en' ? 'Refresh' : 'Actualizar'}
+                        {lang === 'en' ? 'Refresh' : 'Actualizar'}
                     </Button>
                     <Button variant="outline" size="sm" onClick={exportToCSV} disabled={filtered.length === 0}>
                         <Download className="h-4 w-4" />
-                        {$language === 'en' ? 'Export' : 'Exportar'}
+                        {lang === 'en' ? 'Export' : 'Exportar'}
                     </Button>
                     <div className="flex items-center gap-2">
                         <Input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} className="w-36" />
@@ -506,29 +510,29 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                     <div className="p-16 text-center">
                         <PiggyBank className="h-16 w-16 text-muted-foreground/40 mx-auto mb-4" />
                         <p className="text-muted-foreground font-medium">
-                            {$language === 'en' ? 'No commissions found' : 'No se encontraron comisiones'}
+                            {lang === 'en' ? 'No commissions found' : 'No se encontraron comisiones'}
                         </p>
                     </div>
                 ) : (
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>{$language === 'en' ? 'Date' : 'Fecha'}</TableHead>
-                                <TableHead>{$language === 'en' ? 'Tour' : 'Tour'}</TableHead>
-                                <TableHead>{$language === 'en' ? 'Customer' : 'Cliente'}</TableHead>
-                                <TableHead>{$language === 'en' ? 'Time' : 'Hora'}</TableHead>
-                                <TableHead>{$language === 'en' ? 'Location' : 'Ubicación'}</TableHead>
+                                <TableHead>{lang === 'en' ? 'Date' : 'Fecha'}</TableHead>
+                                <TableHead>{lang === 'en' ? 'Tour' : 'Tour'}</TableHead>
+                                <TableHead>{lang === 'en' ? 'Customer' : 'Cliente'}</TableHead>
+                                <TableHead>{lang === 'en' ? 'Time' : 'Hora'}</TableHead>
+                                <TableHead>{lang === 'en' ? 'Location' : 'Ubicación'}</TableHead>
                                 <TableHead># M</TableHead>
                                 <TableHead># PAX</TableHead>
-                                <TableHead>{$language === 'en' ? 'Disc. %' : 'Desc. %'}</TableHead>
-                                <TableHead>{$language === 'en' ? 'Price' : 'Precio'}</TableHead>
-                                <TableHead>{$language === 'en' ? 'Guide' : 'Guía'}</TableHead>
+                                <TableHead>{lang === 'en' ? 'Disc. %' : 'Desc. %'}</TableHead>
+                                <TableHead>{lang === 'en' ? 'Price' : 'Precio'}</TableHead>
+                                <TableHead>{lang === 'en' ? 'Guide' : 'Guía'}</TableHead>
                                 <TableHead>10%</TableHead>
-                                <TableHead>{$language === 'en' ? 'Provider' : 'Proveedor'}</TableHead>
+                                <TableHead>{lang === 'en' ? 'Provider' : 'Proveedor'}</TableHead>
                                 <TableHead>20%</TableHead>
                                 <TableHead>IVA</TableHead>
-                                <TableHead>{$language === 'en' ? 'Payment' : 'Pago'}</TableHead>
-                                <TableHead className="text-right">{$language === 'en' ? 'Actions' : 'Acciones'}</TableHead>
+                                <TableHead>{lang === 'en' ? 'Payment' : 'Pago'}</TableHead>
+                                <TableHead className="text-right">{lang === 'en' ? 'Actions' : 'Acciones'}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -605,30 +609,30 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                 <DialogContent className="sm:max-w-md">
                     <DialogHeader>
                         <DialogTitle>
-                            {$language === 'en' ? 'Delete Commission' : 'Eliminar Comisión'}
+                            {lang === 'en' ? 'Delete Commission' : 'Eliminar Comisión'}
                         </DialogTitle>
                     </DialogHeader>
                     {deleteTarget && (
                         <div className="space-y-4">
                             <p className="text-muted-foreground">
-                                {$language === 'en'
+                                {lang === 'en'
                                     ? 'Are you sure you want to delete this commission entry? This action cannot be undone.'
                                     : '¿Estás seguro de eliminar esta comisión? Esta acción no se puede deshacer.'}
                             </p>
                             <div className="rounded-lg border bg-muted/50 p-4 space-y-1 text-sm">
-                                <p><span className="font-medium">{$language === 'en' ? 'Customer' : 'Cliente'}:</span> {deleteTarget.customer_name}</p>
-                                <p><span className="font-medium">{$language === 'en' ? 'Tour' : 'Tour'}:</span> {deleteTarget.tour_name}</p>
-                                <p><span className="font-medium">{$language === 'en' ? 'Date' : 'Fecha'}:</span> {new Date(deleteTarget.date).toLocaleDateString()}</p>
+                                <p><span className="font-medium">{lang === 'en' ? 'Customer' : 'Cliente'}:</span> {deleteTarget.customer_name}</p>
+                                <p><span className="font-medium">{lang === 'en' ? 'Tour' : 'Tour'}:</span> {deleteTarget.tour_name}</p>
+                                <p><span className="font-medium">{lang === 'en' ? 'Date' : 'Fecha'}:</span> {new Date(deleteTarget.date).toLocaleDateString()}</p>
                             </div>
                         </div>
                     )}
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setDeleteTarget(null)}>
-                            {$language === 'en' ? 'Cancel' : 'Cancelar'}
+                            {lang === 'en' ? 'Cancel' : 'Cancelar'}
                         </Button>
                         <Button variant="destructive" onClick={confirmDelete}>
                             <Trash2 className="h-4 w-4" />
-                            {$language === 'en' ? 'Delete' : 'Eliminar'}
+                            {lang === 'en' ? 'Delete' : 'Eliminar'}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -640,8 +644,8 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                     <DialogHeader>
                         <DialogTitle>
                             {editingCommission
-                                ? ($language === 'en' ? 'Edit Commission' : 'Editar Comisión')
-                                : ($language === 'en' ? 'New Commission' : 'Nueva Comisión')}
+                                ? (lang === 'en' ? 'Edit Commission' : 'Editar Comisión')
+                                : (lang === 'en' ? 'New Commission' : 'Nueva Comisión')}
                         </DialogTitle>
                     </DialogHeader>
 
@@ -654,18 +658,18 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                     <form onSubmit={handleSave} className="space-y-4">
                         <div className="grid grid-cols-3 gap-4">
                             <div className="space-y-2">
-                                <Label>{$language === 'en' ? 'Date' : 'Fecha'} *</Label>
+                                <Label>{lang === 'en' ? 'Date' : 'Fecha'} *</Label>
                                 <Input type="date" required value={formDate} onChange={e => setFormDate(e.target.value)} />
                             </div>
                             <div className="space-y-2">
-                                <Label>{$language === 'en' ? 'Time' : 'Hora'}</Label>
+                                <Label>{lang === 'en' ? 'Time' : 'Hora'}</Label>
                                 <Input type="time" value={formTime} onChange={e => setFormTime(e.target.value)} />
                             </div>
                             <div className="space-y-2">
-                                <Label>{$language === 'en' ? 'Location' : 'Ubicación'}</Label>
+                                <Label>{lang === 'en' ? 'Location' : 'Ubicación'}</Label>
                                 <Select value={formLocation} onValueChange={setFormLocation}>
                                     <SelectTrigger>
-                                        <SelectValue placeholder={$language === 'en' ? 'Select location' : 'Seleccionar ubicación'} />
+                                        <SelectValue placeholder={lang === 'en' ? 'Select location' : 'Seleccionar ubicación'} />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {LOCATION_OPTIONS.filter(Boolean).map(l => (
@@ -677,23 +681,23 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                         </div>
 
                         <div className="space-y-2">
-                            <Label>{$language === 'en' ? 'Tour Name' : 'Nombre del Tour'} *</Label>
+                            <Label>{lang === 'en' ? 'Tour Name' : 'Nombre del Tour'} *</Label>
                             <div className="flex gap-2">
                                 <div className="flex-1">
                                     <Select value={formTour} onValueChange={setFormTour}>
                                         <SelectTrigger>
-                                            <SelectValue placeholder={$language === 'en' ? 'Select tour' : 'Seleccionar tour'} />
+                                            <SelectValue placeholder={lang === 'en' ? 'Select tour' : 'Seleccionar tour'} />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {tourOptions.map(t => (
-                                                <SelectItem key={t.id} value={$language === 'en' ? t.name_en : t.name_es}>
-                                                    {$language === 'en' ? t.name_en : t.name_es}
+                                                <SelectItem key={t.id} value={lang === 'en' ? t.name_en : t.name_es}>
+                                                    {lang === 'en' ? t.name_en : t.name_es}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
                                 </div>
-                                {formTour && !tourOptions.some(t => ($language === 'en' ? t.name_en : t.name_es) === formTour) && (
+                                {formTour && !tourOptions.some(t => (lang === 'en' ? t.name_en : t.name_es) === formTour) && (
                                     <Input
                                         value={formTour}
                                         onChange={e => setFormTour(e.target.value)}
@@ -704,7 +708,7 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                         </div>
 
                         <div className="space-y-2">
-                            <Label>{$language === 'en' ? 'Customer Name' : 'Nombre del Cliente'} *</Label>
+                            <Label>{lang === 'en' ? 'Customer Name' : 'Nombre del Cliente'} *</Label>
                             <Input type="text" required value={formCustomer} onChange={e => setFormCustomer(e.target.value)} />
                         </div>
 
@@ -718,21 +722,21 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                                 <Input type="number" min={1} value={formPax} onChange={e => setFormPax(e.target.value)} />
                             </div>
                             <div className="space-y-2">
-                                <Label>{$language === 'en' ? 'Discount' : 'Descuento'} (%)</Label>
+                                <Label>{lang === 'en' ? 'Discount' : 'Descuento'} (%)</Label>
                                 <Input type="number" min={0} max={100} step="1" value={formDiscount} onChange={e => setFormDiscount(e.target.value)} />
                             </div>
                             <div className="space-y-2">
-                                <Label>{$language === 'en' ? 'Price' : 'Precio'} ($)</Label>
+                                <Label>{lang === 'en' ? 'Price' : 'Precio'} ($)</Label>
                                 <Input type="number" min={0} step="0.01" value={formPrice} onChange={e => setFormPrice(e.target.value)} />
                             </div>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label>{$language === 'en' ? 'Guide Name' : 'Nombre del Guía'}</Label>
+                                <Label>{lang === 'en' ? 'Guide Name' : 'Nombre del Guía'}</Label>
                                 <Select value={formGuide} onValueChange={setFormGuide}>
                                     <SelectTrigger>
-                                        <SelectValue placeholder={$language === 'en' ? 'Select guide' : 'Seleccionar guía'} />
+                                        <SelectValue placeholder={lang === 'en' ? 'Select guide' : 'Seleccionar guía'} />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {guides.map(g => (
@@ -742,25 +746,25 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                                 </Select>
                             </div>
                             <div className="space-y-2">
-                                <Label>10% {$language === 'en' ? 'Guide' : 'Guía'} ($)</Label>
+                                <Label>10% {lang === 'en' ? 'Guide' : 'Guía'} ($)</Label>
                                 <Input type="number" min={0} step="0.01" value={formCommission10} onChange={e => setFormCommission10(e.target.value)} placeholder="0.00" />
                             </div>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label>{$language === 'en' ? 'Provider' : 'Proveedor'}</Label>
-                                <Input type="text" value={formProvider} onChange={e => setFormProvider(e.target.value)} placeholder={$language === 'en' ? 'Provider name...' : 'Nombre del proveedor...'} />
+                                <Label>{lang === 'en' ? 'Provider' : 'Proveedor'}</Label>
+                                <Input type="text" value={formProvider} onChange={e => setFormProvider(e.target.value)} placeholder={lang === 'en' ? 'Provider name...' : 'Nombre del proveedor...'} />
                             </div>
                             <div className="space-y-2">
-                                <Label>20% {$language === 'en' ? 'Provider' : 'Proveedor'} ($)</Label>
+                                <Label>20% {lang === 'en' ? 'Provider' : 'Proveedor'} ($)</Label>
                                 <Input type="number" min={0} step="0.01" value={formCommission20} onChange={e => setFormCommission20(e.target.value)} placeholder="0.00" />
                             </div>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label>{$language === 'en' ? 'Payment Method' : 'Método de Pago'}</Label>
+                                <Label>{lang === 'en' ? 'Payment Method' : 'Método de Pago'}</Label>
                                 <Select value={formPaymentMethod} onValueChange={setFormPaymentMethod}>
                                     <SelectTrigger>
                                         <SelectValue />
@@ -780,12 +784,12 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
 
                         <DialogFooter>
                             <Button type="button" variant="outline" onClick={() => setDialogOpen(false)} disabled={formSaving}>
-                                {$language === 'en' ? 'Cancel' : 'Cancelar'}
+                                {lang === 'en' ? 'Cancel' : 'Cancelar'}
                             </Button>
                             <Button type="submit" disabled={formSaving}>
                                 {formSaving
-                                    ? ($language === 'en' ? 'Saving...' : 'Guardando...')
-                                    : ($language === 'en' ? 'Save' : 'Guardar')}
+                                    ? (lang === 'en' ? 'Saving...' : 'Guardando...')
+                                    : (lang === 'en' ? 'Save' : 'Guardar')}
                             </Button>
                         </DialogFooter>
                     </form>

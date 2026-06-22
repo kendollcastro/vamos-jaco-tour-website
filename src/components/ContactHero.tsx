@@ -7,6 +7,10 @@ export default function ContactHero() {
     const $language = useStore(language);
     const [offset, setOffset] = useState(0);
     const [isLoaded, setIsLoaded] = useState(false);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => { setMounted(true); }, []);
+    const lang = mounted ? $language : 'en';
 
     useEffect(() => {
         const timer = setTimeout(() => setIsLoaded(true), 300);
@@ -33,7 +37,7 @@ export default function ContactHero() {
         }
     };
 
-    const content = $language === 'en' ? t.en : t.es;
+    const content = lang === 'en' ? t.en : t.es;
 
     return (
         <section className="relative h-[70vh] min-h-[550px] flex items-center justify-center overflow-hidden">

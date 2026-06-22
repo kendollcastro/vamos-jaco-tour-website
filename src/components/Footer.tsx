@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Facebook, Instagram, MessageCircle, Phone, Mail } from 'lucide-react';
 import { useStore } from '@nanostores/react';
 import { language } from '../store';
 
 export default function Footer() {
     const $language = useStore(language);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => { setMounted(true); }, []);
+    const lang = mounted ? $language : 'en';
 
     const t = {
         en: {
@@ -55,7 +59,7 @@ export default function Footer() {
         }
     };
 
-    const content = $language === 'en' ? t.en : t.es;
+    const content = lang === 'en' ? t.en : t.es;
 
     const [email, setEmail] = React.useState('');
     const [status, setStatus] = React.useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -243,10 +247,10 @@ export default function Footer() {
                     <div>
                         <h3 className="text-lg font-bold mb-8">{content.cols.resources}</h3>
                         <ul className="space-y-4 text-gray-400 text-sm">
-                            <li><a href="/" className="hover:text-primary transition-colors">{$language === 'en' ? 'Home' : 'Inicio'}</a></li>
+                            <li><a href="/" className="hover:text-primary transition-colors">{lang === 'en' ? 'Home' : 'Inicio'}</a></li>
                             <li><a href="/tours" className="hover:text-primary transition-colors">Tours & Adventures</a></li>
-                            <li><a href="/about" className="hover:text-primary transition-colors">{$language === 'en' ? 'About Us' : 'Nosotros'}</a></li>
-                            <li><a href="/contact" className="hover:text-primary transition-colors">{$language === 'en' ? 'Contact' : 'Contacto'}</a></li>
+                            <li><a href="/about" className="hover:text-primary transition-colors">{lang === 'en' ? 'About Us' : 'Nosotros'}</a></li>
+                            <li><a href="/contact" className="hover:text-primary transition-colors">{lang === 'en' ? 'Contact' : 'Contacto'}</a></li>
                         </ul>
                     </div>
 

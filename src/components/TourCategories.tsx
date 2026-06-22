@@ -1,11 +1,15 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useStore } from '@nanostores/react';
 import { language } from '../store';
 
 export default function TourCategories() {
     const $language = useStore(language);
+    const [mounted, setMounted] = useState(false);
 
-    const title = $language === 'en' ? 'Choose Your Element' : 'Elige tu Elemento';
+    useEffect(() => { setMounted(true); }, []);
+    const lang = mounted ? $language : 'en';
+
+    const title = lang === 'en' ? 'Choose Your Element' : 'Elige tu Elemento';
 
     // Placeholder data for categories - simulating what will come from WP later
     const categories = [
@@ -52,7 +56,7 @@ export default function TourCategories() {
                             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors"></div>
                             <div className="absolute inset-0 flex items-center justify-center">
                                 <span className={`text-white text-3xl md:text-4xl font-['Inter'] drop-shadow-lg transform ${cat.rotate} group-hover:scale-110 transition-transform duration-300`}>
-                                    {$language === 'en' ? cat.name.en : cat.name.es}
+                                    {lang === 'en' ? cat.name.en : cat.name.es}
                                 </span>
                             </div>
                         </div>

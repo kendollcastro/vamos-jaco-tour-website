@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useStore } from '@nanostores/react';
 import { language } from '../../store';
@@ -11,6 +11,10 @@ import { AlertCircle, Mail, Eye, EyeOff, Loader2, Play } from 'lucide-react';
 export default function AdminLogin({ onAuth }: { onAuth: () => void }) {
     const $language = useStore(language);
     const t = adminTranslations[$language];
+    
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => { setMounted(true); }, []);
+    const lang = mounted ? $language : 'en';
     
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -84,8 +88,8 @@ export default function AdminLogin({ onAuth }: { onAuth: () => void }) {
                             }}
                         />
                     </a>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{$language === 'en' ? 'Admin Panel' : 'Panel de Admin'}</h1>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">{$language === 'en' ? 'Sign in to manage your tours' : 'Inicia sesión para gestionar tus tours'}</p>
+                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{lang === 'en' ? 'Admin Panel' : 'Panel de Admin'}</h1>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">{lang === 'en' ? 'Sign in to manage your tours' : 'Inicia sesión para gestionar tus tours'}</p>
                 </div>
 
                 {/* Login Card */}
@@ -95,8 +99,8 @@ export default function AdminLogin({ onAuth }: { onAuth: () => void }) {
                         <div className="bg-brand-teal/10 border border-brand-teal/30 rounded-xl px-4 py-3 text-brand-teal text-sm flex items-start gap-2">
                             <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
                             <div>
-                                <p className="font-semibold">{$language === 'en' ? 'Demo Mode' : 'Modo Demo'}</p>
-                                <p className="text-xs text-brand-teal/70 mt-0.5">{$language === 'en' ? 'Supabase not configured. Click "Enter Demo" to explore with sample data.' : 'Supabase no configurado. Haz clic en "Entrar en Demo" para explorar con datos de ejemplo.'}</p>
+                                <p className="font-semibold">{lang === 'en' ? 'Demo Mode' : 'Modo Demo'}</p>
+                                <p className="text-xs text-brand-teal/70 mt-0.5">{lang === 'en' ? 'Supabase not configured. Click "Enter Demo" to explore with sample data.' : 'Supabase no configurado. Haz clic en "Entrar en Demo" para explorar con datos de ejemplo.'}</p>
                             </div>
                         </div>
                     )}
@@ -113,16 +117,16 @@ export default function AdminLogin({ onAuth }: { onAuth: () => void }) {
                             <div className="w-16 h-16 rounded-full bg-green-500/10 flex items-center justify-center mx-auto mb-4">
                                 <Mail className="w-8 h-8 text-green-500" />
                             </div>
-                            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{$language === 'en' ? 'Check your email' : 'Revisa tu correo'}</h3>
-                            <p className="text-gray-500 text-sm mb-4">{$language === 'en' ? 'We sent a password reset link to' : 'Enviamos un enlace de recuperación a'} <strong className="text-gray-700 dark:text-gray-300">{email}</strong></p>
+                            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{lang === 'en' ? 'Check your email' : 'Revisa tu correo'}</h3>
+                            <p className="text-gray-500 text-sm mb-4">{lang === 'en' ? 'We sent a password reset link to' : 'Enviamos un enlace de recuperación a'} <strong className="text-gray-700 dark:text-gray-300">{email}</strong></p>
                             <Button variant="link" onClick={() => { setView('login'); setResetSent(false); setError(''); }} className="text-sm font-bold">
-                                {$language === 'en' ? 'Back to Sign In' : 'Volver a Iniciar Sesión'}
+                                {lang === 'en' ? 'Back to Sign In' : 'Volver a Iniciar Sesión'}
                             </Button>
                         </div>
                     ) : view === 'forgot' ? (
                         <form onSubmit={handleForgotPassword} className="space-y-5">
                             <div>
-                                <Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{$language === 'en' ? 'Email' : 'Correo Electrónico'}</Label>
+                                <Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{lang === 'en' ? 'Email' : 'Correo Electrónico'}</Label>
                                 <Input
                                     type="email"
                                     value={email}
@@ -141,21 +145,21 @@ export default function AdminLogin({ onAuth }: { onAuth: () => void }) {
                                 {loading ? (
                                     <>
                                         <Loader2 className="w-5 h-5 animate-spin" />
-                                        {$language === 'en' ? 'Sending...' : 'Enviando...'}
+                                        {lang === 'en' ? 'Sending...' : 'Enviando...'}
                                     </>
                                 ) : (
-                                    $language === 'en' ? 'Send Reset Link' : 'Enviar Enlace'
+                                    lang === 'en' ? 'Send Reset Link' : 'Enviar Enlace'
                                 )}
                             </Button>
 
                             <Button type="button" variant="link" onClick={() => { setView('login'); setError(''); }} className="w-full text-center text-gray-500 text-sm hover:text-gray-700 dark:hover:text-gray-300 h-auto">
-                                {$language === 'en' ? 'Back to Sign In' : 'Volver a Iniciar Sesión'}
+                                {lang === 'en' ? 'Back to Sign In' : 'Volver a Iniciar Sesión'}
                             </Button>
                         </form>
                     ) : !isDemo ? (
                         <form onSubmit={handleLogin} className="space-y-5">
                             <div>
-                                <Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{$language === 'en' ? 'Email' : 'Correo Electrónico'}</Label>
+                                <Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{lang === 'en' ? 'Email' : 'Correo Electrónico'}</Label>
                                 <Input
                                     type="email"
                                     value={email}
@@ -168,9 +172,9 @@ export default function AdminLogin({ onAuth }: { onAuth: () => void }) {
 
                             <div>
                                 <div className="flex items-center justify-between mb-1.5">
-                                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">{$language === 'en' ? 'Password' : 'Contraseña'}</Label>
+                                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">{lang === 'en' ? 'Password' : 'Contraseña'}</Label>
                                     <Button type="button" variant="link" onClick={() => { setView('forgot'); setError(''); }} className="text-xs font-bold h-auto">
-                                        {$language === 'en' ? 'Forgot password?' : '¿Olvidaste tu contraseña?'}
+                                        {lang === 'en' ? 'Forgot password?' : '¿Olvidaste tu contraseña?'}
                                     </Button>
                                 </div>
                                 <div className="relative">
@@ -202,10 +206,10 @@ export default function AdminLogin({ onAuth }: { onAuth: () => void }) {
                                 {loading ? (
                                     <>
                                         <Loader2 className="w-5 h-5 animate-spin" />
-                                        {$language === 'en' ? 'Signing in...' : 'Iniciando sesión...'}
+                                        {lang === 'en' ? 'Signing in...' : 'Iniciando sesión...'}
                                     </>
                                 ) : (
-                                    $language === 'en' ? 'Sign In' : 'Iniciar Sesión'
+                                    lang === 'en' ? 'Sign In' : 'Iniciar Sesión'
                                 )}
                             </Button>
                         </form>
@@ -216,7 +220,7 @@ export default function AdminLogin({ onAuth }: { onAuth: () => void }) {
                             className="w-full py-3.5 rounded-xl shadow-lg shadow-primary/20 gap-2"
                         >
                             <Play className="w-5 h-5" />
-                            {$language === 'en' ? 'Enter Demo' : 'Entrar en Demo'}
+                            {lang === 'en' ? 'Enter Demo' : 'Entrar en Demo'}
                         </Button>
                     )}
                 </div>

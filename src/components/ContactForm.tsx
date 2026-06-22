@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useStore } from '@nanostores/react';
 import { language } from '../store';
 import { Phone, Mail, MapPin, Send, MessageSquare, CheckCircle } from 'lucide-react';
 
 export default function ContactForm() {
     const $language = useStore(language);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => { setMounted(true); }, []);
+    const lang = mounted ? $language : 'en';
+
     const [formState, setFormState] = useState({ name: '', email: '', message: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSent, setIsSent] = useState(false);
@@ -62,7 +67,7 @@ export default function ContactForm() {
         }
     };
 
-    const content = $language === 'en' ? t.en : t.es;
+    const content = lang === 'en' ? t.en : t.es;
 
     return (
         <section className="py-24 bg-dark relative -mt-20 z-20">
@@ -123,7 +128,7 @@ export default function ContactForm() {
                             {content.title} <MessageSquare className="w-6 h-6 text-primary" />
                         </h3>
                         <p className="text-gray-400 mb-10">
-                            {$language === 'en' ? "Don't hesitate to reach out. We are here to help you plan the perfect trip." : "No dudes en contactarnos. Estamos aquí para ayudarte a planear el viaje perfecto."}
+                            {lang === 'en' ? "Don't hesitate to reach out. We are here to help you plan the perfect trip." : "No dudes en contactarnos. Estamos aquí para ayudarte a planear el viaje perfecto."}
                         </p>
 
                         <form onSubmit={handleSubmit} className="space-y-6">

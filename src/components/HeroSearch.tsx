@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar, Users, Search, MapPin } from 'lucide-react';
 import { useStore } from '@nanostores/react';
 import { language } from '../store';
 
 export default function HeroSearch() {
     const $language = useStore(language);
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => { setMounted(true); }, []);
+    const lang = mounted ? $language : 'en';
 
     const [activity, setActivity] = useState('');
     const [date, setDate] = useState('');
@@ -29,7 +32,7 @@ export default function HeroSearch() {
         }
     };
 
-    const t = translations[$language];
+    const t = translations[lang];
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();

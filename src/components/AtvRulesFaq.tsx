@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useStore } from '@nanostores/react';
 import { language } from '../store';
 import { ShieldAlert, Route, AlertTriangle, Hand, FileText } from 'lucide-react';
 
 export default function AtvRulesFaq() {
     const $language = useStore(language);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => { setMounted(true); }, []);
+    const lang = mounted ? $language : 'en';
+
     const [openIndex, setOpenIndex] = useState<number | null>(null);
 
     const rules = [
@@ -73,16 +78,16 @@ export default function AtvRulesFaq() {
             <div className="max-w-4xl mx-auto px-6 relative z-10">
                 <div className="text-center mb-12">
                     <span className="inline-flex items-center gap-2 text-primary font-bold text-sm tracking-[0.2em] uppercase mb-4">
-                        {$language === 'en' ? 'Important Rules' : 'Reglas Importantes'}
+                        {lang === 'en' ? 'Important Rules' : 'Reglas Importantes'}
                     </span>
                     <h2 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tight mb-4">
-                        {$language === 'en' ? 'ATV & Buggy' : 'Reglas ATV & Buggy'}{' '}
+                                                {lang === 'en' ? 'ATV & Buggy' : 'Reglas ATV & Buggy'} {' '}
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-orange to-primary italic">
-                            {$language === 'en' ? 'Safety Rules' : 'Seguridad'}
+                            {lang === 'en' ? 'Safety Rules' : 'Seguridad'}
                         </span>
                     </h2>
                     <p className="text-gray-400">
-                        {$language === 'en'
+                        {lang === 'en'
                             ? 'Please read these rules carefully before your off-road adventure.'
                             : 'Por favor lea estas reglas cuidadosamente antes de su aventura todoterreno.'}
                     </p>
@@ -103,7 +108,7 @@ export default function AtvRulesFaq() {
                                         {rule.icon}
                                     </div>
                                     <h3 className="text-white font-bold md:text-lg">
-                                        {rule.title[$language]}
+                                        {rule.title[lang]}
                                     </h3>
                                 </div>
                                 <div className={`w-8 h-8 rounded-full bg-white/5 flex items-center justify-center transition-transform duration-300 ${openIndex === idx ? 'rotate-180 bg-brand-orange/20 text-brand-orange' : 'text-gray-400'}`}>
@@ -117,7 +122,7 @@ export default function AtvRulesFaq() {
                                 className={`overflow-hidden transition-all duration-500 ease-in-out ${openIndex === idx ? 'max-h-60 opacity-100' : 'max-h-0 opacity-0'}`}
                             >
                                 <div className="p-6 pt-0 text-gray-400 leading-relaxed border-t border-white/5 ml-[88px] mr-6">
-                                    {rule.content[$language]}
+                                    {rule.content[lang]}
                                 </div>
                             </div>
                         </div>

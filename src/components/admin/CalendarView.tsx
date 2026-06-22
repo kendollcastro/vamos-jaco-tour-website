@@ -53,6 +53,9 @@ const MONTHS_ES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio
 export default function CalendarView() {
     const $language = useStore(language);
     const t = adminTranslations[$language];
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => { setMounted(true); }, []);
+    const lang = mounted ? $language : 'en';
     const isDemo = !supabase;
 
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -67,8 +70,8 @@ export default function CalendarView() {
 
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
-    const weekdays = $language === 'en' ? WEEKDAYS_EN : WEEKDAYS_ES;
-    const months = $language === 'en' ? MONTHS_EN : MONTHS_ES;
+    const weekdays = lang === 'en' ? WEEKDAYS_EN : WEEKDAYS_ES;
+    const months = lang === 'en' ? MONTHS_EN : MONTHS_ES;
 
     const fetchBookings = useCallback(async () => {
         setLoading(true);
@@ -142,7 +145,7 @@ export default function CalendarView() {
 
             const formattedBookings = (data || []).map((b: any) => ({
                 ...b,
-                tour_name: $language === 'en' ? b.tours?.name_en : b.tours?.name_es || 'Unknown Tour',
+                tour_name: lang === 'en' ? b.tours?.name_en : b.tours?.name_es || 'Unknown Tour',
             }));
 
             setBookings(formattedBookings);
@@ -247,7 +250,7 @@ export default function CalendarView() {
                         onClick={goToToday}
                         className="px-3 py-1 text-xs font-bold bg-primary/10 text-primary rounded-lg hover:bg-primary/20 h-auto"
                     >
-                        {$language === 'en' ? 'Today' : 'Hoy'}
+                        {lang === 'en' ? 'Today' : 'Hoy'}
                     </Button>
                 </div>
                 <div className="flex items-center gap-2">
@@ -273,7 +276,7 @@ export default function CalendarView() {
             {/* Legend */}
             <div className="flex flex-wrap items-center gap-4 p-4 bg-white dark:bg-[#0A0A0A] rounded-2xl border border-gray-200/50 dark:border-white/5">
                 <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    {$language === 'en' ? 'Status:' : 'Estado:'}
+                    {lang === 'en' ? 'Status:' : 'Estado:'}
                 </span>
                 {Object.entries(STATUS_COLORS).filter(([key]) => key !== 'cancelled').map(([status, color]) => (
                     <div key={status} className="flex items-center gap-2">
@@ -340,8 +343,8 @@ export default function CalendarView() {
                                             }
                                         }}
                                         className="w-5 h-5 rounded-md bg-primary/10 text-primary flex items-center justify-center hover:opacity-100"
-                                        title={$language === 'en' ? 'Add booking' : 'Agregar reserva'}
-                                        aria-label={$language === 'en' ? `Add booking for ${day.date.toLocaleDateString()}` : `Agregar reserva para ${day.date.toLocaleDateString()}`}
+                                        title={lang === 'en' ? 'Add booking' : 'Agregar reserva'}
+                                        aria-label={lang === 'en' ? `Add booking for ${day.date.toLocaleDateString()}` : `Agregar reserva para ${day.date.toLocaleDateString()}`}
                                     >
                                         <Plus className="w-3 h-3" strokeWidth={2} />
                                     </Button>
@@ -366,7 +369,7 @@ export default function CalendarView() {
                                 ))}
                                 {day.bookings.length > 3 && (
                                     <div className="text-[10px] text-gray-500 dark:text-gray-400 font-semibold pl-1">
-                                        +{day.bookings.length - 3} {$language === 'en' ? 'more' : 'más'}
+                                        +{day.bookings.length - 3} {lang === 'en' ? 'more' : 'más'}
                                     </div>
                                 )}
                             </div>
@@ -382,7 +385,7 @@ export default function CalendarView() {
                         <div className="p-6 border-b border-gray-200 dark:border-white/5">
                             <div className="flex items-center justify-between">
                                 <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                                    {selectedDate.toLocaleDateString($language === 'en' ? 'en-US' : 'es-ES', { 
+                                    {selectedDate.toLocaleDateString(lang === 'en' ? 'en-US' : 'es-ES', { 
                                         weekday: 'long', 
                                         year: 'numeric', 
                                         month: 'long', 

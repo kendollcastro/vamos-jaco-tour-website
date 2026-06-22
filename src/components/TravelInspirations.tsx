@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Autoplay } from 'swiper/modules';
 import 'swiper/css';
@@ -9,6 +9,10 @@ import { language } from '../store';
 
 export default function TravelInspirations() {
     const $language = useStore(language);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => { setMounted(true); }, []);
+    const lang = mounted ? $language : 'en';
 
     const t = {
         en: {
@@ -23,7 +27,7 @@ export default function TravelInspirations() {
         }
     };
 
-    const fallbackContent = $language === 'en' ? t.en : t.es;
+    const fallbackContent = lang === 'en' ? t.en : t.es;
 
     const title = fallbackContent.title;
     const subtitle = fallbackContent.subtitle;

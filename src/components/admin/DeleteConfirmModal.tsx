@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useStore } from '@nanostores/react';
 import { language } from '../../store';
 import { adminTranslations } from '../../lib/admin-translations';
@@ -20,10 +20,13 @@ interface DeleteConfirmModalProps {
 export default function DeleteConfirmModal({ isOpen, onClose, onConfirm, bookingInfo }: DeleteConfirmModalProps) {
     const $language = useStore(language);
     const t = adminTranslations[$language];
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => { setMounted(true); }, []);
+    const lang = mounted ? $language : 'en';
     const [confirmText, setConfirmText] = useState('');
     const [error, setError] = useState('');
 
-    const expectedText = $language === 'en' 
+    const expectedText = lang === 'en' 
         ? `delete ${bookingInfo.customerName.toLowerCase()}`
         : `eliminar ${bookingInfo.customerName.toLowerCase()}`;
 
@@ -33,7 +36,7 @@ export default function DeleteConfirmModal({ isOpen, onClose, onConfirm, booking
             setConfirmText('');
             setError('');
         } else {
-            setError($language === 'en' 
+            setError(lang === 'en' 
                 ? 'Text does not match. Type the exact phrase to confirm.' 
                 : 'El texto no coincide. Escribe la frase exacta para confirmar.');
         }
@@ -52,10 +55,10 @@ export default function DeleteConfirmModal({ isOpen, onClose, onConfirm, booking
                         </div>
                         <div>
                             <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-                                {$language === 'en' ? 'Delete Booking?' : '¿Eliminar Reserva?'}
+                                {lang === 'en' ? 'Delete Booking?' : '¿Eliminar Reserva?'}
                             </h3>
                             <p className="text-sm text-gray-500">
-                                {$language === 'en' ? 'This action cannot be undone' : 'Esta acción no se puede deshacer'}
+                                {lang === 'en' ? 'This action cannot be undone' : 'Esta acción no se puede deshacer'}
                             </p>
                         </div>
                     </div>
@@ -63,7 +66,7 @@ export default function DeleteConfirmModal({ isOpen, onClose, onConfirm, booking
                     <div className="bg-gray-50 dark:bg-white/5 rounded-xl p-4 mb-4">
                         <div className="grid grid-cols-2 gap-3 text-sm">
                             <div>
-                                <p className="text-gray-400 text-xs uppercase tracking-wider">{$language === 'en' ? 'Customer' : 'Cliente'}</p>
+                                <p className="text-gray-400 text-xs uppercase tracking-wider">{lang === 'en' ? 'Customer' : 'Cliente'}</p>
                                 <p className="font-semibold text-gray-900 dark:text-white">{bookingInfo.customerName}</p>
                             </div>
                             <div>
@@ -75,7 +78,7 @@ export default function DeleteConfirmModal({ isOpen, onClose, onConfirm, booking
 
                     <div className="mb-4">
                         <Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            {$language === 'en' 
+                            {lang === 'en' 
                                 ? `Type "${expectedText}" to confirm:` 
                                 : `Escribe "${expectedText}" para confirmar:`}
                         </Label>
@@ -83,7 +86,7 @@ export default function DeleteConfirmModal({ isOpen, onClose, onConfirm, booking
                             type="text"
                             value={confirmText}
                             onChange={(e) => { setConfirmText(e.target.value); setError(''); }}
-                            placeholder={$language === 'en' ? 'Type to confirm...' : 'Escribe para confirmar...'}
+                            placeholder={lang === 'en' ? 'Type to confirm...' : 'Escribe para confirmar...'}
                             className="w-full bg-gray-50 dark:bg-black/20 border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 h-auto focus:border-red-500 focus:ring-1 focus:ring-red-500/50"
                             autoFocus
                         />
@@ -101,7 +104,7 @@ export default function DeleteConfirmModal({ isOpen, onClose, onConfirm, booking
                             onClick={onClose}
                             className="flex-1 px-4 py-3 bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-300 font-bold rounded-xl hover:bg-gray-200 dark:hover:bg-white/10 h-auto"
                         >
-                            {$language === 'en' ? 'Cancel' : 'Cancelar'}
+                            {lang === 'en' ? 'Cancel' : 'Cancelar'}
                         </Button>
                         <Button
                             variant="destructive"
@@ -110,7 +113,7 @@ export default function DeleteConfirmModal({ isOpen, onClose, onConfirm, booking
                             className="flex-1 px-4 py-3 font-bold rounded-xl h-auto disabled:opacity-50 disabled:cursor-not-allowed gap-2"
                         >
                             <Trash2 className="w-4 h-4" />
-                            {$language === 'en' ? 'Delete' : 'Eliminar'}
+                            {lang === 'en' ? 'Delete' : 'Eliminar'}
                         </Button>
                     </div>
                 </div>

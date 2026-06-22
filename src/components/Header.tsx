@@ -8,6 +8,10 @@ export default function Header() {
     const $language = useStore(language);
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => { setMounted(true); }, []);
+    const lang = mounted ? $language : 'en';
 
     // Initialize language from localStorage on mount
     useEffect(() => {
@@ -32,10 +36,10 @@ export default function Header() {
     }, [isMobileMenuOpen]);
 
     const navLinks = [
-        { href: '/', label: $language === 'en' ? 'Home' : 'Inicio' },
+        { href: '/', label: lang === 'en' ? 'Home' : 'Inicio' },
         { href: '/tours', label: 'Tours' },
-        { href: '/about', label: $language === 'en' ? 'About' : 'Nosotros' },
-        { href: '/contact', label: $language === 'en' ? 'Contact' : 'Contacto' },
+        { href: '/about', label: lang === 'en' ? 'About' : 'Nosotros' },
+        { href: '/contact', label: lang === 'en' ? 'Contact' : 'Contacto' },
     ];
 
     return (
@@ -88,7 +92,7 @@ export default function Header() {
                         )}
                     >
                         <Globe className="w-3.5 h-3.5 text-primary" />
-                        <span>{$language === 'en' ? 'EN' : 'ES'}</span>
+                        <span>{lang === 'en' ? 'EN' : 'ES'}</span>
                     </button>
 
                     {/* Mobile Hamburger Button */}

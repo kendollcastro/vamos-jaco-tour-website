@@ -41,6 +41,9 @@ const getBorderDivider = (isDark: boolean) => isDark ? 'border-white/10' : 'bord
 
 export default function BookingDetailsModal({ isOpen, onClose, booking }: BookingDetailsModalProps) {
     const $language = useStore(language);
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => { setMounted(true); }, []);
+    const lang = mounted ? $language : 'en';
     const isDarkMode = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
     // Duration: first check stored booking.duration, fallback to tour's general duration
     interface TourRow { duration: string; pricing_options?: any[]; }
@@ -86,7 +89,7 @@ export default function BookingDetailsModal({ isOpen, onClose, booking }: Bookin
 
     const formatDate = (dateStr: string) => {
         const date = new Date(dateStr);
-        return date.toLocaleDateString($language === 'en' ? 'en-US' : 'es-ES', {
+        return date.toLocaleDateString(lang === 'en' ? 'en-US' : 'es-ES', {
             weekday: 'long',
             year: 'numeric',
             month: 'long',
@@ -144,7 +147,7 @@ export default function BookingDetailsModal({ isOpen, onClose, booking }: Bookin
                 <div className="bg-gradient-to-r from-primary to-brand-orange px-6 py-4 flex items-center justify-between">
                     <div>
                         <h2 className="text-white font-bold text-lg">
-                            {$language === 'en' ? 'Booking Details' : 'Detalles de Reserva'}
+                            {lang === 'en' ? 'Booking Details' : 'Detalles de Reserva'}
                         </h2>
                         <p className="text-white/70 text-sm font-mono">
                             #{booking.id.slice(0, 8).toUpperCase()}
@@ -233,7 +236,7 @@ export default function BookingDetailsModal({ isOpen, onClose, booking }: Bookin
                         <div className={`${getBgCards(isDarkMode)} rounded-xl p-5 ${getBorderCards(isDarkMode)}`}>
                             <h3 className={`text-xs font-bold ${getTextSecondary(isDarkMode)} uppercase tracking-wider mb-2`}>🕐 Time</h3>
                             <p className={`${getTextPrimary(isDarkMode)} font-bold`}>
-                                {booking.booking_time ? formatTime(booking.booking_time) : ($language === 'en' ? 'Not specified' : 'No especificada')}
+                                {booking.booking_time ? formatTime(booking.booking_time) : (lang === 'en' ? 'Not specified' : 'No especificada')}
                             </p>
                         </div>
                     </div>
@@ -294,7 +297,7 @@ export default function BookingDetailsModal({ isOpen, onClose, booking }: Bookin
                 <div className={`px-6 py-4 ${getBgCards(isDarkMode)} ${getBorderDivider(isDarkMode)} flex items-center justify-between`}>
                     <Button variant="ghost" onClick={() => window.open(`mailto:${booking.customer_email}?subject=Booking: ${booking.tour_name}`)} className={`gap-2 text-sm font-medium ${getTextMuted(isDarkMode)} hover:${getTextPrimary(isDarkMode)} h-auto`}>
                         <Mail className="w-4 h-4" />
-                        {$language === 'en' ? 'Email' : 'Email'}
+                        {lang === 'en' ? 'Email' : 'Email'}
                     </Button>
                     <div className="flex items-center gap-3">
                         {booking.customer_phone && (
@@ -304,7 +307,7 @@ export default function BookingDetailsModal({ isOpen, onClose, booking }: Bookin
                             </Button>
                         )}
                         <Button variant="ghost" onClick={onClose} className={`${isDarkMode ? 'bg-white/10 hover:bg-white/20 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'} px-4 py-2 rounded-lg text-sm font-bold h-auto`}>
-                            {$language === 'en' ? 'Close' : 'Cerrar'}
+                            {lang === 'en' ? 'Close' : 'Cerrar'}
                         </Button>
                     </div>
                 </div>

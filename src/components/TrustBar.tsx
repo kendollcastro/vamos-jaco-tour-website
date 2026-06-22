@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
 import { Plane, Map, Shield, Heart, Globe, Compass, Award, ShieldCheck, FileCheck, UserCheck, Star, Lock } from 'lucide-react';
@@ -19,10 +19,14 @@ interface TrustBarProps {
 
 export default function TrustBar({ items }: TrustBarProps) {
     const $language = useStore(language);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => { setMounted(true); }, []);
+    const lang = mounted ? $language : 'en';
 
     const partners = items && items.length > 0 ? items.map((item, i) => ({
         id: item.id || i,
-        name: $language === 'es' ? (item as any).name_es || item.name : item.name,
+        name: lang === 'es' ? (item as any).name_es || item.name : item.name,
         icon: item.icon && IconMap[item.icon] ? IconMap[item.icon] : Shield,
         color: (item as any).color || 'text-primary',
         image: item.image || null
@@ -37,7 +41,7 @@ export default function TrustBar({ items }: TrustBarProps) {
         <section className="py-12 border-b border-white/10">
             <div className="max-w-7xl mx-auto px-6">
                 <h3 className="text-center text-gray-400 font-medium tracking-wide text-sm mb-8 px-4 leading-relaxed max-w-3xl mx-auto">
-                    {$language === 'en' ? 'YOUR SAFETY IS OUR PRIORITY. WE OPERATE WITH ALL REQUIRED PERMITS, INSURANCE, AND RISK POLICIES IN COSTA RICA.' : 'TU SEGURIDAD ES NUESTRA PRIORIDAD. OPERAMOS CON TODOS LOS PERMISOS, SEGUROS Y PÓLIZAS DE RIESGO DE LEY EN COSTA RICA.'}
+                    {lang === 'en' ? 'YOUR SAFETY IS OUR PRIORITY. WE OPERATE WITH ALL REQUIRED PERMITS, INSURANCE, AND RISK POLICIES IN COSTA RICA.' : 'TU SEGURIDAD ES NUESTRA PRIORIDAD. OPERAMOS CON TODOS LOS PERMISOS, SEGUROS Y PÓLIZAS DE RIESGO DE LEY EN COSTA RICA.'}
                 </h3>
 
                 <Swiper

@@ -63,6 +63,10 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
     const $language = useStore(language);
     const t = adminTranslations[$language];
     
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => { setMounted(true); }, []);
+    const lang = mounted ? $language : 'en';
+    
     const [stats, setStats] = useState<Stats>({
         todayBookings: 0, todayRevenue: 0, pendingCount: 0, confirmedCount: 0, weekGrowth: 0, totalTours: 0,
     });
@@ -181,7 +185,7 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
             icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
             color: 'text-purple-500 dark:text-[#A855F7]',
             bg: 'bg-purple-50 dark:bg-[#1E1A2C]',
-            percentage: $language === 'en' ? 'Low priority' : 'Baja prioridad',
+            percentage: lang === 'en' ? 'Low priority' : 'Baja prioridad',
             sparkline: [2, 4, 3, 5, 2, 3, 2],
             sparkColor: '#A855F7',
         },
@@ -191,7 +195,7 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
             icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
             color: 'text-emerald-500 dark:text-[#10B981]',
             bg: 'bg-emerald-50 dark:bg-[#0F291E]',
-            percentage: $language === 'en' ? '98% Success' : '98% Éxito',
+            percentage: lang === 'en' ? '98% Success' : '98% Éxito',
             sparkline: [5, 7, 6, 8, 5, 6, 5],
             sparkColor: '#10B981',
         },
@@ -259,7 +263,7 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
                         </div>
                         <div className="flex-1">
                             <h3 className="text-red-800 dark:text-red-400 font-bold text-lg">
-                                {$language === 'en' ? '⚠️ OVERBOOKING ALERT' : '⚠️ ALERTA DE SOBREBOOKING'}
+                                {lang === 'en' ? '⚠️ OVERBOOKING ALERT' : '⚠️ ALERTA DE SOBREBOOKING'}
                             </h3>
                             <div className="mt-2 space-y-1">
                                 {overbookings.slice(0, 3).map((b: any) => (
@@ -273,7 +277,7 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
                                 ))}
                                 {overbookings.length > 3 && (
                                     <p className="text-sm text-red-600 dark:text-red-400 font-medium">
-                                        +{overbookings.length - 3} {$language === 'en' ? 'more' : 'más'}
+                                        +{overbookings.length - 3} {lang === 'en' ? 'more' : 'más'}
                                     </p>
                                 )}
                             </div>
@@ -283,7 +287,7 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
                             onClick={() => onNavigate?.('bookings')}
                             className="flex-shrink-0 text-sm"
                         >
-                            {$language === 'en' ? 'View All' : 'Ver Todos'}
+                            {lang === 'en' ? 'View All' : 'Ver Todos'}
                         </Button>
                     </div>
                 </div>
@@ -435,7 +439,7 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
                 <div className="flex items-center gap-3">
                     <Calendar className="w-6 h-6 text-primary" />
                     <h2 className="text-xl font-heading font-black text-gray-900 dark:text-white tracking-tight">
-                        {$language === 'en' ? 'Booking Calendar' : 'Calendario de Reservas'}
+                        {lang === 'en' ? 'Booking Calendar' : 'Calendario de Reservas'}
                     </h2>
                 </div>
                 <CalendarView />

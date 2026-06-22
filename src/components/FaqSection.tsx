@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp, ArrowRight, HelpCircle } from 'lucide-react';
 import { useStore } from '@nanostores/react';
 import { language } from '../store';
@@ -13,6 +13,10 @@ interface FaqSectionProps {
 export default function FaqSection({ faqs: wpFaqs }: FaqSectionProps) {
     const [openIndex, setOpenIndex] = useState<number | null>(0);
     const $language = useStore(language);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => { setMounted(true); }, []);
+    const lang = mounted ? $language : 'en';
 
     const toggleFaq = (index: number) => {
         setOpenIndex(openIndex === index ? null : index);
@@ -33,14 +37,14 @@ export default function FaqSection({ faqs: wpFaqs }: FaqSectionProps) {
         }
     };
 
-    const fallbackContent = $language === 'en' ? t.en : t.es;
+    const fallbackContent = lang === 'en' ? t.en : t.es;
 
     const bannerTitle = fallbackContent.bannerTitle;
     const bannerSubtitle = fallbackContent.bannerSubtitle;
     const title = fallbackContent.title;
     const subtitle = fallbackContent.subtitle;
 
-    const currentLanguageFaqs = $language === 'en' ? faqs.en : faqs.es;
+    const currentLanguageFaqs = lang === 'en' ? faqs.en : faqs.es;
     const faqsToDisplay = wpFaqs && wpFaqs.length > 0 ? wpFaqs : currentLanguageFaqs;
 
     return (

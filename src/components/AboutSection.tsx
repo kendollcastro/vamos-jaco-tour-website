@@ -31,6 +31,10 @@ const StatItem = ({ stat }: { stat: { value: string; label: string; icon: any; c
 export default function AboutSection() {
     const $language = useStore(language);
     const [showVideoModal, setShowVideoModal] = useState(false);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => { setMounted(true); }, []);
+    const lang = mounted ? $language : 'en';
 
     useEffect(() => {
         if (showVideoModal) {
@@ -70,7 +74,7 @@ export default function AboutSection() {
         }
     };
 
-    const content = $language === 'en' ? t.en : t.es;
+    const content = lang === 'en' ? t.en : t.es;
 
     return (
         <section className="py-32 relative bg-dark overflow-hidden">
@@ -144,7 +148,7 @@ export default function AboutSection() {
                             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                                 <button
                                     onClick={() => setShowVideoModal(true)}
-                                    aria-label={$language === 'en' ? "Play video" : "Ver video"}
+                                    aria-label={lang === 'en' ? "Play video" : "Ver video"}
                                     className="pointer-events-auto relative flex items-center justify-center w-24 h-24 rounded-full bg-black/60 backdrop-blur-md border-2 border-white text-white hover:bg-primary hover:border-primary transition-all duration-300 group shadow-[0_0_30px_rgba(0,0,0,0.5)]"
                                 >
                                     <Play className="w-10 h-10 fill-current ml-2 group-hover:scale-110 transition-transform" />

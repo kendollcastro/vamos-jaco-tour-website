@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
@@ -45,6 +45,10 @@ const testimonials = [
 
 export default function TestimonialsSection() {
     const $language = useStore(language);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => { setMounted(true); }, []);
+    const lang = mounted ? $language : 'en';
 
     const displayReviews = testimonials;
 
@@ -63,7 +67,7 @@ export default function TestimonialsSection() {
         }
     };
 
-    const content = $language === 'en' ? t.en : t.es;
+    const content = lang === 'en' ? t.en : t.es;
 
     return (
         <section className="py-24 relative overflow-hidden">
@@ -161,13 +165,13 @@ export default function TestimonialsSection() {
                     <div className="flex gap-4">
                         <button 
                             className="testi-prev w-12 h-12 rounded-full bg-dark-soft shadow-soft ring-1 ring-white/10 flex items-center justify-center text-gray-400 hover:bg-primary hover:text-white transition-all duration-300"
-                            aria-label={$language === 'en' ? "Previous testimonial" : "Testimonio anterior"}
+                            aria-label={lang === 'en' ? "Previous testimonial" : "Testimonio anterior"}
                         >
                             <ChevronLeft className="w-5 h-5" />
                         </button>
                         <button 
                             className="testi-next w-12 h-12 rounded-full bg-dark-soft shadow-soft ring-1 ring-white/10 flex items-center justify-center text-gray-400 hover:bg-primary hover:text-white transition-all duration-300"
-                            aria-label={$language === 'en' ? "Next testimonial" : "Siguiente testimonio"}
+                            aria-label={lang === 'en' ? "Next testimonial" : "Siguiente testimonio"}
                         >
                             <ChevronRight className="w-5 h-5" />
                         </button>

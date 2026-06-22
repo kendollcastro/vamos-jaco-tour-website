@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Send, CheckCircle2, Flame, Mail } from 'lucide-react';
 import { useStore } from '@nanostores/react';
 import { language } from '../store';
 
 export default function NewsletterSection() {
     const $language = useStore(language);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => { setMounted(true); }, []);
+    const lang = mounted ? $language : 'en';
 
     const t = {
         en: {
@@ -23,7 +27,7 @@ export default function NewsletterSection() {
         }
     };
 
-    const fallbackContent = $language === 'en' ? t.en : t.es;
+    const fallbackContent = lang === 'en' ? t.en : t.es;
 
     const [email, setEmail] = useState('');
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -109,7 +113,7 @@ export default function NewsletterSection() {
                             <div className="bg-brand-teal/20 border border-brand-teal/30 p-4 rounded-3xl flex items-center justify-center gap-3 max-w-xl mx-auto mb-6 text-brand-teal animate-fade-in-up">
                                 <CheckCircle2 className="w-6 h-6" />
                                 <span className="font-bold text-lg">
-                                    {message || ($language === 'en' ? 'Thanks for subscribing!' : '¡Gracias por suscribirte!')}
+                                    {message || (lang === 'en' ? 'Thanks for subscribing!' : '¡Gracias por suscribirte!')}
                                 </span>
                             </div>
                         ) : (
@@ -129,7 +133,7 @@ export default function NewsletterSection() {
                                     <button
                                         type="submit"
                                         disabled={status === 'loading'}
-                                        aria-label={$language === 'en' ? 'Subscribe' : 'Suscribirse'}
+                                        aria-label={lang === 'en' ? 'Subscribe' : 'Suscribirse'}
                                         className="bg-gradient-to-r from-primary to-brand-orange text-white w-12 h-12 rounded-full flex items-center justify-center hover:scale-105 transition-transform shadow-lg shadow-primary/30 disabled:opacity-50"
                                     >
                                         {status === 'loading' ? (

@@ -8,6 +8,10 @@ export default function HeroSlider() {
     const $language = useStore(language);
     const [isLoaded, setIsLoaded] = useState(false);
     const videoRef = useRef<HTMLVideoElement>(null);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => { setMounted(true); }, []);
+    const lang = mounted ? $language : 'en';
 
     useEffect(() => {
         const timer = setTimeout(() => setIsLoaded(true), 300);
@@ -58,7 +62,7 @@ export default function HeroSlider() {
         }
     };
 
-    const t = content[$language];
+    const t = content[lang];
 
     return (
         <div className="relative w-full min-h-[100svh] md:h-screen overflow-hidden flex flex-col justify-between">

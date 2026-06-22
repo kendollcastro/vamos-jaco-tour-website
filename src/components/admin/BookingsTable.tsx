@@ -51,6 +51,10 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
     const $language = useStore(language);
     const t = adminTranslations[$language];
     
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => { setMounted(true); }, []);
+    const lang = mounted ? $language : 'en';
+    
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState<string>('all');
@@ -114,7 +118,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
     async function updateStatus(id: string, newStatus: string) {
         if (isDemo) {
             setBookings(prev => prev.map(b => b.id === id ? { ...b, status: newStatus as any } : b));
-            onToast?.(newStatus === 'confirmed' ? ($language === 'en' ? 'Booking confirmed!' : '¡Reserva confirmada!') : ($language === 'en' ? 'Booking cancelled' : 'Reserva cancelada'));
+            onToast?.(newStatus === 'confirmed' ? (lang === 'en' ? 'Booking confirmed!' : '¡Reserva confirmada!') : (lang === 'en' ? 'Booking cancelled' : 'Reserva cancelada'));
             return;
         }
 
@@ -126,7 +130,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
 
         if (!error) {
             fetchBookings();
-            onToast?.(newStatus === 'confirmed' ? ($language === 'en' ? 'Booking confirmed!' : '¡Reserva confirmada!') : ($language === 'en' ? 'Booking cancelled' : 'Reserva cancelada'));
+            onToast?.(newStatus === 'confirmed' ? (lang === 'en' ? 'Booking confirmed!' : '¡Reserva confirmada!') : (lang === 'en' ? 'Booking cancelled' : 'Reserva cancelada'));
         }
     }
 
@@ -145,7 +149,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
         
         if (isDemo) {
             setBookings(prev => prev.filter(b => b.id !== id));
-            onToast?.($language === 'en' ? 'Booking deleted' : 'Reserva eliminada');
+            onToast?.(lang === 'en' ? 'Booking deleted' : 'Reserva eliminada');
             setDeleteModalOpen(false);
             setBookingToDelete(null);
             return;
@@ -159,7 +163,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
 
         if (!error) {
             fetchBookings();
-            onToast?.($language === 'en' ? 'Booking deleted' : 'Reserva eliminada');
+            onToast?.(lang === 'en' ? 'Booking deleted' : 'Reserva eliminada');
         }
         setDeleteModalOpen(false);
         setBookingToDelete(null);
@@ -186,7 +190,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
         link.download = `bookings_${new Date().toISOString().split('T')[0]}.csv`;
         link.click();
 
-        onToast?.($language === 'en' ? `Exported ${filtered.length} bookings to CSV` : `Exportados ${filtered.length} reservas a CSV`);
+        onToast?.(lang === 'en' ? `Exported ${filtered.length} bookings to CSV` : `Exportados ${filtered.length} reservas a CSV`);
     }
 
     const filtered = bookings.filter((b) => {
@@ -214,7 +218,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                         type="text"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder={$language === 'en' ? "Search customer, email or tour..." : "Buscar cliente, email o tour..."}
+                        placeholder={lang === 'en' ? "Search customer, email or tour..." : "Buscar cliente, email o tour..."}
                         className="w-full rounded-full pl-11 pr-4 py-3 h-auto text-sm shadow-sm"
                     />
                 </div>
@@ -228,7 +232,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                         className="gap-2 rounded-full shadow-sm shrink-0"
                     >
                         <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
-                        {$language === 'en' ? 'Refresh' : 'Actualizar'}
+                        {lang === 'en' ? 'Refresh' : 'Actualizar'}
                     </Button>
 
                     {/* Export CSV Button */}
@@ -237,10 +241,10 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                         onClick={exportToCSV}
                         disabled={filtered.length === 0}
                         className="gap-2 rounded-full shadow-sm shrink-0"
-                        title={$language === 'en' ? 'Export to CSV' : 'Exportar a CSV'}
+                        title={lang === 'en' ? 'Export to CSV' : 'Exportar a CSV'}
                     >
                         <Download className="w-4 h-4" />
-                        <span className="hidden md:inline">{$language === 'en' ? 'Export' : 'Exportar'}</span>
+                        <span className="hidden md:inline">{lang === 'en' ? 'Export' : 'Exportar'}</span>
                     </Button>
 
                     {/* Status Filter */}
@@ -260,7 +264,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                                     : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'
                                     }`}
                             >
-                                {$language === 'en' ? s.en : s.es}
+                                {lang === 'en' ? s.en : s.es}
                             </Button>
                         ))}
                     </div>
@@ -274,7 +278,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                                 value={dateFrom}
                                 onChange={(e) => setDateFrom(e.target.value)}
                                 className="w-auto pl-10 pr-3 py-2 h-auto rounded-lg text-xs font-medium"
-                                title={$language === 'en' ? 'From date' : 'Desde fecha'}
+                                title={lang === 'en' ? 'From date' : 'Desde fecha'}
                             />
                         </div>
                         <span className="text-gray-400">-</span>
@@ -284,7 +288,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                                 value={dateTo}
                                 onChange={(e) => setDateTo(e.target.value)}
                                 className="w-auto px-3 py-2 h-auto rounded-lg text-xs font-medium"
-                                title={$language === 'en' ? 'To date' : 'Hasta fecha'}
+                                title={lang === 'en' ? 'To date' : 'Hasta fecha'}
                             />
                         </div>
                         {(dateFrom || dateTo) && (
@@ -292,7 +296,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                                 variant="ghost"
                                 onClick={() => { setDateFrom(''); setDateTo(''); }}
                                 className="p-2 h-auto text-gray-400 hover:text-red-500"
-                                title={$language === 'en' ? 'Clear dates' : 'Limpiar fechas'}
+                                title={lang === 'en' ? 'Clear dates' : 'Limpiar fechas'}
                             >
                                 <X className="w-4 h-4" />
                             </Button>
@@ -306,7 +310,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                         className="hidden sm:flex gap-2 rounded-full shadow-lg shadow-primary/25"
                     >
                         <Plus className="w-4 h-4" strokeWidth={3} />
-                        {$language === 'en' ? 'Create Booking' : 'Crear Reserva'}
+                        {lang === 'en' ? 'Create Booking' : 'Crear Reserva'}
                     </Button>
                 </div>
             </div>
@@ -364,18 +368,18 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                 ) : filtered.length === 0 ? (
                     <div className="p-16 text-center">
                         <FileText className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" strokeWidth={1} />
-                        <p className="text-gray-500 font-medium">{$language === 'en' ? 'No bookings found' : 'No se encontraron reservas'}</p>
+                        <p className="text-gray-500 font-medium">{lang === 'en' ? 'No bookings found' : 'No se encontraron reservas'}</p>
                     </div>
                 ) : (
                     <Table>
                         <TableHeader>
                             <TableRow className="border-b border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-white/5">
-                                <TableHead className="text-left px-6 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider">{$language === 'en' ? 'Date' : 'Fecha'}</TableHead>
-                                <TableHead className="text-left px-6 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider">{$language === 'en' ? 'Customer' : 'Cliente'}</TableHead>
-                                <TableHead className="text-left px-6 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider hidden md:table-cell">{$language === 'en' ? 'Tour' : 'Tour'}</TableHead>
-                                <TableHead className="text-left px-6 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider">{$language === 'en' ? 'Amount' : 'Monto'}</TableHead>
-                                <TableHead className="text-left px-6 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider">{$language === 'en' ? 'Status' : 'Estado'}</TableHead>
-                                <TableHead className="text-left px-6 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider">{$language === 'en' ? 'Actions' : 'Acciones'}</TableHead>
+                                <TableHead className="text-left px-6 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider">{lang === 'en' ? 'Date' : 'Fecha'}</TableHead>
+                                <TableHead className="text-left px-6 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider">{lang === 'en' ? 'Customer' : 'Cliente'}</TableHead>
+                                <TableHead className="text-left px-6 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider hidden md:table-cell">{lang === 'en' ? 'Tour' : 'Tour'}</TableHead>
+                                <TableHead className="text-left px-6 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider">{lang === 'en' ? 'Amount' : 'Monto'}</TableHead>
+                                <TableHead className="text-left px-6 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider">{lang === 'en' ? 'Status' : 'Estado'}</TableHead>
+                                <TableHead className="text-left px-6 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider">{lang === 'en' ? 'Actions' : 'Acciones'}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody className="divide-y divide-gray-100 dark:divide-white/5">
@@ -446,7 +450,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                                                 size="icon"
                                                 onClick={() => { setSelectedBookingDetails(booking); setDetailsModalOpen(true); }}
                                                 className="ml-1 rounded-xl"
-                                                title={$language === 'en' ? 'View Details' : 'Ver Detalles'}
+                                                title={lang === 'en' ? 'View Details' : 'Ver Detalles'}
                                             >
                                                 <Eye className="w-4 h-4" />
                                             </Button>
@@ -467,7 +471,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                                                                 className="w-full justify-start px-4 py-2 h-auto text-sm font-medium text-green-600 hover:bg-green-500/10 gap-2 rounded-none"
                                                             >
                                                                 <Check className="w-4 h-4" />
-                                                                {$language === 'en' ? 'Confirm' : 'Confirmar'}
+                                                                {lang === 'en' ? 'Confirm' : 'Confirmar'}
                                                             </Button>
                                                             <Button
                                                                 variant="ghost"
@@ -475,7 +479,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                                                                 className="w-full justify-start px-4 py-2 h-auto text-sm font-medium text-gray-600 hover:bg-gray-500/10 gap-2 rounded-none"
                                                             >
                                                                 <Check className="w-4 h-4" />
-                                                                {$language === 'en' ? 'Mark Completed' : 'Marcar Completado'}
+                                                                {lang === 'en' ? 'Mark Completed' : 'Marcar Completado'}
                                                             </Button>
                                                             <div className="border-t border-gray-100 dark:border-white/5 my-1" />
                                                         </>
@@ -489,7 +493,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                                                                 className="w-full justify-start px-4 py-2 h-auto text-sm font-medium text-green-600 hover:bg-green-500/10 gap-2 rounded-none"
                                                             >
                                                                 <Check className="w-4 h-4" />
-                                                                {$language === 'en' ? 'Confirm' : 'Confirmar'}
+                                                                {lang === 'en' ? 'Confirm' : 'Confirmar'}
                                                             </Button>
                                                             <Button
                                                                 variant="ghost"
@@ -497,7 +501,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                                                                 className="w-full justify-start px-4 py-2 h-auto text-sm font-medium text-gray-600 hover:bg-gray-500/10 gap-2 rounded-none"
                                                             >
                                                                 <Check className="w-4 h-4" />
-                                                                {$language === 'en' ? 'Mark Completed' : 'Marcar Completado'}
+                                                                {lang === 'en' ? 'Mark Completed' : 'Marcar Completado'}
                                                             </Button>
                                                             <div className="border-t border-gray-100 dark:border-white/5 my-1" />
                                                         </>
@@ -511,7 +515,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                                                                 className="w-full justify-start px-4 py-2 h-auto text-sm font-medium text-gray-600 hover:bg-gray-500/10 gap-2 rounded-none"
                                                             >
                                                                 <Check className="w-4 h-4" />
-                                                                {$language === 'en' ? 'Mark Completed' : 'Marcar Completado'}
+                                                                {lang === 'en' ? 'Mark Completed' : 'Marcar Completado'}
                                                             </Button>
                                                             <div className="border-t border-gray-100 dark:border-white/5 my-1" />
                                                         </>
@@ -522,7 +526,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                                                         className="w-full justify-start px-4 py-2 h-auto text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 gap-2 rounded-none"
                                                     >
                                                         <Mail className="w-4 h-4" />
-                                                        {$language === 'en' ? 'Send Email' : 'Enviar Email'}
+                                                        {lang === 'en' ? 'Send Email' : 'Enviar Email'}
                                                     </Button>
                                                     {booking.customer_phone && (
                                                         <Button
@@ -531,7 +535,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                                                             className="w-full justify-start px-4 py-2 h-auto text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 gap-2 rounded-none"
                                                         >
                                                             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
-                                                            {$language === 'en' ? 'WhatsApp' : 'WhatsApp'}
+                                                            {lang === 'en' ? 'WhatsApp' : 'WhatsApp'}
                                                         </Button>
                                                     )}
                                                     <Button
@@ -629,7 +633,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                                                         className="w-full justify-start px-4 py-2 h-auto text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 gap-2 rounded-none"
                                                     >
                                                         <Printer className="w-4 h-4" />
-                                                        {$language === 'en' ? 'Print' : 'Imprimir'}
+                                                        {lang === 'en' ? 'Print' : 'Imprimir'}
                                                     </Button>
                                                     <div className="border-t border-gray-100 dark:border-white/5 my-1" />
                                                     <Button
@@ -638,7 +642,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                                                         className="w-full justify-start px-4 py-2 h-auto text-sm font-medium text-red-500 hover:bg-red-500/10 gap-2 rounded-none"
                                                     >
                                                         <Trash2 className="w-4 h-4" />
-                                                        {$language === 'en' ? 'Delete' : 'Eliminar'}
+                                                        {lang === 'en' ? 'Delete' : 'Eliminar'}
                                                     </Button>
                                                 </div>
                                             )}

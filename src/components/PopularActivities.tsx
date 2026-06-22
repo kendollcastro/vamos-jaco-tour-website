@@ -79,6 +79,9 @@ function findTourByCategory(tours: Tour[], category: string, titleKeywords?: str
 
 export default function PopularActivities({ tours = [] }: PopularActivitiesProps) {
     const $language = useStore(language);
+    const [mounted, setMounted] = React.useState(false);
+    React.useEffect(() => { setMounted(true); }, []);
+    const lang = mounted ? $language : 'en';
 
     const content = {
         en: {
@@ -93,7 +96,7 @@ export default function PopularActivities({ tours = [] }: PopularActivitiesProps
         }
     };
 
-    const fallbackContent = content[$language];
+    const fallbackContent = content[lang];
 
     const tagline = fallbackContent.tagline;
     const titleText = fallbackContent.title;
@@ -119,7 +122,7 @@ export default function PopularActivities({ tours = [] }: PopularActivitiesProps
         }
 
         return {
-            name: $language === 'en' ? fallback.nameEn : fallback.nameEs,
+            name: lang === 'en' ? fallback.nameEn : fallback.nameEs,
             badge: fallback.badge,
             image: tour?.image_url || fallback.image,
             rotation: fallback.rotation,
