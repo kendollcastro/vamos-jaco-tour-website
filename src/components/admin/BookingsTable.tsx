@@ -130,11 +130,12 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
             .eq('id', id);
 
         if (!error) {
+            const booking = bookings.find(b => b.id === id);
             await logAudit({
                 action: 'update',
                 table_name: 'bookings',
                 record_id: id,
-                summary: `Updated booking ${id} status to ${newStatus}`
+                summary: `Updated booking ${booking?.customer_name || id} status to ${newStatus}`
             });
             fetchBookings();
             onToast?.(newStatus === 'confirmed' ? (lang === 'en' ? 'Booking confirmed!' : '¡Reserva confirmada!') : (lang === 'en' ? 'Booking cancelled' : 'Reserva cancelada'));
@@ -173,6 +174,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                 action: 'delete',
                 table_name: 'bookings',
                 record_id: id,
+                summary: `Deleted booking: ${bookingToDelete.customerName} - ${bookingToDelete.tourName}`
             });
             fetchBookings();
             onToast?.(lang === 'en' ? 'Booking deleted' : 'Reserva eliminada');

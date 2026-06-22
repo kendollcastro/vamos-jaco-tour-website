@@ -327,6 +327,7 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                 action: 'delete',
                 table_name: 'commissions',
                 record_id: id,
+                summary: `Deleted commission: ${deleteTarget.tour_name} - ${deleteTarget.customer_name}`
             });
             fetchCommissions();
             onToast?.(lang === 'en' ? 'Commission deleted' : 'Comisión eliminada');
