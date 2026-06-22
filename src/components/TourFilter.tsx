@@ -28,9 +28,12 @@ export default function TourFilter({
     subtitle
 }: TourFilterProps) {
     const $language = useStore(language);
+    const [mounted, setMounted] = useState(false);
     const [activeCategory, setActiveCategory] = useState<TourCategory | 'all'>('all');
     const [displayLimit, setDisplayLimit] = useState(defaultLimit); // Limit initial display
     const [searchQuery, setSearchQuery] = useState('');
+
+    useEffect(() => { setMounted(true); }, []);
 
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
@@ -81,6 +84,8 @@ export default function TourFilter({
     const displayedTours = filteredTours.slice(0, displayLimit);
     const hasMore = displayLimit < filteredTours.length;
 
+    const lang = mounted ? $language : 'en';
+
     const handleCategoryChange = (id: TourCategory | 'all') => {
         setActiveCategory(id);
         setDisplayLimit(8); // Reset limit when changing category
@@ -97,12 +102,12 @@ export default function TourFilter({
                             <div>
                                 {subtitle && (
                                     <span className="text-brand-orange font-bold tracking-widest uppercase mb-2 block animate-fade-in">
-                                        {$language === 'en' ? subtitle.en : subtitle.es}
+                                        {lang === 'en' ? subtitle.en : subtitle.es}
                                     </span>
                                 )}
                                 {title && (
                                     <h2 className="text-4xl md:text-6xl font-heading font-black text-white leading-[1.1] tracking-tight">
-                                        {$language === 'en' ? title.en : title.es}
+                                        {lang === 'en' ? title.en : title.es}
                                     </h2>
                                 )}
                             </div>
@@ -110,7 +115,7 @@ export default function TourFilter({
                                 <p className="text-gray-400 font-medium whitespace-nowrap bg-white/5 md:bg-transparent px-4 py-2 rounded-full inline-flex items-center">
                                     <span className="text-primary font-black text-xl mr-2">{filteredTours.length}</span> 
                                     <span className="text-sm uppercase tracking-wider">
-                                        {$language === 'en' ? 'Experiences Available' : 'Experiencias Disponibles'}
+                                        {lang === 'en' ? 'Experiences Available' : 'Experiencias Disponibles'}
                                     </span>
                                 </p>
                             </div>
@@ -132,7 +137,7 @@ export default function TourFilter({
                                     type="text"
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    placeholder={$language === 'en' ? "Search for tours, activities..." : "Busca tours, actividades..."}
+                                    placeholder={lang === 'en' ? "Search for tours, activities..." : "Busca tours, actividades..."}
                                     className="w-full bg-transparent py-4 px-4 text-white text-lg placeholder-gray-500 focus:outline-none"
                                 />
                                 <div className="flex items-center gap-2">
@@ -146,7 +151,7 @@ export default function TourFilter({
                                         </button>
                                     )}
                                     <button className="bg-primary text-white px-8 py-3.5 rounded-full font-black text-xs uppercase tracking-widest hidden md:block hover:bg-primary-dark transition-premium shadow-lg shadow-primary/20 active:scale-95">
-                                        {$language === 'en' ? 'Search' : 'Buscar'}
+                                        {lang === 'en' ? 'Search' : 'Buscar'}
                                     </button>
                                 </div>
                             </div>
@@ -158,7 +163,7 @@ export default function TourFilter({
                         <div className="flex items-center gap-4 text-gray-500 font-bold text-[10px] uppercase tracking-[0.3em] mb-6 md:justify-center">
                             <div className="h-px w-8 bg-white/10 hidden md:block"></div>
                             <Filter className="w-3.5 h-3.5 text-primary" />
-                            <span>{$language === 'en' ? 'Filter by Category' : 'Filtrar por Categoría'}</span>
+                            <span>{lang === 'en' ? 'Filter by Category' : 'Filtrar por Categoría'}</span>
                             <div className="h-px w-8 bg-white/10 hidden md:block"></div>
                         </div>
                         
@@ -179,7 +184,7 @@ export default function TourFilter({
                                                 : "bg-white/5 text-gray-400 border-white/10 hover:border-white/30 hover:text-white hover:bg-white/10 active:scale-95"
                                         )}
                                     >
-                                        {$language === 'en' ? cat.label.en : cat.label.es}
+                                        {lang === 'en' ? cat.label.en : cat.label.es}
                                     </button>
                                 ))}
                             </div>
@@ -208,7 +213,7 @@ export default function TourFilter({
 
             {filteredTours.length === 0 && (
                 <div className="text-center py-20 text-gray-400">
-                    <p>{$language === 'en' ? 'No tours found in this category.' : 'No se encontraron tours en esta categoría.'}</p>
+                    <p>{lang === 'en' ? 'No tours found in this category.' : 'No se encontraron tours en esta categoría.'}</p>
                 </div>
             )}
 
@@ -219,7 +224,7 @@ export default function TourFilter({
                         onClick={() => setDisplayLimit(prev => prev + 8)}
                         className="inline-flex items-center gap-3 px-12 py-5 rounded-full bg-white/5 border border-white/10 text-white font-black text-xs uppercase tracking-[0.2em] hover:bg-white/10 hover:border-primary/50 transition-premium shadow-xl active:scale-95"
                     >
-                        {$language === 'en' ? 'Explore More Tours' : 'Explorar Más Tours'}
+                        {lang === 'en' ? 'Explore More Tours' : 'Explorar Más Tours'}
                         <ChevronRight className="w-4 h-4 text-primary" />
                     </button>
                 </div>

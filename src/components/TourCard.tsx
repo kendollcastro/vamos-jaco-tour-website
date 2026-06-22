@@ -36,10 +36,11 @@ export default function TourCard({ id, slug, title, price, originalPrice, image_
     };
 
     const currentTitle = getText(title);
-    const bookText = $language === 'en' ? 'Book Now' : 'Reservar';
-    const startingFromText = $language === 'en' ? 'Starting From' : 'Desde';
-    const experienceText = $language === 'en' ? 'Experience' : 'Experiencia';
-    const inclusionText = $language === 'en' ? 'Inclusion' : 'Incluye';
+    const lang = mounted ? $language : 'en';
+    const bookText = lang === 'en' ? 'Book Now' : 'Reservar';
+    const startingFromText = lang === 'en' ? 'Starting From' : 'Desde';
+    const experienceText = lang === 'en' ? 'Experience' : 'Experiencia';
+    const inclusionText = lang === 'en' ? 'Inclusion' : 'Incluye';
 
     const getBadgeColor = (color: string) => {
         switch (color) {
