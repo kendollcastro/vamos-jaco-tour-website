@@ -205,4 +205,4 @@ CREATE POLICY "Secretaries read own audit" ON audit_log
 CREATE POLICY "Auth users insert audit log" ON audit_log
   FOR INSERT WITH CHECK (auth.role() = 'authenticated');
 
-ALTER PUBLICATION supabase_realtime ADD TABLE audit_log;
+ALTER PUBLICATION supabase_realtime ADD TABLE IF NOT EXISTS audit_log;

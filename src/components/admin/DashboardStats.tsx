@@ -8,7 +8,7 @@ import AddBookingModal from './AddBookingModal';
 import CalendarView from './CalendarView';
 import { cardClasses, statusBadge } from '../../lib/admin-design-tokens';
 import { Button } from '../ui/button';
-import { RefreshCw, Plus, AlertTriangle, Info, Zap, ClipboardList, Image, Mail, Calendar, Layers, Star, Edit } from 'lucide-react';
+import { RefreshCw, Plus, AlertTriangle, Info, Zap, ClipboardList, Image, Mail, Calendar, Layers, Star, Edit, History } from 'lucide-react';
 
 interface Stats {
     todayBookings: number;
@@ -80,6 +80,19 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
 
     useEffect(() => {
         fetchStats();
+        if (!supabase) return;
+        const channel = supabase
+            .channel('dashboard-audit')
+            .on('postgres_changes',
+                { event: 'INSERT', schema: 'public', table: 'audit_log' },
+                (payload: any) => {
+                    const entry = payload.new;
+                    const formatted = formatAuditActivities([entry]);
+                    setActivities(prev => [formatted[0], ...prev].slice(0, 10));
+                }
+            )
+            .subscribe();
+        return () => { supabase.removeChannel(channel); };
     }, []);
 
     async function fetchStats() {
@@ -152,10 +165,51 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
                 .order('created_at', { ascending: false });
 
             setOverbookings(overbooked || []);
+
+            // Fetch audit log activity
+            const { data: auditData } = await supabase
+                .from('audit_log')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(10);
+
+            if (auditData) {
+                setActivities(formatAuditActivities(auditData));
+            }
         } catch (err) {
             console.error('Error fetching stats:', err);
         }
         setLoading(false);
+    }
+
+    function formatAuditActivities(entries: any[]) {
+        const actionIcons: Record<string, string> = {
+            create: 'M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z',
+            update: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z',
+            delete: 'M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16',
+        };
+        const tableColors: Record<string, string> = {
+            bookings: 'text-blue-500 bg-blue-500/10',
+            commissions: 'text-emerald-500 bg-emerald-500/10',
+            tours: 'text-purple-500 bg-purple-500/10',
+        };
+        const getTimeAgo = (date: string) => {
+            const diff = Date.now() - new Date(date).getTime();
+            const mins = Math.floor(diff / 60000);
+            if (mins < 1) return 'just now';
+            if (mins < 60) return `${mins} min ago`;
+            const hrs = Math.floor(mins / 60);
+            if (hrs < 24) return `${hrs}h ago`;
+            return `${Math.floor(hrs / 24)}d ago`;
+        };
+        return entries.map((e: any) => ({
+            id: e.id,
+            type: e.table_name,
+            message: e.summary || `${e.action} ${e.table_name}`,
+            time: getTimeAgo(e.created_at),
+            icon: actionIcons[e.action] || 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+            color: tableColors[e.table_name] || 'text-gray-500 bg-gray-500/10',
+        }));
     }
 
     const statCards = [
@@ -365,8 +419,9 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
                                 <h3 className="text-gray-900 dark:text-white font-heading font-black text-lg tracking-tight uppercase flex items-center gap-2">
                                     <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                                     {t.dashboard.liveActivity}
+                                    <span className="text-[9px] text-muted-foreground font-medium uppercase tracking-wider ml-auto">audit log</span>
                                 </h3>
-                                <Button variant="link" onClick={() => onNavigate?.('bookings')} className="text-[10px] uppercase tracking-widest">{t.common.viewAll}</Button>
+                                <Button variant="link" onClick={() => onNavigate?.('auditLog')} className="text-[10px] uppercase tracking-widest">{t.common.viewAll}</Button>
                             </div>
                             
                             {activities.length === 0 ? (
