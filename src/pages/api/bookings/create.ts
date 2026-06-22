@@ -118,22 +118,23 @@ export const POST: APIRoute = async ({ request }) => {
                 resolvedTourId = tourData.id;
             }
 
+            const bookingRow: Record<string, any> = {
+                id: generatedBookingId,
+                tour_id: resolvedTourId,
+                customer_name: sanitizedName,
+                customer_email: sanitizedEmail,
+                customer_phone: sanitizedPhone,
+                tour_name: tourName || tourId,
+                booking_date: formattedDate,
+                total_amount: priceResult.total,
+                status: 'pending',
+                adults: adults || 1,
+                children: children || 0,
+            };
+            if (duration) bookingRow.duration = duration;
             const { error } = await supabaseAdmin
                 .from('bookings')
-                .insert([{
-                    id: generatedBookingId,
-                    tour_id: resolvedTourId,
-                    customer_name: sanitizedName,
-                    customer_email: sanitizedEmail,
-                    customer_phone: sanitizedPhone,
-                    tour_name: tourName || tourId,
-                    booking_date: formattedDate,
-                    total_amount: priceResult.total, // Use server-calculated price
-                    duration: duration || '',
-                    status: 'pending',
-                    adults: adults || 1,
-                    children: children || 0,
-                }]);
+                .insert([bookingRow]);
 
             if (error) {
                 console.error('Supabase booking error:', error.code);

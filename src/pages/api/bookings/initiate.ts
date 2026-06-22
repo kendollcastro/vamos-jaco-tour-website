@@ -139,7 +139,7 @@ export const POST: APIRoute = async ({ request }) => {
                 headers: { 'Content-Type': 'application/json' }
             });
         }
-        const { error: insertError } = await supabaseAdmin.from('bookings').insert([{
+        const bookingRow: Record<string, any> = {
             id: orderId,
             tour_id: tourUuid,
             tour_name: tourName || tourId,
@@ -150,9 +150,10 @@ export const POST: APIRoute = async ({ request }) => {
             adults: adults || 1,
             children: children || 0,
             total_amount: priceResult.total,
-            duration: duration || '',
             status: 'pending',
-        }]);
+        };
+        if (duration) bookingRow.duration = duration;
+        const { error: insertError } = await supabaseAdmin.from('bookings').insert([bookingRow]);
         if (insertError) {
             console.error('Error creating booking in initiate:', insertError);
             return new Response(JSON.stringify({

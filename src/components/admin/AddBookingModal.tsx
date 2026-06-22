@@ -49,12 +49,12 @@ export default function AddBookingModal({ isOpen, onClose, onSuccess, prefillDat
                 return;
             }
 
+            const { duration, ...rest } = formData;
+            const bookingData: Record<string, any> = { ...rest, created_at: new Date().toISOString() };
+            if (duration) bookingData.duration = duration;
             const { error } = await supabase
                 .from('bookings')
-                .insert([{
-                    ...formData,
-                    created_at: new Date().toISOString()
-                }]);
+                .insert([bookingData]);
 
             if (error) throw error;
             onSuccess();
