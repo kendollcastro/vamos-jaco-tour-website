@@ -129,22 +129,38 @@ export const POST: APIRoute = async ({ request }) => {
 
         // 6. Create booking BEFORE payment (so callback can find it)
         const formattedDate = new Date(date).toISOString().split('T')[0];
-        if (supabaseAdmin) {
-            await supabaseAdmin.from('bookings').insert([{
-                id: orderId,
-                tour_id: tourUuid,
-                tour_name: tourName || tourId,
-                customer_name: sanitizedName,
-                customer_email: sanitizedEmail,
-                customer_phone: sanitizedPhone,
-                booking_date: formattedDate,
-                adults: adults || 1,
-                children: children || 0,
-                total_amount: priceResult.total,
-                duration: duration || '',
-                status: 'pending',
-            }]).then(({ error }) => {
-                if (error) console.error('Error creating booking in initiate:', error);
+        if (!supabaseAdmin) {
+            console.error('Supabase not configured - cannot create booking');
+            return new Response(JSON.stringify({
+                success: false,
+                message: 'Payment service unavailable'
+            }), {
+                status: 500,
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
+        const { error: insertError } = await supabaseAdmin.from('bookings').insert([{
+            id: orderId,
+            tour_id: tourUuid,
+            tour_name: tourName || tourId,
+            customer_name: sanitizedName,
+            customer_email: sanitizedEmail,
+            customer_phone: sanitizedPhone,
+            booking_date: formattedDate,
+            adults: adults || 1,
+            children: children || 0,
+            total_amount: priceResult.total,
+            duration: duration || '',
+            status: 'pending',
+        }]);
+        if (insertError) {
+            console.error('Error creating booking in initiate:', insertError);
+            return new Response(JSON.stringify({
+                success: false,
+                message: 'Failed to create booking'
+            }), {
+                status: 500,
+                headers: { 'Content-Type': 'application/json' }
             });
         }
 
