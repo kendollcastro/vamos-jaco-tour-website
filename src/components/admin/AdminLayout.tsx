@@ -91,7 +91,10 @@ export default function AdminLayout({ children }: Props) {
         return 'dashboard';
     });
     const [userEmail, setUserEmail] = useState('');
-    const [userRole, setUserRole] = useState<string>('admin');
+    const [userRole, setUserRole] = useState<string>(() => {
+        if (typeof window !== 'undefined') return localStorage.getItem('user_role') || 'admin';
+        return 'admin';
+    });
     const [searchQuery, setSearchQuery] = useState('');
     const [toast, setToast] = useState<{ message: string; type?: 'info' | 'success' } | null>(null);
     const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -148,61 +151,45 @@ export default function AdminLayout({ children }: Props) {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, []);
 
-    // Auth + Profile
+    // Auth (no profile query — role is loaded lazily from localStorage)
     useEffect(() => {
         if (!supabase) {
             setAuthenticated(false);
             return;
         }
-        supabase.auth.getSession().then(async ({ data: { session } }) => {
+        const savedRole = localStorage.getItem('user_role');
+        if (savedRole === 'admin' || savedRole === 'secretary') setUserRole(savedRole);
+
+        supabase.auth.getSession().then(({ data: { session } }) => {
             setAuthenticated(!!session);
             if (session?.user?.email) setUserEmail(session.user.email);
-            if (session?.user) {
-                try {
-                    const { data: existing } = await supabase
-                        .from('profiles')
-                        .select('id, role')
-                        .eq('id', session.user.id)
-                        .single();
-                    if (existing) {
-                        setUserRole((existing as any).role);
-                    } else {
-                        await supabase.from('profiles').insert({
-                            id: session.user.id,
-                            email: session.user.email!,
-                            full_name: session.user.user_metadata?.full_name || '',
-                            role: 'admin',
-                        });
-                        setUserRole('admin');
-                    }
-                } catch {} // profiles table may not exist yet
-            }
         });
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             setAuthenticated(!!session);
             if (session?.user?.email) setUserEmail(session.user.email);
-            if (session?.user) {
-                try {
-                    const { data: existing } = await supabase
-                        .from('profiles')
-                        .select('id, role')
-                        .eq('id', session.user.id)
-                        .single();
-                    if (existing) {
-                        setUserRole((existing as any).role);
-                    } else {
-                        await supabase.from('profiles').insert({
-                            id: session.user.id,
-                            email: session.user.email!,
-                            full_name: session.user.user_metadata?.full_name || '',
-                            role: 'admin',
-                        });
-                        setUserRole('admin');
-                    }
-                } catch {} // profiles table may not exist yet
-            }
         });
         return () => subscription.unsubscribe();
+    }, []);
+
+    // Background profile fetch (fires once, stores result in localStorage)
+    useEffect(() => {
+        if (!supabase) return;
+        const controller = new AbortController();
+        const timeout = setTimeout(async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+            const { data } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('id', user.id)
+                .single();
+            if (data) {
+                const role = (data as any).role;
+                setUserRole(role);
+                localStorage.setItem('user_role', role);
+            }
+        }, 2000); // wait 2s after mount to not block rendering
+        return () => { clearTimeout(timeout); controller.abort(); };
     }, []);
 
     // Lazy-import view components

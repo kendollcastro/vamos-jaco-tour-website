@@ -80,21 +80,6 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
 
     useEffect(() => {
         fetchStats();
-        if (!supabase) return;
-        try {
-            const channel = supabase
-                .channel('dashboard-audit')
-                .on('postgres_changes',
-                    { event: 'INSERT', schema: 'public', table: 'audit_log' },
-                    (payload: any) => {
-                        const entry = payload.new;
-                        const formatted = formatAuditActivities([entry]);
-                        setActivities(prev => [formatted[0], ...prev].slice(0, 10));
-                    }
-                )
-                .subscribe();
-            return () => { supabase.removeChannel(channel); };
-        } catch {}
     }, []);
 
     async function fetchStats() {
@@ -123,16 +108,16 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
             return result as any;
         }
 
-        const [todayResult, pendingResult, confirmedResult, toursCountResult, recentResult, recentToursResult, overbookedResult, auditResult] = await Promise.allSettled([
-            queryWithTimeout(supabase.from('bookings').select('*').gte('created_at', `${today}T00:00:00`).lte('created_at', `${today}T23:59:59`)),
-            queryWithTimeout(supabase.from('bookings').select('id', { count: 'exact', head: true }).eq('status', 'pending')),
-            queryWithTimeout(supabase.from('bookings').select('id', { count: 'exact', head: true }).eq('status', 'confirmed')),
-            queryWithTimeout(supabase.from('tours').select('id', { count: 'exact', head: true }).eq('is_active', true)),
-            queryWithTimeout(supabase.from('bookings').select('*').order('created_at', { ascending: false }).limit(5)),
-            queryWithTimeout(supabase.from('tours').select('*').order('created_at', { ascending: false }).limit(2)),
-            queryWithTimeout(supabase.from('bookings').select('*, tours:tour_id(name_en, name_es)').eq('status', 'overbooked').order('created_at', { ascending: false })),
-            queryWithTimeout(supabase.from('audit_log').select('*').order('created_at', { ascending: false }).limit(10)),
-        ]);
+        const mainQueries = [
+            queryWithTimeout(supabase.from('bookings').select('*').gte('created_at', `${today}T00:00:00`).lte('created_at', `${today}T23:59:59`), 5000),
+            queryWithTimeout(supabase.from('bookings').select('id', { count: 'exact', head: true }).eq('status', 'pending'), 5000),
+            queryWithTimeout(supabase.from('bookings').select('id', { count: 'exact', head: true }).eq('status', 'confirmed'), 5000),
+            queryWithTimeout(supabase.from('tours').select('id', { count: 'exact', head: true }).eq('is_active', true), 5000),
+            queryWithTimeout(supabase.from('bookings').select('*').order('created_at', { ascending: false }).limit(5), 5000),
+            queryWithTimeout(supabase.from('tours').select('*').order('created_at', { ascending: false }).limit(2), 5000),
+            queryWithTimeout(supabase.from('bookings').select('*, tours:tour_id(name_en, name_es)').eq('status', 'overbooked').order('created_at', { ascending: false }), 5000),
+        ];
+        const [todayResult, pendingResult, confirmedResult, toursCountResult, recentResult, recentToursResult, overbookedResult] = await Promise.allSettled(mainQueries);
 
         console.log('[DashboardStats] all queries done');
 
@@ -143,7 +128,6 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
         const recentVal = recentResult.status === 'fulfilled' ? recentResult.value : { data: null, error: null };
         const recentToursVal = recentToursResult.status === 'fulfilled' ? recentToursResult.value : { data: null, error: null };
         const overbookedVal = overbookedResult.status === 'fulfilled' ? overbookedResult.value : { data: null, error: null };
-        const auditVal = auditResult.status === 'fulfilled' ? auditResult.value : { data: null, error: null };
 
         const todayBookings = todayVal.data || [];
         const todayRevenue = todayBookings.reduce((sum: number, b: any) => sum + Number(b.total_amount || 0), 0);
@@ -159,7 +143,6 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
         setRecentBookings(recentVal.data || []);
         setRecentTours(recentToursVal.data || []);
         setOverbookings(overbookedVal.data || []);
-        if (auditVal.data) setActivities(formatAuditActivities(auditVal.data));
         console.log('[DashboardStats] fetchStats complete');
         setLoading(false);
     }

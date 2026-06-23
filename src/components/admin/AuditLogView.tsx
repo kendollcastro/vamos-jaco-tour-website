@@ -29,7 +29,7 @@ export default function AuditLogView() {
             .from('audit_log')
             .select('*')
             .order('created_at', { ascending: false })
-            .limit(200);
+            .limit(50);
 
         if (!error) setEntries((data as AuditEntry[]) || []);
         setLoading(false);
