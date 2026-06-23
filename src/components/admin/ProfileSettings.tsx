@@ -46,12 +46,13 @@ export default function ProfileSettings({ onToast }: Props) {
 
         const { error } = await supabase
             .from('profiles')
-            .update({ full_name: fullName.trim() })
-            .eq('id', user.id);
+            .upsert(
+                { id: user.id, full_name: fullName.trim(), email: user.email },
+                { onConflict: 'id' }
+            );
 
         if (error) {
-            console.error('Error saving profile:', error);
-            onToast?.('Error saving profile', 'info');
+            onToast?.(`Error: ${error.message}`, 'info');
         } else {
             localStorage.setItem('user_full_name', fullName.trim());
             onToast?.('Profile updated', 'success');
