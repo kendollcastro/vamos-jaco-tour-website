@@ -34,12 +34,10 @@ import {
     ExternalLink,
     LogOut,
     BookOpen,
-    History,
-    Shield,
     Settings,
 } from 'lucide-react';
 
-type AdminView = 'dashboard' | 'tours' | 'bookings' | 'calendar' | 'subscribers' | 'gallery' | 'team' | 'website' | 'emails' | 'commissions' | 'auditLog' | 'users' | 'profile';
+type AdminView = 'dashboard' | 'tours' | 'bookings' | 'calendar' | 'subscribers' | 'gallery' | 'team' | 'website' | 'emails' | 'commissions' | 'profile';
 
 interface Props {
     children?: ReactNode;
@@ -56,8 +54,6 @@ const NAV_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
     website: Code,
     emails: Monitor,
     commissions: DollarSign,
-    auditLog: History,
-    users: Shield,
     profile: Settings,
 };
 
@@ -72,8 +68,6 @@ const ALL_NAV_ITEMS = (t: typeof adminTranslations.en) => [
     { id: 'website' as AdminView, label: t.nav.components, adminOnly: true },
     { id: 'emails' as AdminView, label: t.nav.emailTests, adminOnly: true },
     { id: 'commissions' as AdminView, label: t.nav.commissions, adminOnly: false },
-    { id: 'auditLog' as AdminView, label: t.nav.auditLog, adminOnly: true },
-    { id: 'users' as AdminView, label: t.nav.users, adminOnly: true },
     { id: 'profile' as AdminView, label: t.nav.profile, adminOnly: false },
 ];
 
@@ -215,8 +209,6 @@ export default function AdminLayout({ children }: Props) {
     const [WebsiteComponentsView, setWebsiteComponentsView] = useState<React.ComponentType | null>(null);
     const [EmailsView, setEmailsView] = useState<React.ComponentType | null>(null);
     const [CommissionsView, setCommissionsView] = useState<React.ComponentType | null>(null);
-    const [AuditLogView, setAuditLogView] = useState<React.ComponentType | null>(null);
-    const [UserManagerView, setUserManagerView] = useState<React.ComponentType | null>(null);
     const [ProfileSettingsView, setProfileSettingsView] = useState<React.ComponentType | null>(null);
 
     useEffect(() => {
@@ -230,8 +222,6 @@ export default function AdminLayout({ children }: Props) {
         import('./WebsiteComponents').then((m) => setWebsiteComponentsView(() => m.default));
         import('./EmailTester').then((m) => setEmailsView(() => m.default));
         import('./CommissionsTable').then((m) => setCommissionsView(() => m.default));
-        import('./AuditLogView').then((m) => setAuditLogView(() => m.default));
-        import('./UserManager').then((m) => setUserManagerView(() => m.default));
         import('./ProfileSettings').then((m) => setProfileSettingsView(() => m.default));
     }, []);
 
@@ -261,11 +251,9 @@ export default function AdminLayout({ children }: Props) {
                             : currentView === 'website' ? WebsiteComponentsView
                                 : currentView === 'emails' ? EmailsView
                                     : currentView === 'commissions' ? CommissionsView
-                                        : currentView === 'auditLog' ? AuditLogView
-                                            : currentView === 'users' ? UserManagerView
-                                                : currentView === 'profile' ? ProfileSettingsView
-                                                    : currentView === 'gallery' ? GalleryView
-                                                        : DashboardView;
+                                        : currentView === 'profile' ? ProfileSettingsView
+                                            : currentView === 'gallery' ? GalleryView
+                                                : DashboardView;
 
     const navItems = getNavItems(t as any, userRole).filter(item =>
         item.label.toLowerCase().includes(searchQuery.toLowerCase())
