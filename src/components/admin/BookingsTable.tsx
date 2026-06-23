@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { logAudit } from '../../lib/audit';
+import AuditInfo from './AuditInfo';
 import { useStore } from '@nanostores/react';
 import { language } from '../../store';
 import { adminTranslations } from '../../lib/admin-translations';
@@ -458,7 +459,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                                                 <MoreHorizontal className="w-4 h-4" />
                                             </Button>
                                             
-                                            {/* Quick View Button - Open Details Modal */}
+                                            <AuditInfo recordId={booking.id} />
                                             <Button
                                                 variant="ghost"
                                                 size="icon"

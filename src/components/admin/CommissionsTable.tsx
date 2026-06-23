@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { logAudit } from '../../lib/audit';
+import AuditInfo from './AuditInfo';
 import { useStore } from '@nanostores/react';
 import { language } from '../../store';
 import { adminTranslations } from '../../lib/admin-translations';
@@ -614,6 +615,7 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex items-center justify-end gap-1">
+                                            <AuditInfo recordId={c.id} />
                                             <Button variant="ghost" size="icon" onClick={() => openEditModal(c)}>
                                                 <Pencil className="h-4 w-4" />
                                             </Button>

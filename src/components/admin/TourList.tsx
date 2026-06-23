@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { logAudit } from '../../lib/audit';
+import AuditInfo from './AuditInfo';
 import type { TourRow } from '../../lib/supabase-tours';
 import TourEditor from './TourEditor';
 import { Button } from '../ui/button';
@@ -180,6 +181,7 @@ export default function TourList() {
 
                                 {/* Action Buttons */}
                                 <div className="mt-auto pt-4 border-t border-gray-100 dark:border-white/5 flex gap-2 w-full">
+                                    <AuditInfo recordId={tour.id} />
                                     <Button
                                         variant="ghost"
                                         onClick={() => handleEdit(tour)}
