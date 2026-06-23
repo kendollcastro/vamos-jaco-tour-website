@@ -30,9 +30,10 @@ export default function AuditInfo({ recordId }: Props) {
             .order('created_at', { ascending: false })
             .limit(10)
             .then(({ data }) => {
-                setEntries((data as AuditEntry[]) || []);
+                if (data) setEntries(data as AuditEntry[]);
                 setLoading(false);
-            });
+            })
+            .catch(() => setLoading(false));
     }, [open, recordId]);
 
     const ActionIcon = (action: string) => {

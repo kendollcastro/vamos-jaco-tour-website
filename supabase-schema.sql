@@ -175,6 +175,9 @@ CREATE POLICY "Admins manage profiles" ON profiles
     EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
   );
 
+CREATE POLICY "Users insert own profile" ON profiles
+  FOR INSERT WITH CHECK (auth.uid() = id);
+
 -- ─── Audit Log ──────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS audit_log (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),

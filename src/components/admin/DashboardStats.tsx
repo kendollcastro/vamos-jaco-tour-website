@@ -81,18 +81,20 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
     useEffect(() => {
         fetchStats();
         if (!supabase) return;
-        const channel = supabase
-            .channel('dashboard-audit')
-            .on('postgres_changes',
-                { event: 'INSERT', schema: 'public', table: 'audit_log' },
-                (payload: any) => {
-                    const entry = payload.new;
-                    const formatted = formatAuditActivities([entry]);
-                    setActivities(prev => [formatted[0], ...prev].slice(0, 10));
-                }
-            )
-            .subscribe();
-        return () => { supabase.removeChannel(channel); };
+        try {
+            const channel = supabase
+                .channel('dashboard-audit')
+                .on('postgres_changes',
+                    { event: 'INSERT', schema: 'public', table: 'audit_log' },
+                    (payload: any) => {
+                        const entry = payload.new;
+                        const formatted = formatAuditActivities([entry]);
+                        setActivities(prev => [formatted[0], ...prev].slice(0, 10));
+                    }
+                )
+                .subscribe();
+            return () => { supabase.removeChannel(channel); };
+        } catch {} // audit_log table may not be in publication yet
     }, []);
 
     async function fetchStats() {
@@ -166,16 +168,15 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
 
             setOverbookings(overbooked || []);
 
-            // Fetch audit log activity
-            const { data: auditData } = await supabase
-                .from('audit_log')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .limit(10);
-
-            if (auditData) {
-                setActivities(formatAuditActivities(auditData));
-            }
+            // Fetch audit log activity (gracefully if table doesn't exist yet)
+            try {
+                const { data: auditData } = await supabase
+                    .from('audit_log')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+                if (auditData) setActivities(formatAuditActivities(auditData));
+            } catch {} // table may not exist yet
         } catch (err) {
             console.error('Error fetching stats:', err);
         }
