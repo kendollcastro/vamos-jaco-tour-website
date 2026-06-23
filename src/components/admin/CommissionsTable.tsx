@@ -238,7 +238,7 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
         const discount = parseFloat(formDiscount) || 0;
         const price = parseFloat(formPrice) || 0;
 
-        const payload = {
+        const payload: Record<string, any> = {
             date: formDate,
             tour_name: formTour,
             customer_name: formCustomer,
@@ -253,8 +253,8 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
             commission_20: parseFloat(formCommission20) || 0,
             tax: parseFloat(formTax) || 0,
             payment_method: formPaymentMethod,
-            location: formLocation,
         };
+        if (formLocation) payload.location = formLocation;
 
         if (isDemo) {
             if (editingCommission) {
