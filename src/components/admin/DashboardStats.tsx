@@ -114,75 +114,52 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
         const today = new Date().toISOString().split('T')[0];
         console.log('[DashboardStats] queries starting');
 
-        try {
-            const { data: todayData } = await supabase
-                .from('bookings')
-                .select('*')
-                .gte('created_at', `${today}T00:00:00`)
-                .lte('created_at', `${today}T23:59:59`);
-
-            const todayBookings = todayData || [];
-            const todayRevenue = todayBookings.reduce((sum, b) => sum + Number(b.total_amount || 0), 0);
-
-            const { count: pendingCount } = await supabase
-                .from('bookings')
-                .select('*', { count: 'exact', head: true })
-                .eq('status', 'pending');
-
-            const { count: confirmedCount } = await supabase
-                .from('bookings')
-                .select('*', { count: 'exact', head: true })
-                .eq('status', 'confirmed');
-            
-            const { count: totalTours } = await supabase
-                .from('tours')
-                .select('*', { count: 'exact', head: true })
-                .eq('is_active', true);
-
-            setStats({
-                todayBookings: todayBookings.length,
-                todayRevenue,
-                pendingCount: pendingCount || 0,
-                confirmedCount: confirmedCount || 0,
-                weekGrowth: 12.5,
-                totalTours: totalTours || 0,
-            });
-
-            const { data: recent } = await supabase
-                .from('bookings')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .limit(5);
-
-            setRecentBookings(recent || []);
-            const { data: tours } = await supabase
-                .from('tours')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .limit(2);
-
-            setRecentTours(tours || []);
-
-            const { data: overbooked } = await supabase
-                .from('bookings')
-                .select('*, tours:tour_id(name_en, name_es)')
-                .eq('status', 'overbooked')
-                .order('created_at', { ascending: false });
-
-            setOverbookings(overbooked || []);
-
-            // Fetch audit log activity (gracefully if table doesn't exist yet)
-            try {
-                const { data: auditData } = await supabase
-                    .from('audit_log')
-                    .select('*')
-                    .order('created_at', { ascending: false })
-                    .limit(10);
-                if (auditData) setActivities(formatAuditActivities(auditData));
-            } catch {} // table may not exist yet
-        } catch (err) {
-            console.error('[DashboardStats] Error:', err);
+        // Query with timeout helper
+        async function queryWithTimeout<T>(promise: Promise<{ data: T | null; error: any }>, ms = 10000): Promise<{ data: T | null; error: any }> {
+            const result = await Promise.race([
+                promise,
+                new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout')), ms)),
+            ]);
+            return result as any;
         }
+
+        const [todayResult, pendingResult, confirmedResult, toursCountResult, recentResult, recentToursResult, overbookedResult, auditResult] = await Promise.allSettled([
+            queryWithTimeout(supabase.from('bookings').select('*').gte('created_at', `${today}T00:00:00`).lte('created_at', `${today}T23:59:59`)),
+            queryWithTimeout(supabase.from('bookings').select('id', { count: 'exact', head: true }).eq('status', 'pending')),
+            queryWithTimeout(supabase.from('bookings').select('id', { count: 'exact', head: true }).eq('status', 'confirmed')),
+            queryWithTimeout(supabase.from('tours').select('id', { count: 'exact', head: true }).eq('is_active', true)),
+            queryWithTimeout(supabase.from('bookings').select('*').order('created_at', { ascending: false }).limit(5)),
+            queryWithTimeout(supabase.from('tours').select('*').order('created_at', { ascending: false }).limit(2)),
+            queryWithTimeout(supabase.from('bookings').select('*, tours:tour_id(name_en, name_es)').eq('status', 'overbooked').order('created_at', { ascending: false })),
+            queryWithTimeout(supabase.from('audit_log').select('*').order('created_at', { ascending: false }).limit(10)),
+        ]);
+
+        console.log('[DashboardStats] all queries done');
+
+        const todayVal = todayResult.status === 'fulfilled' ? todayResult.value : { data: null, error: null };
+        const pendingVal = pendingResult.status === 'fulfilled' ? pendingResult.value : { data: null, error: null };
+        const confirmedVal = confirmedResult.status === 'fulfilled' ? confirmedResult.value : { data: null, error: null };
+        const toursCountVal = toursCountResult.status === 'fulfilled' ? toursCountResult.value : { data: null, error: null };
+        const recentVal = recentResult.status === 'fulfilled' ? recentResult.value : { data: null, error: null };
+        const recentToursVal = recentToursResult.status === 'fulfilled' ? recentToursResult.value : { data: null, error: null };
+        const overbookedVal = overbookedResult.status === 'fulfilled' ? overbookedResult.value : { data: null, error: null };
+        const auditVal = auditResult.status === 'fulfilled' ? auditResult.value : { data: null, error: null };
+
+        const todayBookings = todayVal.data || [];
+        const todayRevenue = todayBookings.reduce((sum: number, b: any) => sum + Number(b.total_amount || 0), 0);
+
+        setStats({
+            todayBookings: todayBookings.length,
+            todayRevenue,
+            pendingCount: (pendingVal as any).count || 0,
+            confirmedCount: (confirmedVal as any).count || 0,
+            weekGrowth: 12.5,
+            totalTours: (toursCountVal as any).count || 0,
+        });
+        setRecentBookings(recentVal.data || []);
+        setRecentTours(recentToursVal.data || []);
+        setOverbookings(overbookedVal.data || []);
+        if (auditVal.data) setActivities(formatAuditActivities(auditVal.data));
         console.log('[DashboardStats] fetchStats complete');
         setLoading(false);
     }
