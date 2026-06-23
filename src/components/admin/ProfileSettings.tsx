@@ -25,14 +25,7 @@ export default function ProfileSettings({ onToast }: Props) {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) { setLoading(false); return; }
         setEmail(user.email || '');
-
-        const { data } = await supabase
-            .from('profiles')
-            .select('full_name')
-            .eq('id', user.id)
-            .single();
-
-        if (data) setFullName((data as any).full_name || '');
+        setFullName(user.user_metadata?.full_name || '');
         setLoading(false);
     }
 
@@ -44,12 +37,9 @@ export default function ProfileSettings({ onToast }: Props) {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) { setSaving(false); return; }
 
-        const { error } = await supabase
-            .from('profiles')
-            .upsert(
-                { id: user.id, full_name: fullName.trim(), email: user.email },
-                { onConflict: 'id' }
-            );
+        const { error } = await supabase.auth.updateUser({
+            data: { full_name: fullName.trim() },
+        });
 
         if (error) {
             onToast?.(`Error: ${error.message}`, 'info');

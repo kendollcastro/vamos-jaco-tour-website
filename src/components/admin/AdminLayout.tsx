@@ -170,10 +170,12 @@ export default function AdminLayout({ children }: Props) {
         supabase.auth.getSession().then(({ data: { session } }) => {
             setAuthenticated(!!session);
             if (session?.user?.email) setUserEmail(session.user.email);
+            if (session?.user?.user_metadata?.full_name) setUserName(session.user.user_metadata.full_name);
         });
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             setAuthenticated(!!session);
             if (session?.user?.email) setUserEmail(session.user.email);
+            if (session?.user?.user_metadata?.full_name) setUserName(session.user.user_metadata.full_name);
         });
         return () => subscription.unsubscribe();
     }, []);
