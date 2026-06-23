@@ -182,22 +182,24 @@ export default function AdminLayout({ children }: Props) {
             setAuthenticated(!!session);
             if (session?.user?.email) setUserEmail(session.user.email);
             if (session?.user) {
-                const { data: existing } = await supabase
-                    .from('profiles')
-                    .select('id, role')
-                    .eq('id', session.user.id)
-                    .single();
-                if (existing) {
-                    setUserRole((existing as any).role);
-                } else {
-                    await supabase.from('profiles').insert({
-                        id: session.user.id,
-                        email: session.user.email!,
-                        full_name: session.user.user_metadata?.full_name || '',
-                        role: 'admin',
-                    });
-                    setUserRole('admin');
-                }
+                try {
+                    const { data: existing } = await supabase
+                        .from('profiles')
+                        .select('id, role')
+                        .eq('id', session.user.id)
+                        .single();
+                    if (existing) {
+                        setUserRole((existing as any).role);
+                    } else {
+                        await supabase.from('profiles').insert({
+                            id: session.user.id,
+                            email: session.user.email!,
+                            full_name: session.user.user_metadata?.full_name || '',
+                            role: 'admin',
+                        });
+                        setUserRole('admin');
+                    }
+                } catch {} // profiles table may not exist yet
             }
         });
         return () => subscription.unsubscribe();

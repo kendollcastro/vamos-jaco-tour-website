@@ -80,7 +80,9 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
 
     useEffect(() => {
         fetchStats();
-        if (!supabase) return;
+        // Safety timeout — force loading off after 8s in case a query hangs
+        const timer = setTimeout(() => setLoading(false), 8000);
+        if (!supabase) return () => clearTimeout(timer);
         try {
             const channel = supabase
                 .channel('dashboard-audit')
@@ -93,8 +95,8 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
                     }
                 )
                 .subscribe();
-            return () => { supabase.removeChannel(channel); };
-        } catch {} // audit_log table may not be in publication yet
+            return () => { clearTimeout(timer); supabase.removeChannel(channel); };
+        } catch { return () => clearTimeout(timer); }
     }, []);
 
     async function fetchStats() {
