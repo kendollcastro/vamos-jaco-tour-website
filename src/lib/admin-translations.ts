@@ -14,6 +14,7 @@ export const adminTranslations = {
       commissions: 'Commissions',
       auditLog: 'Audit Log',
       users: 'Users',
+      profile: 'Profile',
     },
     common: {
       search: 'Search sections, tours...',
@@ -88,6 +89,7 @@ export const adminTranslations = {
       commissions: 'Comisiones',
       auditLog: 'Registro de Actividad',
       users: 'Usuarios',
+      profile: 'Perfil',
     },
     common: {
       search: 'Buscar secciones, tours...',

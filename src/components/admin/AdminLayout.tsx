@@ -36,9 +36,10 @@ import {
     BookOpen,
     History,
     Shield,
+    Settings,
 } from 'lucide-react';
 
-type AdminView = 'dashboard' | 'tours' | 'bookings' | 'calendar' | 'subscribers' | 'gallery' | 'team' | 'website' | 'emails' | 'commissions' | 'auditLog' | 'users';
+type AdminView = 'dashboard' | 'tours' | 'bookings' | 'calendar' | 'subscribers' | 'gallery' | 'team' | 'website' | 'emails' | 'commissions' | 'auditLog' | 'users' | 'profile';
 
 interface Props {
     children?: ReactNode;
@@ -57,6 +58,7 @@ const NAV_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
     commissions: DollarSign,
     auditLog: History,
     users: Shield,
+    profile: Settings,
 };
 
 const ALL_NAV_ITEMS = (t: typeof adminTranslations.en) => [
@@ -72,6 +74,7 @@ const ALL_NAV_ITEMS = (t: typeof adminTranslations.en) => [
     { id: 'commissions' as AdminView, label: t.nav.commissions, adminOnly: false },
     { id: 'auditLog' as AdminView, label: t.nav.auditLog, adminOnly: true },
     { id: 'users' as AdminView, label: t.nav.users, adminOnly: true },
+    { id: 'profile' as AdminView, label: t.nav.profile, adminOnly: false },
 ];
 
 const getNavItems = (t: typeof adminTranslations.en, role: string) =>
@@ -91,6 +94,10 @@ export default function AdminLayout({ children }: Props) {
         return 'dashboard';
     });
     const [userEmail, setUserEmail] = useState('');
+    const [userName, setUserName] = useState(() => {
+        if (typeof window !== 'undefined') return localStorage.getItem('user_full_name') || '';
+        return '';
+    });
     const [userRole, setUserRole] = useState<string>(() => {
         if (typeof window !== 'undefined') return localStorage.getItem('user_role') || 'admin';
         return 'admin';
@@ -180,13 +187,16 @@ export default function AdminLayout({ children }: Props) {
             if (!user) return;
             const { data } = await supabase
                 .from('profiles')
-                .select('role')
+                .select('role, full_name')
                 .eq('id', user.id)
                 .single();
             if (data) {
                 const role = (data as any).role;
+                const name = (data as any).full_name || '';
                 setUserRole(role);
+                setUserName(name);
                 localStorage.setItem('user_role', role);
+                localStorage.setItem('user_full_name', name);
             }
         }, 2000); // wait 2s after mount to not block rendering
         return () => { clearTimeout(timeout); controller.abort(); };
@@ -205,6 +215,7 @@ export default function AdminLayout({ children }: Props) {
     const [CommissionsView, setCommissionsView] = useState<React.ComponentType | null>(null);
     const [AuditLogView, setAuditLogView] = useState<React.ComponentType | null>(null);
     const [UserManagerView, setUserManagerView] = useState<React.ComponentType | null>(null);
+    const [ProfileSettingsView, setProfileSettingsView] = useState<React.ComponentType | null>(null);
 
     useEffect(() => {
         import('./DashboardStats').then((m) => setDashboardView(() => m.default));
@@ -219,6 +230,7 @@ export default function AdminLayout({ children }: Props) {
         import('./CommissionsTable').then((m) => setCommissionsView(() => m.default));
         import('./AuditLogView').then((m) => setAuditLogView(() => m.default));
         import('./UserManager').then((m) => setUserManagerView(() => m.default));
+        import('./ProfileSettings').then((m) => setProfileSettingsView(() => m.default));
     }, []);
 
     async function handleLogout() {
@@ -249,7 +261,9 @@ export default function AdminLayout({ children }: Props) {
                                     : currentView === 'commissions' ? CommissionsView
                                         : currentView === 'auditLog' ? AuditLogView
                                             : currentView === 'users' ? UserManagerView
-                                                : GalleryView;
+                                                : currentView === 'profile' ? ProfileSettingsView
+                                                    : currentView === 'gallery' ? GalleryView
+                                                        : DashboardView;
 
     const navItems = getNavItems(t as any, userRole).filter(item =>
         item.label.toLowerCase().includes(searchQuery.toLowerCase())
@@ -333,7 +347,7 @@ export default function AdminLayout({ children }: Props) {
                     </Avatar>
                     <div className="flex flex-col min-w-0">
                         <span className="text-sm font-bold text-foreground truncate">
-                            {userEmail.split('@')[0] || 'Admin'}
+                            {userName || userEmail.split('@')[0] || 'Admin'}
                         </span>
                         <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">
                             {userRole === 'admin' ? 'Admin' : 'Secretary'}
