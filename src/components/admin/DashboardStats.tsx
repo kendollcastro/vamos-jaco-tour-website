@@ -80,9 +80,7 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
 
     useEffect(() => {
         fetchStats();
-        // Safety timeout — force loading off after 8s in case a query hangs
-        const timer = setTimeout(() => setLoading(false), 8000);
-        if (!supabase) return () => clearTimeout(timer);
+        if (!supabase) return;
         try {
             const channel = supabase
                 .channel('dashboard-audit')
@@ -95,14 +93,16 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
                     }
                 )
                 .subscribe();
-            return () => { clearTimeout(timer); supabase.removeChannel(channel); };
-        } catch { return () => clearTimeout(timer); }
+            return () => { supabase.removeChannel(channel); };
+        } catch {}
     }, []);
 
     async function fetchStats() {
+        console.log('[DashboardStats] fetchStats start');
         setLoading(true);
 
         if (!supabase) {
+            console.log('[DashboardStats] demo mode');
             setStats({ todayBookings: 3, todayRevenue: 720, pendingCount: 2, confirmedCount: 5, weekGrowth: 12.5, totalTours: 8 });
             setRecentBookings(DEMO_BOOKINGS);
             setRecentTours([]);
@@ -112,6 +112,7 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
         }
 
         const today = new Date().toISOString().split('T')[0];
+        console.log('[DashboardStats] queries starting');
 
         try {
             const { data: todayData } = await supabase
@@ -180,8 +181,9 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
                 if (auditData) setActivities(formatAuditActivities(auditData));
             } catch {} // table may not exist yet
         } catch (err) {
-            console.error('Error fetching stats:', err);
+            console.error('[DashboardStats] Error:', err);
         }
+        console.log('[DashboardStats] fetchStats complete');
         setLoading(false);
     }
 
