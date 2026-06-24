@@ -72,7 +72,7 @@ const ALL_NAV_ITEMS = (t: typeof adminTranslations.en) => [
     { id: 'website' as AdminView, label: t.nav.components, adminOnly: true },
     { id: 'emails' as AdminView, label: t.nav.emailTests, adminOnly: true },
     { id: 'commissions' as AdminView, label: t.nav.commissions, adminOnly: false },
-    { id: 'auditLog' as AdminView, label: t.nav.auditLog, adminOnly: true },
+    { id: 'auditLog' as AdminView, label: t.nav.auditLog, adminOnly: false },
     { id: 'users' as AdminView, label: t.nav.users, adminOnly: true },
     { id: 'profile' as AdminView, label: t.nav.profile, adminOnly: false },
 ];
