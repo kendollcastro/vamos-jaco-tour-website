@@ -7,6 +7,7 @@ import { RefreshCw, History } from 'lucide-react';
 interface AuditEntry {
     id: string;
     user_email: string;
+    user_name: string;
     action: string;
     table_name: string;
     record_id: string;
@@ -84,7 +85,7 @@ export default function AuditLogView() {
                                             <div className="flex items-center gap-2 flex-wrap">
                                                 <span className="text-sm font-semibold capitalize">{entry.table_name}</span>
                                                 <span className="text-xs text-muted-foreground">by</span>
-                                                <span className="text-sm font-medium">{entry.user_email || 'Unknown'}</span>
+                                                <span className="text-sm font-medium">{entry.user_name || entry.user_email || 'Unknown'}</span>
                                             </div>
                                             {entry.summary && (
                                                 <p className="text-sm text-muted-foreground mt-0.5">{entry.summary}</p>

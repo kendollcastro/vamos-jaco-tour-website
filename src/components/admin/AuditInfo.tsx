@@ -11,6 +11,7 @@ interface Props {
 interface AuditEntry {
     action: string;
     user_email: string;
+    user_name: string;
     summary: string;
     created_at: string;
 }
@@ -25,7 +26,7 @@ export default function AuditInfo({ recordId }: Props) {
         setLoading(true);
         supabase
             .from('audit_log')
-            .select('action, user_email, summary, created_at')
+            .select('action, user_email, user_name, summary, created_at')
             .eq('record_id', recordId)
             .order('created_at', { ascending: false })
             .limit(10)
@@ -97,7 +98,7 @@ export default function AuditInfo({ recordId }: Props) {
                                             <div className="min-w-0 flex-1">
                                                 <p className="text-sm font-medium text-foreground">{e.summary || `${e.action} record`}</p>
                                                 <div className="flex items-center gap-2 mt-0.5">
-                                                    <span className="text-xs text-muted-foreground">{e.user_email}</span>
+                                                    <span className="text-xs text-muted-foreground">{e.user_name || e.user_email}</span>
                                                     <span className="text-[10px] text-muted-foreground/60">&middot;</span>
                                                     <span className="text-xs text-muted-foreground">{formatTimeAgo(e.created_at)}</span>
                                                 </div>
