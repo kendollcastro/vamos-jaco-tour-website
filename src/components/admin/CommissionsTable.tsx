@@ -23,14 +23,6 @@ import {
     SelectValue,
 } from '../ui/select';
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '../ui/table';
-import {
     Plus,
     Search,
     RefreshCw,
@@ -41,6 +33,12 @@ import {
     PiggyBank,
     DollarSign,
     Landmark,
+    TrendingUp,
+    ChevronLeft,
+    ChevronRight,
+    Clock,
+    MapPin,
+    User,
 } from 'lucide-react';
 
 interface Commission {
@@ -74,6 +72,36 @@ const DEMO_COMMISSIONS: Commission[] = [
 
 const LOCATION_OPTIONS = ['', 'Centro', 'Madrigales'];
 const PAYMENT_OPTIONS = ['Cash', 'Card', 'Transfer', 'Synapay', 'Tilopay'];
+
+const TOUR_ICONS: Record<string, string> = {
+    'ATV': '\u{1F3CE}',
+    'Jetski': '\u{1F3C4}',
+    'Mulas': '\u{1F98F}',
+    'Surf': '\u{1F3C4}',
+    'Flyboard': '\u{1F6F9}',
+    'Slingshot': '\u{1F6B2}',
+    'Rainforest': '\u{1F333}',
+};
+
+function getInitials(name: string): string {
+    return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+}
+
+const AVATAR_COLORS = [
+    'from-primary/80 to-primary',
+    'from-brand-teal/80 to-brand-teal',
+    'from-brand-orange/80 to-brand-orange',
+    'from-brand-yellow/80 to-brand-yellow',
+    'from-purple-500/80 to-purple-700',
+];
+
+function getAvatarColor(name: string): string {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+}
 
 export default function CommissionsTable({ onToast }: { onToast?: (message: string) => void }) {
     const $language = useStore(language);
@@ -116,8 +144,14 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
 
     const isDemo = !supabase;
 
-    const [guides, setGuides] = useState<{ id: string; name: string }[]>([]);
+    const [guides, setGuides] = useState<{ id: string; name: string; image_url?: string }[]>([]);
+    const guideImageMap = Object.fromEntries(
+        guides.filter(g => g.image_url).map(g => [g.name, g.image_url])
+    );
     const [tourOptions, setTourOptions] = useState<{ id: string; name_en: string; name_es: string }[]>([]);
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const pageSize = 10;
 
     useEffect(() => {
         fetchCommissions();
@@ -152,10 +186,10 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
         }
         const { data } = await supabase
             .from('team_members')
-            .select('id, name')
+            .select('id, name, image_url')
             .eq('is_active', true)
             .order('name');
-        if (data) setGuides(data as { id: string; name: string }[]);
+        if (data) setGuides(data as { id: string; name: string; image_url?: string }[]);
     }
 
     async function fetchToursList() {
@@ -266,7 +300,7 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                     id: Date.now().toString(),
                     ...payload,
                     created_at: new Date().toISOString(),
-                };
+                } as Commission;
                 setCommissions(prev => [newEntry, ...prev]);
             }
             onToast?.(lang === 'en' ? 'Commission saved' : 'Comisión guardada');
@@ -314,7 +348,7 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                     const newVal = payload[key];
                     if (String(oldVal) !== String(newVal)) {
                         const label = fieldLabels[key] || key;
-                        changes.push(`${label}: ${oldVal ?? '—'} → ${newVal ?? '—'}`);
+                        changes.push(`${label}: ${oldVal ?? '\u2014'} \u2192 ${newVal ?? '\u2014'}`);
                         changesJson[key] = { old: oldVal, new: newVal };
                     }
                 }
@@ -411,6 +445,10 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
         return matchesSearch && matchesDateFrom && matchesDateTo && matchesGuide && matchesLocation;
     });
 
+    const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+    const safePage = Math.min(currentPage, totalPages);
+    const paginated = filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
+
     const totalPrice = filtered.reduce((sum, c) => sum + c.price, 0);
     const totalCommission10 = filtered.reduce((sum, c) => sum + c.commission_10, 0);
     const totalCommission20 = filtered.reduce((sum, c) => sum + c.commission_20, 0);
@@ -431,63 +469,102 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-end justify-between">
                 <div>
-                    <h2 className="text-2xl font-bold text-foreground">
-                        {lang === 'en' ? 'Commissions' : 'Comisiones'}
-                    </h2>
-                    <p className="text-sm text-muted-foreground mt-1">
-                        {lang === 'en' ? 'Track guide commissions and provider payments' : 'Control de comisiones de guías y pagos a proveedores'}
+                    <p className="text-sm text-muted-foreground">
+                        {lang === 'en' ? 'Control Dashboard' : 'Dashboard de Control'}
                     </p>
+                    <h2 className="text-3xl font-bold text-foreground tracking-tight">
+                        {lang === 'en' ? 'Guide Commissions & Payments' : 'Comisiones de guías y pagos'}
+                    </h2>
                 </div>
-                <Button onClick={openNewModal}>
+                <Button onClick={openNewModal} className="gap-2 shadow-lg shadow-primary/20">
                     <Plus className="h-4 w-4" />
                     {lang === 'en' ? 'Add Entry' : 'Agregar Entrada'}
                 </Button>
             </div>
 
-            {/* Summary Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="rounded-xl border border-border/60 bg-card p-5 text-card-foreground shadow-sm">
-                    <div className="flex items-center gap-2 text-muted-foreground mb-1">
-                        <DollarSign className="h-4 w-4" />
-                        <p className="text-xs font-bold uppercase tracking-wider">{lang === 'en' ? 'Total Revenue' : 'Ingreso Total'}</p>
+            {/* KPI Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div className="rounded-2xl border border-border/40 bg-card/60 backdrop-blur-xl p-5 card-hover">
+                    <div className="flex items-start justify-between mb-4">
+                        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                            <DollarSign className="h-5 w-5 text-primary" />
+                        </div>
+                        <div className="flex items-center gap-1 text-emerald-500 text-xs font-semibold">
+                            <TrendingUp className="h-3.5 w-3.5" />
+                            <span>+12.4%</span>
+                        </div>
                     </div>
-                    <p className="text-2xl font-black">${totalPrice.toLocaleString()}</p>
+                    <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-0.5">
+                        {lang === 'en' ? 'Total Revenue' : 'Ingreso Total'}
+                    </p>
+                    <p className="text-3xl font-black text-foreground">${totalPrice.toLocaleString()}</p>
                 </div>
-                <div className="rounded-xl border border-border/60 bg-card p-5 text-card-foreground shadow-sm">
-                    <div className="flex items-center gap-2 text-muted-foreground mb-1">
-                        <PiggyBank className="h-4 w-4" />
-                        <p className="text-xs font-bold uppercase tracking-wider">10% {lang === 'en' ? 'Guide' : 'Guía'}</p>
+                <div className="rounded-2xl border border-border/40 bg-card/60 backdrop-blur-xl p-5 card-hover">
+                    <div className="flex items-start justify-between mb-4">
+                        <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                            <PiggyBank className="h-5 w-5 text-emerald-500" />
+                        </div>
                     </div>
-                    <p className="text-2xl font-black text-emerald-600">${totalCommission10.toLocaleString()}</p>
+                    <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-0.5">
+                        {lang === 'en' ? 'Guide Commission (10%)' : 'Comisión Guías (10%)'}
+                    </p>
+                    <p className="text-3xl font-black text-emerald-500">${totalCommission10.toLocaleString()}</p>
                 </div>
-                <div className="rounded-xl border border-border/60 bg-card p-5 text-card-foreground shadow-sm">
-                    <div className="flex items-center gap-2 text-muted-foreground mb-1">
-                        <Landmark className="h-4 w-4" />
-                        <p className="text-xs font-bold uppercase tracking-wider">20% {lang === 'en' ? 'Provider' : 'Proveedor'}</p>
+                <div className="rounded-2xl border border-border/40 bg-card/60 backdrop-blur-xl p-5 card-hover">
+                    <div className="flex items-start justify-between mb-4">
+                        <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center">
+                            <Landmark className="h-5 w-5 text-orange-500" />
+                        </div>
                     </div>
-                    <p className="text-2xl font-black text-orange-600">${totalCommission20.toLocaleString()}</p>
+                    <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-0.5">
+                        {lang === 'en' ? 'Provider Payment (20%)' : 'Pago Proveedores (20%)'}
+                    </p>
+                    <p className="text-3xl font-black text-orange-500">${totalCommission20.toLocaleString()}</p>
                 </div>
             </div>
 
-            {/* Guide Stats */}
-            <div className="rounded-xl border border-border/60 bg-card shadow-sm p-4">
-                <h3 className="text-sm font-bold text-foreground mb-3">
+            {/* Guide Performance */}
+            <div className="rounded-2xl border border-border/40 bg-card/60 backdrop-blur-xl p-5 card-hover">
+                <h3 className="text-lg font-bold text-foreground mb-5 flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5 text-primary" />
                     {lang === 'en' ? 'Guide Performance' : 'Rendimiento por Guía'}
                 </h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {guideStats.length === 0 ? (
                         <p className="text-sm text-muted-foreground col-span-full">
                             {lang === 'en' ? 'No guide data available' : 'No hay datos de guías'}
                         </p>
                     ) : guideStats.map(([name, stats]) => (
-                        <div key={name} className="rounded-lg border border-border/40 bg-background p-3">
-                            <p className="text-sm font-bold text-foreground truncate">{name}</p>
-                            <div className="mt-1 space-y-0.5 text-[11px] text-muted-foreground">
-                                <p>{stats.count} {lang === 'en' ? 'tours' : 'tours'}</p>
-                                <p className="font-semibold text-foreground">${stats.revenue.toLocaleString()}</p>
-                                <p className="font-semibold text-emerald-600">${stats.commission.toFixed(2)}</p>
+                        <div key={name} className="rounded-xl border border-border/40 bg-background/80 p-4 card-hover group relative overflow-hidden">
+                            <div className="flex items-center gap-3 relative z-10">
+                                <div className={`w-11 h-11 rounded-full ${guideImageMap[name] ? 'overflow-hidden ring-2 ring-border/60' : `bg-gradient-to-br ${getAvatarColor(name)}`} flex items-center justify-center text-white text-sm font-bold shadow-lg shrink-0`}>
+                                    {guideImageMap[name] ? (
+                                        <img src={guideImageMap[name]} alt={name} className="w-full h-full object-cover" />
+                                    ) : (
+                                        getInitials(name)
+                                    )}
+                                </div>
+                                <div>
+                                    <p className="font-semibold text-foreground text-sm">{name}</p>
+                                    <p className="text-xs text-muted-foreground">
+                                        {stats.count} {lang === 'en' ? 'tours completed' : 'tours realizados'}
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="mt-3 flex items-center justify-between relative z-10">
+                                <div>
+                                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{lang === 'en' ? 'Revenue' : 'Ganancias'}</p>
+                                    <p className="text-base font-bold text-foreground">${stats.revenue.toLocaleString()}</p>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{lang === 'en' ? 'Commission' : 'Comisión'}</p>
+                                    <p className="text-sm font-semibold text-emerald-500">${stats.commission.toFixed(2)}</p>
+                                </div>
+                            </div>
+                            <div className="absolute -right-4 -bottom-4 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity">
+                                <User className="h-20 w-20" />
                             </div>
                         </div>
                     ))}
@@ -496,18 +573,18 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
 
             {/* Toolbar */}
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-                <div className="relative w-full sm:w-80">
+                <div className="relative w-full sm:w-72">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder={lang === 'en' ? 'Search customer, tour or guide...' : 'Buscar cliente, tour o guía...'}
-                        className="pl-9"
+                        placeholder={lang === 'en' ? 'Search transaction...' : 'Buscar transacción...'}
+                        className="pl-9 bg-background/80"
                     />
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
-                    <Select value={guideFilter} onValueChange={setGuideFilter}>
-                        <SelectTrigger className="w-40">
+                    <Select value={guideFilter} onValueChange={(v) => { setGuideFilter(v); setCurrentPage(1); }}>
+                        <SelectTrigger className="w-36">
                             <SelectValue placeholder={lang === 'en' ? 'All guides' : 'Todos los guías'} />
                         </SelectTrigger>
                         <SelectContent>
@@ -517,8 +594,8 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                             ))}
                         </SelectContent>
                     </Select>
-                    <Select value={locationFilter} onValueChange={setLocationFilter}>
-                        <SelectTrigger className="w-36">
+                    <Select value={locationFilter} onValueChange={(v) => { setLocationFilter(v); setCurrentPage(1); }}>
+                        <SelectTrigger className="w-32">
                             <SelectValue placeholder={lang === 'en' ? 'Location' : 'Ubicación'} />
                         </SelectTrigger>
                         <SelectContent>
@@ -528,29 +605,40 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                             ))}
                         </SelectContent>
                     </Select>
-                    <Button variant="outline" size="sm" onClick={handleRefresh} disabled={refreshing}>
-                        <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
-                        {lang === 'en' ? 'Refresh' : 'Actualizar'}
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={exportToCSV} disabled={filtered.length === 0}>
-                        <Download className="h-4 w-4" />
-                        {lang === 'en' ? 'Export' : 'Exportar'}
-                    </Button>
-                    <div className="flex items-center gap-2">
-                        <Input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} className="w-36" />
-                        <span className="text-muted-foreground">-</span>
-                        <Input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} className="w-36" />
+                    <div className="flex items-center gap-1 bg-background/80 border border-border/60 rounded-lg p-1">
+                        <Input
+                            type="date"
+                            value={dateFrom}
+                            onChange={e => { setDateFrom(e.target.value); setCurrentPage(1); }}
+                            className="w-32 border-0 bg-transparent h-8 text-xs"
+                        />
+                        <span className="text-muted-foreground text-xs px-0.5">{lang === 'en' ? 'to' : 'al'}</span>
+                        <Input
+                            type="date"
+                            value={dateTo}
+                            onChange={e => { setDateTo(e.target.value); setCurrentPage(1); }}
+                            className="w-32 border-0 bg-transparent h-8 text-xs"
+                        />
                         {(dateFrom || dateTo) && (
-                            <Button variant="ghost" size="icon" onClick={() => { setDateFrom(''); setDateTo(''); }}>
-                                <X className="h-4 w-4" />
-                            </Button>
+                            <button onClick={() => { setDateFrom(''); setDateTo(''); setCurrentPage(1); }}
+                                className="p-1 hover:bg-muted rounded transition-colors">
+                                <X className="h-3.5 w-3.5 text-muted-foreground" />
+                            </button>
                         )}
                     </div>
+                    <Button variant="outline" size="sm" onClick={handleRefresh} disabled={refreshing} className="gap-2">
+                        <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin' : ''}`} />
+                        {lang === 'en' ? 'Refresh' : 'Actualizar'}
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={exportToCSV} disabled={filtered.length === 0} className="gap-2">
+                        <Download className="h-3.5 w-3.5" />
+                        {lang === 'en' ? 'Export' : 'Exportar'}
+                    </Button>
                 </div>
             </div>
 
             {/* Table */}
-            <div className="rounded-xl border border-border/60 bg-card shadow-sm">
+            <div className="rounded-2xl border border-border/40 bg-card/60 backdrop-blur-xl overflow-hidden shadow-sm">
                 {loading ? (
                     <div className="p-6 space-y-4">
                         {[1, 2, 3, 4, 5].map(i => (
@@ -572,94 +660,169 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                         </p>
                     </div>
                 ) : (
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>{lang === 'en' ? 'Date' : 'Fecha'}</TableHead>
-                                <TableHead>{lang === 'en' ? 'Tour' : 'Tour'}</TableHead>
-                                <TableHead>{lang === 'en' ? 'Customer' : 'Cliente'}</TableHead>
-                                <TableHead>{lang === 'en' ? 'Time' : 'Hora'}</TableHead>
-                                <TableHead>{lang === 'en' ? 'Location' : 'Ubicación'}</TableHead>
-                                <TableHead># M</TableHead>
-                                <TableHead># PAX</TableHead>
-                                <TableHead>{lang === 'en' ? 'Disc. %' : 'Desc. %'}</TableHead>
-                                <TableHead>{lang === 'en' ? 'Price' : 'Precio'}</TableHead>
-                                <TableHead>{lang === 'en' ? 'Guide' : 'Guía'}</TableHead>
-                                <TableHead>10%</TableHead>
-                                <TableHead>{lang === 'en' ? 'Provider' : 'Proveedor'}</TableHead>
-                                <TableHead>20%</TableHead>
-                                <TableHead>IVA</TableHead>
-                                <TableHead>{lang === 'en' ? 'Payment' : 'Pago'}</TableHead>
-                                <TableHead className="text-right">{lang === 'en' ? 'Actions' : 'Acciones'}</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {filtered.map((c) => (
-                                <TableRow key={c.id}>
-                                    <TableCell className="font-medium">{new Date(c.date).toLocaleDateString()}</TableCell>
-                                    <TableCell>{c.tour_name}</TableCell>
-                                    <TableCell>{c.customer_name}</TableCell>
-                                    <TableCell className="text-muted-foreground">{c.time}</TableCell>
-                                    <TableCell>
-                                        {c.location ? (
-                                            <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                                                c.location === 'Madrigales'
-                                                    ? 'bg-amber-500/15 text-amber-600 dark:text-amber-500 border border-amber-500/25'
-                                                    : 'bg-blue-500/15 text-blue-600 dark:text-blue-500 border border-blue-500/25'
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="bg-muted/50 border-b border-border/60">
+                                    <th className="px-5 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground">{lang === 'en' ? 'Date' : 'Fecha'}</th>
+                                    <th className="px-5 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground">{lang === 'en' ? 'Tour' : 'Tour'}</th>
+                                    <th className="px-5 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground">{lang === 'en' ? 'Customer' : 'Cliente'}</th>
+                                    <th className="px-5 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground">{lang === 'en' ? 'Details' : 'Detalles'}</th>
+                                    <th className="px-5 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground text-center">Pax</th>
+                                    <th className="px-5 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground text-right">{lang === 'en' ? 'Price' : 'Precio'}</th>
+                                    <th className="px-5 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground">{lang === 'en' ? 'Guide' : 'Guía'}</th>
+                                    <th className="px-5 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground text-right">{lang === 'en' ? 'Commission' : 'Comisión'}</th>
+                                    <th className="px-5 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground">IVA</th>
+                                    <th className="px-5 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground">{lang === 'en' ? 'Payment' : 'Pago'}</th>
+                                    <th className="px-5 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground text-right">{lang === 'en' ? 'Actions' : 'Acciones'}</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-border/40">
+                                {paginated.map((c) => (
+                                    <tr key={c.id} className="hover:bg-muted/30 transition-colors group">
+                                        <td className="px-5 py-4 text-sm text-foreground whitespace-nowrap">
+                                            {new Date(c.date).toLocaleDateString()}
+                                        </td>
+                                        <td className="px-5 py-4">
+                                            <div className="flex items-center gap-2.5">
+                                                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-sm shrink-0">
+                                                    {TOUR_ICONS[c.tour_name] || (
+                                                        <MapPin className="h-4 w-4 text-primary" />
+                                                    )}
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-medium text-foreground">{c.tour_name}</p>
+                                                    {c.location && (
+                                                        <p className="text-[11px] text-muted-foreground">{c.location}</p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-5 py-4">
+                                            <p className="text-sm text-foreground">{c.customer_name}</p>
+                                            <p className="text-[11px] text-muted-foreground">ID: #{c.id.slice(0, 4)}</p>
+                                        </td>
+                                        <td className="px-5 py-4">
+                                            <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
+                                                <Clock className="h-3.5 w-3.5" />
+                                                <span>{c.time || '\u2014'}</span>
+                                            </div>
+                                            {c.discount > 0 && (
+                                                <span className="inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-500/10 text-amber-500 border border-amber-500/20">
+                                                    {c.discount}% DESC
+                                                </span>
+                                            )}
+                                        </td>
+                                        <td className="px-5 py-4 text-center text-sm font-semibold text-foreground">
+                                            {c.pax}
+                                        </td>
+                                        <td className="px-5 py-4 text-right text-base font-bold text-foreground">
+                                            ${c.price.toLocaleString()}
+                                        </td>
+                                        <td className="px-5 py-4">
+                                            <div className="flex items-center gap-2">
+                                                <div className={`w-6 h-6 rounded-full ${guideImageMap[c.guide_name] ? 'overflow-hidden ring-1 ring-border/40' : `bg-gradient-to-br ${getAvatarColor(c.guide_name)}`} flex items-center justify-center text-white text-[9px] font-bold shrink-0`}>
+                                                    {guideImageMap[c.guide_name] ? (
+                                                        <img src={guideImageMap[c.guide_name]} alt={c.guide_name} className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        getInitials(c.guide_name)
+                                                    )}
+                                                </div>
+                                                <span className="text-sm text-foreground">{c.guide_name}</span>
+                                            </div>
+                                        </td>
+                                        <td className="px-5 py-4 text-right text-sm font-bold text-emerald-500">
+                                            ${c.commission_10.toFixed(2)}
+                                        </td>
+                                        <td className="px-5 py-4 text-sm text-muted-foreground">
+                                            ${c.tax.toFixed(2)}
+                                        </td>
+                                        <td className="px-5 py-4">
+                                            <span className={`inline-flex px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
+                                                c.payment_method === 'Cash'
+                                                    ? 'bg-emerald-500/15 text-emerald-500 border-emerald-500/25'
+                                                    : c.payment_method === 'Card'
+                                                    ? 'bg-blue-500/15 text-blue-500 border-blue-500/25'
+                                                    : c.payment_method === 'Transfer'
+                                                    ? 'bg-purple-500/15 text-purple-500 border-purple-500/25'
+                                                    : 'bg-muted/50 text-muted-foreground border-border/40'
                                             }`}>
-                                                {c.location}
+                                                {c.payment_method.toUpperCase()}
                                             </span>
-                                        ) : (
-                                            <span className="text-muted-foreground">-</span>
-                                        )}
-                                    </TableCell>
-                                    <TableCell className="font-bold">{c.machines}</TableCell>
-                                    <TableCell className="font-bold">{c.pax}</TableCell>
-                                    <TableCell className="font-bold text-destructive">
-                                        {c.discount > 0 ? `${c.discount}%` : '-'}
-                                    </TableCell>
-                                    <TableCell className="font-black">${c.price.toLocaleString()}</TableCell>
-                                    <TableCell className="text-muted-foreground">{c.guide_name}</TableCell>
-                                    <TableCell className="font-bold text-emerald-600">${c.commission_10.toFixed(2)}</TableCell>
-                                    <TableCell className="text-muted-foreground">{c.provider_name || '-'}</TableCell>
-                                    <TableCell className="font-bold text-orange-600">${c.commission_20.toFixed(2)}</TableCell>
-                                    <TableCell className="text-muted-foreground">${c.tax.toFixed(2)}</TableCell>
-                                    <TableCell className="text-right">
-                                        {c.apuesta_pct > 0 ? (
-                                            <span className="font-bold text-purple-600 dark:text-purple-400">
-                                                ${(c.price * c.apuesta_pct / 100).toFixed(2)}
-                                                <span className="text-[10px] text-muted-foreground ml-1">({c.apuesta_pct}%)</span>
-                                            </span>
-                                        ) : (
-                                            <span className="text-muted-foreground">-</span>
-                                        )}
-                                    </TableCell>
-                                    <TableCell>
-                                        <span className={`inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                                            c.payment_method === 'Cash'
-                                                ? 'bg-emerald-500/20 text-emerald-600 border border-emerald-500/30'
-                                                : c.payment_method === 'Card'
-                                                ? 'bg-blue-500/20 text-blue-600 border border-blue-500/30'
-                                                : 'bg-purple-500/20 text-purple-600 border border-purple-500/30'
-                                        }`}>
-                                            {c.payment_method}
-                                        </span>
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        <div className="flex items-center justify-end gap-1">
-                                            <AuditInfo recordId={c.id} />
-                                            <Button variant="ghost" size="icon" onClick={() => openEditModal(c)}>
-                                                <Pencil className="h-4 w-4" />
-                                            </Button>
-                                            <Button variant="ghost" size="icon" onClick={() => handleDeleteClick(c)}>
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
+                                        </td>
+                                        <td className="px-5 py-4 text-right">
+                                            <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <AuditInfo recordId={c.id} />
+                                                <button onClick={() => openEditModal(c)}
+                                                    className="p-1.5 hover:bg-muted rounded-lg transition-colors text-muted-foreground hover:text-foreground">
+                                                    <Pencil className="h-3.5 w-3.5" />
+                                                </button>
+                                                <button onClick={() => handleDeleteClick(c)}
+                                                    className="p-1.5 hover:bg-destructive/10 rounded-lg transition-colors text-muted-foreground hover:text-destructive">
+                                                    <Trash2 className="h-3.5 w-3.5" />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+
+                {/* Pagination */}
+                {filtered.length > 0 && (
+                    <div className="px-5 py-3.5 bg-muted/30 border-t border-border/40 flex items-center justify-between">
+                        <p className="text-xs text-muted-foreground">
+                            {lang === 'en'
+                                ? `Showing ${(safePage - 1) * pageSize + 1}-${Math.min(safePage * pageSize, filtered.length)} of ${filtered.length} transactions`
+                                : `Mostrando ${(safePage - 1) * pageSize + 1}-${Math.min(safePage * pageSize, filtered.length)} de ${filtered.length} transacciones`}
+                        </p>
+                        <div className="flex items-center gap-1">
+                            <button
+                                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                disabled={safePage <= 1}
+                                className="p-1.5 rounded-lg border border-border/40 hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                            >
+                                <ChevronLeft className="h-4 w-4 text-muted-foreground" />
+                            </button>
+                            {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                                let pageNum: number;
+                                if (totalPages <= 5) {
+                                    pageNum = i + 1;
+                                } else if (safePage <= 3) {
+                                    pageNum = i + 1;
+                                } else if (safePage >= totalPages - 2) {
+                                    pageNum = totalPages - 4 + i;
+                                } else {
+                                    pageNum = safePage - 2 + i;
+                                }
+                                return (
+                                    <button
+                                        key={pageNum}
+                                        onClick={() => setCurrentPage(pageNum)}
+                                        className={`w-8 h-8 rounded-lg text-xs font-bold transition-colors ${
+                                            safePage === pageNum
+                                                ? 'bg-primary text-primary-foreground shadow-sm'
+                                                : 'hover:bg-muted text-muted-foreground'
+                                        }`}
+                                    >
+                                        {pageNum}
+                                    </button>
+                                );
+                            })}
+                            {totalPages > 5 && safePage < totalPages - 2 && (
+                                <span className="px-1 text-xs text-muted-foreground">...</span>
+                            )}
+                            <button
+                                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                                disabled={safePage >= totalPages}
+                                className="p-1.5 rounded-lg border border-border/40 hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                            >
+                                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                            </button>
+                        </div>
+                    </div>
                 )}
             </div>
 
@@ -854,6 +1017,16 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                     </form>
                 </DialogContent>
             </Dialog>
+
+            <style>{`
+                .card-hover {
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                }
+                .card-hover:hover {
+                    transform: translateY(-3px);
+                    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+                }
+            `}</style>
         </div>
     );
 }
