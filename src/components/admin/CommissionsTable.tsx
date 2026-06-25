@@ -93,6 +93,7 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
 
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editingCommission, setEditingCommission] = useState<Commission | null>(null);
+    const [originalCommission, setOriginalCommission] = useState<Partial<Record<keyof Commission, any>> | null>(null);
     const [deleteTarget, setDeleteTarget] = useState<Commission | null>(null);
 
     const [formDate, setFormDate] = useState('');
@@ -206,6 +207,7 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
 
     function openEditModal(c: Commission) {
         setEditingCommission(c);
+        setOriginalCommission({ ...c });
         setFormDate(c.date);
         setFormTour(c.tour_name);
         setFormCustomer(c.customer_name);
@@ -287,11 +289,41 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
             setFormError(error.message);
         } else {
             if (editingCommission) {
+                const changes: string[] = [];
+                const changesJson: Record<string, { old: any; new: any }> = {};
+                const orig = originalCommission as any;
+                const fieldLabels: Record<string, string> = {
+                    location: lang === 'en' ? 'Location' : 'Ubicación',
+                    machines: '#M',
+                    pax: lang === 'en' ? 'Pax' : 'Pax',
+                    discount: lang === 'en' ? 'Discount' : 'Descuento',
+                    price: lang === 'en' ? 'Price' : 'Precio',
+                    guide_name: lang === 'en' ? 'Guide' : 'Guía',
+                    commission_10: '10%',
+                    provider_name: lang === 'en' ? 'Provider' : 'Proveedor',
+                    commission_20: '20%',
+                    tax: lang === 'en' ? 'Tax' : 'Impuesto',
+                    payment_method: lang === 'en' ? 'Payment' : 'Pago',
+                    date: lang === 'en' ? 'Date' : 'Fecha',
+                    tour_name: lang === 'en' ? 'Tour' : 'Tour',
+                    customer_name: lang === 'en' ? 'Customer' : 'Cliente',
+                    time: lang === 'en' ? 'Time' : 'Hora',
+                };
+                for (const key of Object.keys(payload)) {
+                    const oldVal = orig?.[key];
+                    const newVal = payload[key];
+                    if (String(oldVal) !== String(newVal)) {
+                        const label = fieldLabels[key] || key;
+                        changes.push(`${label}: ${oldVal ?? '—'} → ${newVal ?? '—'}`);
+                        changesJson[key] = { old: oldVal, new: newVal };
+                    }
+                }
                 await logAudit({
                     action: 'update',
                     table_name: 'commissions',
                     record_id: editingCommission.id,
-                    summary: `Updated commission: ${formTour} - ${formCustomer}`
+                    summary: changes.length > 0 ? changes.join('; ') : `Updated commission: ${formTour} - ${formCustomer}`,
+                    changes: changesJson,
                 });
             } else if (newId) {
                 await logAudit({
