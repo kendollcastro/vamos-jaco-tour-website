@@ -72,8 +72,8 @@ const ALL_NAV_ITEMS = (t: typeof adminTranslations.en) => [
     { id: 'website' as AdminView, label: t.nav.components, adminOnly: true },
     { id: 'emails' as AdminView, label: t.nav.emailTests, adminOnly: true },
     { id: 'commissions' as AdminView, label: t.nav.commissions, adminOnly: false },
-    { id: 'auditLog' as AdminView, label: t.nav.auditLog, adminOnly: false },
-    { id: 'users' as AdminView, label: t.nav.users, adminOnly: true },
+    // { id: 'auditLog' as AdminView, label: t.nav.auditLog, adminOnly: false },
+    // { id: 'users' as AdminView, label: t.nav.users, adminOnly: true },
     { id: 'profile' as AdminView, label: t.nav.profile, adminOnly: false },
 ];
 
@@ -486,9 +486,9 @@ export default function AdminLayout({ children }: Props) {
                 </header>
 
                 {/* Page Content */}
-                <div className="flex-1 p-4 lg:p-8 overflow-auto">
+                <div className="flex-1 p-4 lg:px-6 lg:py-8 overflow-auto">
                     {ActiveView ? (
-                        <div className="mx-auto max-w-7xl">
+                        <div className="mx-auto w-full">
                             <ActiveView onNavigate={setCurrentView} onToast={showToast} />
                         </div>
                     ) : (

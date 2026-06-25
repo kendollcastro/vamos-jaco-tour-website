@@ -664,62 +664,65 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="bg-muted/50 border-b border-border/60">
-                                    <th className="px-5 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground">{lang === 'en' ? 'Date' : 'Fecha'}</th>
-                                    <th className="px-5 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground">{lang === 'en' ? 'Tour' : 'Tour'}</th>
-                                    <th className="px-5 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground">{lang === 'en' ? 'Customer' : 'Cliente'}</th>
-                                    <th className="px-5 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground">{lang === 'en' ? 'Details' : 'Detalles'}</th>
-                                    <th className="px-5 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground text-center">Pax</th>
-                                    <th className="px-5 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground text-right">{lang === 'en' ? 'Price' : 'Precio'}</th>
-                                    <th className="px-5 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground">{lang === 'en' ? 'Guide' : 'Guía'}</th>
-                                    <th className="px-5 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground text-right">{lang === 'en' ? 'Commission' : 'Comisión'}</th>
-                                    <th className="px-5 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground">IVA</th>
-                                    <th className="px-5 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground">{lang === 'en' ? 'Payment' : 'Pago'}</th>
-                                    <th className="px-5 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground text-right">{lang === 'en' ? 'Actions' : 'Acciones'}</th>
+                                    <th className="px-4 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground whitespace-nowrap">{lang === 'en' ? 'Date' : 'Fecha'}</th>
+                                    <th className="px-4 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground whitespace-nowrap">{lang === 'en' ? 'Tour' : 'Tour'}</th>
+                                    <th className="px-4 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground whitespace-nowrap">{lang === 'en' ? 'Customer' : 'Cliente'}</th>
+                                    <th className="px-4 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground whitespace-nowrap">{lang === 'en' ? 'Time' : 'Hora'}</th>
+                                    <th className="px-4 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground whitespace-nowrap">{lang === 'en' ? 'Location' : 'Ubicación'}</th>
+                                    <th className="px-4 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground whitespace-nowrap text-center"># M</th>
+                                    <th className="px-4 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground whitespace-nowrap text-center"># PAX</th>
+                                    <th className="px-4 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground whitespace-nowrap text-center">{lang === 'en' ? 'Disc. %' : 'Desc. %'}</th>
+                                    <th className="px-4 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground whitespace-nowrap text-right">{lang === 'en' ? 'Price' : 'Precio'}</th>
+                                    <th className="px-4 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground whitespace-nowrap">{lang === 'en' ? 'Guide' : 'Guía'}</th>
+                                    <th className="px-4 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground whitespace-nowrap text-right">10%</th>
+                                    <th className="px-4 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground whitespace-nowrap">{lang === 'en' ? 'Provider' : 'Proveedor'}</th>
+                                    <th className="px-4 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground whitespace-nowrap text-right">20%</th>
+                                    <th className="px-4 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground whitespace-nowrap text-right">IVA</th>
+                                    <th className="px-4 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground whitespace-nowrap">{lang === 'en' ? 'Payment' : 'Pago'}</th>
+                                    <th className="px-4 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground whitespace-nowrap text-right">{lang === 'en' ? 'Actions' : 'Acciones'}</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-border/40">
                                 {paginated.map((c) => (
                                     <tr key={c.id} className="hover:bg-muted/30 transition-colors group">
-                                        <td className="px-5 py-4 text-sm text-foreground whitespace-nowrap">
+                                        <td className="px-4 py-4 text-sm text-foreground whitespace-nowrap">
                                             {new Date(c.date).toLocaleDateString()}
                                         </td>
-                                        <td className="px-5 py-4">
+                                        <td className="px-4 py-4">
                                             <div className="flex items-center gap-2.5">
                                                 <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-sm shrink-0">
                                                     {TOUR_ICONS[c.tour_name] || (
                                                         <MapPin className="h-4 w-4 text-primary" />
                                                     )}
                                                 </div>
-                                                <div>
-                                                    <p className="text-sm font-medium text-foreground">{c.tour_name}</p>
-                                                    {c.location && (
-                                                        <p className="text-[11px] text-muted-foreground">{c.location}</p>
-                                                    )}
-                                                </div>
+                                                <span className="text-sm font-medium text-foreground">{c.tour_name}</span>
                                             </div>
                                         </td>
-                                        <td className="px-5 py-4">
+                                        <td className="px-4 py-4">
                                             <p className="text-sm text-foreground">{c.customer_name}</p>
                                             <p className="text-[11px] text-muted-foreground">ID: #{c.id.slice(0, 4)}</p>
                                         </td>
-                                        <td className="px-5 py-4">
-                                            <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
-                                                <Clock className="h-3.5 w-3.5" />
-                                                <span>{c.time || '\u2014'}</span>
-                                            </div>
-                                            {c.discount > 0 && (
-                                                <span className="inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-500/10 text-amber-500 border border-amber-500/20">
-                                                    {c.discount}% DESC
+                                        <td className="px-4 py-4 text-sm text-muted-foreground">{c.time || '\u2014'}</td>
+                                        <td className="px-4 py-4">
+                                            {c.location ? (
+                                                <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
+                                                    c.location === 'Madrigales'
+                                                        ? 'bg-amber-500/15 text-amber-500 border-amber-500/25'
+                                                        : 'bg-blue-500/15 text-blue-500 border-blue-500/25'
+                                                }`}>
+                                                    {c.location}
                                                 </span>
+                                            ) : (
+                                                <span className="text-muted-foreground">\u2014</span>
                                             )}
                                         </td>
-                                        <td className="px-5 py-4 text-center text-sm font-semibold text-foreground">
-                                            {c.pax}
+                                        <td className="px-4 py-4 text-center text-sm font-bold text-foreground">{c.machines}</td>
+                                        <td className="px-4 py-4 text-center text-sm font-bold text-foreground">{c.pax}</td>
+                                        <td className="px-4 py-4 text-center text-sm font-bold text-destructive">
+                                            {c.discount > 0 ? `${c.discount}%` : '\u2014'}
                                         </td>
-                                        <td className="px-5 py-4 text-right text-base font-bold text-foreground">
-                                            ${c.price.toLocaleString()}
-                                        </td>
-                                        <td className="px-5 py-4">
+                                        <td className="px-4 py-4 text-right text-base font-bold text-foreground">${c.price.toLocaleString()}</td>
+                                        <td className="px-4 py-4">
                                             <div className="flex items-center gap-2">
                                                 <div className={`w-6 h-6 rounded-full ${guideImageMap[c.guide_name] ? 'overflow-hidden ring-1 ring-border/40' : `bg-gradient-to-br ${getAvatarColor(c.guide_name)}`} flex items-center justify-center text-white text-[9px] font-bold shrink-0`}>
                                                     {guideImageMap[c.guide_name] ? (
@@ -731,13 +734,11 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                                                 <span className="text-sm text-foreground">{c.guide_name}</span>
                                             </div>
                                         </td>
-                                        <td className="px-5 py-4 text-right text-sm font-bold text-emerald-500">
-                                            ${c.commission_10.toFixed(2)}
-                                        </td>
-                                        <td className="px-5 py-4 text-sm text-muted-foreground">
-                                            ${c.tax.toFixed(2)}
-                                        </td>
-                                        <td className="px-5 py-4">
+                                        <td className="px-4 py-4 text-right text-sm font-bold text-emerald-500">${c.commission_10.toFixed(2)}</td>
+                                        <td className="px-4 py-4 text-sm text-muted-foreground">{c.provider_name || '\u2014'}</td>
+                                        <td className="px-4 py-4 text-right text-sm font-bold text-orange-500">${c.commission_20.toFixed(2)}</td>
+                                        <td className="px-4 py-4 text-right text-sm text-muted-foreground">${c.tax.toFixed(2)}</td>
+                                        <td className="px-4 py-4">
                                             <span className={`inline-flex px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
                                                 c.payment_method === 'Cash'
                                                     ? 'bg-emerald-500/15 text-emerald-500 border-emerald-500/25'
@@ -750,7 +751,7 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                                                 {c.payment_method.toUpperCase()}
                                             </span>
                                         </td>
-                                        <td className="px-5 py-4 text-right">
+                                        <td className="px-4 py-4 text-right">
                                             <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                                 <AuditInfo recordId={c.id} />
                                                 <button onClick={() => openEditModal(c)}
