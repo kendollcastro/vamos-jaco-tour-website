@@ -36,8 +36,10 @@ export const GET: APIRoute = async ({ request }) => {
         let role = 'secretary';
         let name = '';
 
-        if (supabaseAdmin) {
-            const { data: profile } = await supabaseAdmin
+        // Try service-role client first, fall back to anon (both use same URL)
+        const profileClient = supabaseAdmin || supabase;
+        if (profileClient) {
+            const { data: profile } = await profileClient
                 .from('profiles')
                 .select('role, full_name')
                 .eq('id', userId)
