@@ -31,6 +31,7 @@ CREATE POLICY "Admins manage subscribers" ON subscribers
 
 -- 5. Commissions - Authenticated users CRUD (was: TO authenticated USING (true) WITH CHECK (true))
 DROP POLICY IF EXISTS "Allow all for authenticated users" ON commissions;
+DROP POLICY IF EXISTS "Admins manage commissions" ON commissions;
 CREATE POLICY "Admins manage commissions" ON commissions
     FOR ALL TO authenticated USING (
         EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin', 'secretary'))
