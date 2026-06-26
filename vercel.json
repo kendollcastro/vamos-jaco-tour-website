@@ -10,7 +10,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https: data: blob: https://ddukdjdiqjvfjywuhnpn.supabase.co; connect-src 'self' https://ddukdjdiqjvfjywuhnpn.supabase.co https://www.google-analytics.com; frame-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https: data: blob: https://ddukdjdiqjvfjywuhnpn.supabase.co; connect-src 'self' https://ddukdjdiqjvfjywuhnpn.supabase.co wss://ddukdjdiqjvfjywuhnpn.supabase.co https://www.google-analytics.com; frame-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests"
         },
         {
           "key": "Strict-Transport-Security",

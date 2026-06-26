@@ -10,7 +10,7 @@ function buildCSP(): string {
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
         "font-src 'self' https://fonts.gstatic.com",
         `img-src 'self' https: data: blob: ${supabase}`,
-        `connect-src 'self' ${supabase} https://www.google-analytics.com`,
+        `connect-src 'self' ${supabase} wss://${new URL(supabase).host} https://www.google-analytics.com`,
         "frame-src 'none'",
         "frame-ancestors 'none'",
         "base-uri 'self'",
