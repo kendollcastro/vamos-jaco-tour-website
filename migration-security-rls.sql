@@ -42,8 +42,13 @@ CREATE POLICY "Admins manage commissions" ON commissions
 DROP POLICY IF EXISTS "Allow read for anon" ON commissions;
 
 -- 7. Reviews - Admin manage reviews (was: FOR ALL USING (true) — anyone could delete/modify)
-DROP POLICY IF EXISTS "Admin manage reviews" ON tour_reviews;
-CREATE POLICY "Admin manage reviews" ON tour_reviews
-    FOR ALL USING (
-        EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin', 'secretary'))
-    );
+DO $$
+BEGIN
+    IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'tour_reviews') THEN
+        DROP POLICY IF EXISTS "Admin manage reviews" ON tour_reviews;
+        CREATE POLICY "Admin manage reviews" ON tour_reviews
+            FOR ALL USING (
+                EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin', 'secretary'))
+            );
+    END IF;
+END $$;
