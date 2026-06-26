@@ -9,10 +9,17 @@ import {
     type TeamMemberInput
 } from '../../lib/supabase-team';
 import { supabase } from '../../lib/supabase';
-import { Plus, X, User, Image as ImageIcon, Camera, Instagram, Linkedin } from 'lucide-react';
+import { Plus, X, User, Image as ImageIcon, Camera, Instagram, Linkedin, Trash2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from '../ui/dialog';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '../ui/table';
 import ImagePicker from './ImagePicker';
 
@@ -35,6 +42,7 @@ export default function TeamManager() {
     const [isActive, setIsActive] = useState(true);
 
     const [isImagePickerOpen, setIsImagePickerOpen] = useState(false);
+    const [deleteTarget, setDeleteTarget] = useState<TeamMember | null>(null);
 
     useEffect(() => {
         fetchMembers();
@@ -120,12 +128,11 @@ export default function TeamManager() {
     };
 
     const handleDelete = async (id: string) => {
-        if (!window.confirm('Are you sure you want to delete this team member?')) return;
-
         try {
             setLoading(true);
             await deleteTeamMember(id);
             await fetchMembers();
+            setDeleteTarget(null);
         } catch (err: any) {
             setError(err.message || 'Failed to delete team member');
             setLoading(false);
@@ -211,7 +218,7 @@ export default function TeamManager() {
                                     </Button>
                                     <Button
                                         variant="link"
-                                        onClick={() => handleDelete(member.id)}
+                                        onClick={() => setDeleteTarget(member)}
                                         className="text-red-400 hover:text-white"
                                     >
                                         Delete
@@ -406,6 +413,33 @@ export default function TeamManager() {
                     </div>
                 </div>
             )}
+            <Dialog open={!!deleteTarget} onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>Delete Team Member</DialogTitle>
+                    </DialogHeader>
+                    {deleteTarget && (
+                        <div className="space-y-4">
+                            <p className="text-muted-foreground">
+                                Are you sure you want to delete <strong>{deleteTarget.name}</strong>? This action cannot be undone.
+                            </p>
+                            <div className="rounded-lg border bg-muted/50 p-4 space-y-1 text-sm">
+                                <p><span className="font-medium">Name:</span> {deleteTarget.name}</p>
+                                <p><span className="font-medium">Position:</span> {deleteTarget.position_en || '-'}</p>
+                            </div>
+                        </div>
+                    )}
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setDeleteTarget(null)}>
+                            Cancel
+                        </Button>
+                        <Button variant="destructive" onClick={() => deleteTarget && handleDelete(deleteTarget.id)}>
+                            <Trash2 className="h-4 w-4" />
+                            Delete
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
             <ImagePicker
                 isOpen={isImagePickerOpen}
                 onClose={() => setIsImagePickerOpen(false)}
