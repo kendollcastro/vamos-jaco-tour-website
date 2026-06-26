@@ -1,23 +1,64 @@
 import type { APIRoute } from 'astro';
 import { createClient } from '@supabase/supabase-js';
+import crypto from 'node:crypto';
 
 const SUPABASE_URL = import.meta.env.PUBLIC_SUPABASE_URL || '';
 const SUPABASE_SERVICE_KEY = import.meta.env.SUPABASE_SERVICE_ROLE_KEY || '';
 const TILOPAY_WEBHOOK_SECRET = import.meta.env.TILOPAY_WEBHOOK_SECRET || '';
 
 /**
+ * Verify the webhook payload using HMAC-SHA256.
+ * Checks common signature headers:
+ *   - x-tilopay-signature
+ *   - x-signature
+ *   - x-webhook-signature
+ * Falls back to Bearer token / secret comparison if no signature header is found.
+ */
+function verifySignature(rawBody: string, headers: Headers): boolean {
+    if (!TILOPAY_WEBHOOK_SECRET) return true;
+
+    const signatureHeader =
+        headers.get('x-tilopay-signature') ||
+        headers.get('x-signature') ||
+        headers.get('x-webhook-signature');
+
+    if (signatureHeader) {
+        try {
+            const expected = crypto
+                .createHmac('sha256', TILOPAY_WEBHOOK_SECRET)
+                .update(rawBody)
+                .digest('hex');
+
+            if (expected.length !== signatureHeader.length) return false;
+            return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signatureHeader));
+        } catch {
+            return false;
+        }
+    }
+
+    // Fallback: legacy token-based check
+    const authHeader = headers.get('Authorization') || headers.get('x-webhook-secret');
+    if (authHeader !== `Bearer ${TILOPAY_WEBHOOK_SECRET}` && authHeader !== TILOPAY_WEBHOOK_SECRET) {
+        console.warn('Webhook: Invalid or missing secret');
+        return false;
+    }
+
+    return true;
+}
+
+/**
  * POST /api/tilopay-webhook
- * 
+ *
  * Receives payment confirmation/cancellation callbacks from Tilopay.
  * Updates the booking status in Supabase accordingly.
  */
 export const POST: APIRoute = async ({ request }) => {
     try {
+        const rawBody = await request.text();
+
         // Verify webhook secret if configured
         if (TILOPAY_WEBHOOK_SECRET) {
-            const authHeader = request.headers.get('Authorization') || request.headers.get('x-webhook-secret');
-            if (authHeader !== `Bearer ${TILOPAY_WEBHOOK_SECRET}` && authHeader !== TILOPAY_WEBHOOK_SECRET) {
-                console.warn('Webhook: Invalid or missing secret');
+            if (!verifySignature(rawBody, request.headers)) {
                 return new Response(JSON.stringify({ message: 'Unauthorized' }), {
                     status: 401,
                     headers: { 'Content-Type': 'application/json' },
@@ -25,7 +66,7 @@ export const POST: APIRoute = async ({ request }) => {
             }
         }
 
-        const body = await request.json();
+        const body = JSON.parse(rawBody);
 
         const {
             orderNumber,

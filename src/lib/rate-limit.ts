@@ -1,24 +1,9 @@
 /**
- * Simple in-memory rate limiter for API endpoints.
- * Uses a sliding window approach.
+ * Serverless-compatible rate limiter using Supabase.
+ * Tracks request counts per IP per time window in the rate_limits table.
  */
 
-interface RateLimitEntry {
-    count: number;
-    resetTime: number;
-}
-
-const store = new Map<string, RateLimitEntry>();
-
-// Clean up old entries every 5 minutes
-setInterval(() => {
-    const now = Date.now();
-    for (const [key, entry] of store.entries()) {
-        if (now > entry.resetTime) {
-            store.delete(key);
-        }
-    }
-}, 5 * 60 * 1000);
+import { supabaseAdmin } from './supabase';
 
 interface RateLimitOptions {
     windowMs?: number;  // Time window in ms (default: 60000 = 1 minute)
@@ -31,27 +16,59 @@ interface RateLimitOptions {
  * @param options - Rate limit options
  * @returns Object with limited status and remaining requests
  */
-export function checkRateLimit(identifier: string, options: RateLimitOptions = {}): { limited: boolean; remaining: number; resetIn: number } {
+export async function checkRateLimit(identifier: string, options: RateLimitOptions = {}): Promise<{ limited: boolean; remaining: number; resetIn: number }> {
     const { windowMs = 60000, max = 10 } = options;
-    const now = Date.now();
-    
-    const entry = store.get(identifier);
-    
-    if (!entry || now > entry.resetTime) {
-        // New window
-        store.set(identifier, {
-            count: 1,
-            resetTime: now + windowMs
-        });
+
+    if (!supabaseAdmin) {
+        // Fallback: no rate limiting if Supabase isn't configured
+        return { limited: false, remaining: max, resetIn: 0 };
+    }
+
+    const now = new Date();
+    const windowStart = new Date(now.getTime() - windowMs);
+
+    try {
+        // Clean up old entries for this identifier
+        await supabaseAdmin
+            .from('rate_limits')
+            .delete()
+            .lt('window_start', windowStart.toISOString());
+
+        // Find existing window for this identifier
+        const { data: existing } = await supabaseAdmin
+            .from('rate_limits')
+            .select('id, request_count')
+            .eq('identifier', identifier)
+            .gte('window_start', windowStart.toISOString())
+            .order('window_start', { ascending: false })
+            .limit(1);
+
+        if (existing && existing.length > 0) {
+            const entry = existing[0] as any;
+            if (entry.request_count >= max) {
+                const resetIn = windowMs - (Date.now() - windowStart.getTime());
+                return { limited: true, remaining: 0, resetIn: Math.max(resetIn, 0) };
+            }
+
+            // Increment count
+            await supabaseAdmin
+                .from('rate_limits')
+                .update({ request_count: entry.request_count + 1 })
+                .eq('id', entry.id);
+
+            return { limited: false, remaining: max - entry.request_count - 1, resetIn: windowMs };
+        }
+
+        // Start new window
+        await supabaseAdmin
+            .from('rate_limits')
+            .insert({ identifier, window_start: now.toISOString(), request_count: 1 });
+
         return { limited: false, remaining: max - 1, resetIn: windowMs };
+    } catch (err) {
+        console.error('Rate limit check failed:', err);
+        return { limited: false, remaining: max, resetIn: 0 };
     }
-    
-    if (entry.count >= max) {
-        return { limited: true, remaining: 0, resetIn: entry.resetTime - now };
-    }
-    
-    entry.count++;
-    return { limited: false, remaining: max - entry.count, resetIn: entry.resetTime - now };
 }
 
 /**
@@ -71,7 +88,7 @@ export function withRateLimit(options: RateLimitOptions = {}) {
     return function(handler: Function) {
         return async (context: any) => {
             const ip = getClientIP(context.request);
-            const { limited, remaining, resetIn } = checkRateLimit(ip, options);
+            const { limited, remaining, resetIn } = await checkRateLimit(ip, options);
             
             if (limited) {
                 return new Response(JSON.stringify({

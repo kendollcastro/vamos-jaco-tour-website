@@ -98,10 +98,7 @@ export default function AdminLayout({ children }: Props) {
         if (typeof window !== 'undefined') return localStorage.getItem('user_full_name') || '';
         return '';
     });
-    const [userRole, setUserRole] = useState<string>(() => {
-        if (typeof window !== 'undefined') return localStorage.getItem('user_role') || 'admin';
-        return 'admin';
-    });
+    const [userRole, setUserRole] = useState<string>('secretary');
     const [searchQuery, setSearchQuery] = useState('');
     const [toast, setToast] = useState<{ message: string; type?: 'info' | 'success' } | null>(null);
     const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -180,28 +177,30 @@ export default function AdminLayout({ children }: Props) {
         return () => subscription.unsubscribe();
     }, []);
 
-    // Background profile fetch (fires once, stores result in localStorage)
+    // Fetch role from server — localStorage is not trusted for authorization
     useEffect(() => {
-        if (!supabase) return;
-        const controller = new AbortController();
-        const timeout = setTimeout(async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
-            const { data } = await supabase
-                .from('profiles')
-                .select('role, full_name')
-                .eq('id', user.id)
-                .single();
-            if (data) {
-                const role = (data as any).role;
-                const name = (data as any).full_name || '';
-                setUserRole(role);
-                setUserName(name);
-                localStorage.setItem('user_role', role);
-                localStorage.setItem('user_full_name', name);
-            }
-        }, 2000); // wait 2s after mount to not block rendering
-        return () => { clearTimeout(timeout); controller.abort(); };
+        if (!supabase) {
+            setUserRole('admin');
+            return;
+        }
+        let cancelled = false;
+        fetch('/api/admin/me')
+            .then(res => res.json())
+            .then(data => {
+                if (cancelled) return;
+                if (data.authenticated && data.role) {
+                    setUserRole(data.role);
+                    setUserName(data.name || '');
+                    localStorage.setItem('user_role', data.role);
+                    localStorage.setItem('user_full_name', data.name || '');
+                } else {
+                    setUserRole('secretary');
+                }
+            })
+            .catch(err => {
+                console.error('Failed to fetch admin role:', err);
+            });
+        return () => { cancelled = true; };
     }, []);
 
     // Lazy-import view components

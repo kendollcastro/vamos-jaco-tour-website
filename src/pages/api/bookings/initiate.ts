@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import { supabaseAdmin } from '../../../lib/supabase';
 import { createPaymentSession } from '../../../lib/tilopay';
 import { calculateServerPrice, validatePrice, isVehicleTour } from '../../../lib/price-calculator';
+import { sanitize, sanitizeEmail, sanitizePhone } from '../../../lib/sanitize';
 
 export const prerender = false;
 
@@ -43,10 +44,11 @@ export const POST: APIRoute = async ({ request }) => {
             });
         }
 
-        // Sanitize inputs
-        const sanitizedName = customerName.trim().slice(0, 100);
-        const sanitizedEmail = customerEmail.trim().toLowerCase().slice(0, 254);
-        const sanitizedPhone = (customerPhone || '').trim().slice(0, 20);
+        // Sanitize all user inputs
+        const sanitizedName = sanitize(customerName, 100);
+        const sanitizedEmail = sanitizeEmail(customerEmail);
+        const sanitizedPhone = sanitizePhone(customerPhone || '');
+        const sanitizedTourName = sanitize(tourName || tourId, 200);
 
         // 2. Server-side price calculation and validation
         const priceResult = await calculateServerPrice({
@@ -144,7 +146,7 @@ export const POST: APIRoute = async ({ request }) => {
         const bookingRow: Record<string, any> = {
             id: orderId,
             tour_id: tourUuid,
-            tour_name: tourName || tourId,
+            tour_name: sanitizedTourName,
             customer_name: sanitizedName,
             customer_email: sanitizedEmail,
             customer_phone: sanitizedPhone,
@@ -190,7 +192,7 @@ export const POST: APIRoute = async ({ request }) => {
                         customerEmail: sanitizedEmail,
                         customerPhone: sanitizedPhone,
                         tourId: tourUuid,
-                        tourName: tourName || tourId,
+                        tourName: sanitizedTourName,
                         date,
                         formattedDate,
                         adults: adults || 1,

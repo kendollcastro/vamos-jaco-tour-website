@@ -23,10 +23,11 @@ export const supabase = createSafeClient(supabaseUrl, supabaseAnon);
 /**
  * Admin client – uses the service-role key.
  * ⚠️  Only use in server-side code (API routes, Astro frontmatter).
+ * Returns null if the service role key is not configured.
  */
 const serviceRoleKey = import.meta.env.SUPABASE_SERVICE_ROLE_KEY || '';
 export const supabaseAdmin = serviceRoleKey
     ? createSafeClient(supabaseUrl, serviceRoleKey, {
         auth: { autoRefreshToken: false, persistSession: false },
     })
-    : supabase;
+    : null;
