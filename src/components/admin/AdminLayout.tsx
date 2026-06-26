@@ -39,7 +39,7 @@ import {
     Settings,
 } from 'lucide-react';
 
-type AdminView = 'dashboard' | 'tours' | 'bookings' | 'calendar' | 'subscribers' | 'gallery' | 'team' | 'website' | 'emails' | 'commissions' | 'auditLog' | 'users' | 'profile';
+type AdminView = 'dashboard' | 'tours' | 'bookings' | 'calendar' | 'subscribers' | 'gallery' | 'team' | 'website' | 'emails' | 'commissions' | 'auditLog' | 'users' | 'profile' | 'roles';
 
 interface Props {
     children?: ReactNode;
@@ -59,22 +59,24 @@ const NAV_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
     auditLog: History,
     users: Shield,
     profile: Settings,
+    roles: Shield,
 };
 
 const ALL_NAV_ITEMS = (t: typeof adminTranslations.en) => [
-    { id: 'dashboard' as AdminView, label: t.nav.dashboard, adminOnly: false },
-    { id: 'tours' as AdminView, label: t.nav.tours, adminOnly: true },
-    { id: 'bookings' as AdminView, label: t.nav.bookings, adminOnly: false },
-    { id: 'calendar' as AdminView, label: 'Calendar', adminOnly: false },
-    { id: 'subscribers' as AdminView, label: t.nav.subscribers, adminOnly: true },
-    { id: 'gallery' as AdminView, label: t.nav.gallery, adminOnly: true },
-    { id: 'team' as AdminView, label: t.nav.team, adminOnly: true },
-    { id: 'website' as AdminView, label: t.nav.components, adminOnly: true },
-    { id: 'emails' as AdminView, label: t.nav.emailTests, adminOnly: true },
-    { id: 'commissions' as AdminView, label: t.nav.commissions, adminOnly: false },
-    // { id: 'auditLog' as AdminView, label: t.nav.auditLog, adminOnly: false },
-    // { id: 'users' as AdminView, label: t.nav.users, adminOnly: true },
-    { id: 'profile' as AdminView, label: t.nav.profile, adminOnly: false },
+    { id: 'dashboard' as AdminView, label: t.nav.dashboard },
+    { id: 'tours' as AdminView, label: t.nav.tours },
+    { id: 'bookings' as AdminView, label: t.nav.bookings },
+    { id: 'calendar' as AdminView, label: 'Calendar' },
+    { id: 'subscribers' as AdminView, label: t.nav.subscribers },
+    { id: 'gallery' as AdminView, label: t.nav.gallery },
+    { id: 'team' as AdminView, label: t.nav.team },
+    { id: 'website' as AdminView, label: t.nav.components },
+    { id: 'emails' as AdminView, label: t.nav.emailTests },
+    { id: 'commissions' as AdminView, label: t.nav.commissions },
+    { id: 'auditLog' as AdminView, label: t.nav.auditLog },
+    { id: 'users' as AdminView, label: t.nav.users },
+    { id: 'profile' as AdminView, label: t.nav.profile },
+    { id: 'roles' as AdminView, label: 'Roles' },
 ];
 
 const getNavItems = (t: typeof adminTranslations.en, role: string) =>
@@ -99,6 +101,7 @@ export default function AdminLayout({ children }: Props) {
         return '';
     });
     const [userRole, setUserRole] = useState<string>('secretary');
+    const [userPermissions, setUserPermissions] = useState<string[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [toast, setToast] = useState<{ message: string; type?: 'info' | 'success' } | null>(null);
     const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -177,29 +180,53 @@ export default function AdminLayout({ children }: Props) {
         return () => subscription.unsubscribe();
     }, []);
 
-    // Fetch role from server — localStorage is not trusted for authorization
+    // Fetch role and permissions from server
     useEffect(() => {
         if (!supabase) {
             setUserRole('admin');
             return;
         }
         let cancelled = false;
-        fetch('/api/admin/me')
-            .then(res => res.json())
-            .then(data => {
+
+        async function loadSession() {
+            const { data: { session } } = await supabase.auth.getSession();
+            const token = session?.access_token;
+
+            const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+
+            try {
+                const meRes = await fetch('/api/admin/me', { headers });
+                const meData = await meRes.json();
                 if (cancelled) return;
-                if (data.authenticated && data.role) {
-                    setUserRole(data.role);
-                    setUserName(data.name || '');
-                    localStorage.setItem('user_role', data.role);
-                    localStorage.setItem('user_full_name', data.name || '');
+                if (meData.authenticated && meData.role) {
+                    setUserRole(meData.role);
+                    setUserName(meData.name || '');
+                    localStorage.setItem('user_role', meData.role);
+                    localStorage.setItem('user_full_name', meData.name || '');
                 } else {
                     setUserRole('secretary');
                 }
-            })
-            .catch(err => {
+            } catch (err) {
                 console.error('Failed to fetch admin role:', err);
-            });
+            }
+
+            // Load permissions for the user's role
+            try {
+                const permsRes = await fetch('/api/admin/permissions', { headers });
+                const permsData = await permsRes.json();
+                if (cancelled) return;
+                if (permsData.permissions) {
+                    const savedRole = localStorage.getItem('user_role') || 'secretary';
+                    const mods = permsData.permissions
+                        .filter((p: any) => p.role === savedRole)
+                        .map((p: any) => p.module);
+                    setUserPermissions(mods);
+                }
+            } catch {}
+        }
+
+        loadSession();
         return () => { cancelled = true; };
     }, []);
 
@@ -217,6 +244,7 @@ export default function AdminLayout({ children }: Props) {
     const [AuditLogView, setAuditLogView] = useState<React.ComponentType | null>(null);
     const [UserManagerView, setUserManagerView] = useState<React.ComponentType | null>(null);
     const [ProfileSettingsView, setProfileSettingsView] = useState<React.ComponentType | null>(null);
+    const [PermissionsView, setPermissionsView] = useState<React.ComponentType | null>(null);
 
     useEffect(() => {
         import('./DashboardStats').then((m) => setDashboardView(() => m.default));
@@ -232,6 +260,7 @@ export default function AdminLayout({ children }: Props) {
         import('./AuditLogView').then((m) => setAuditLogView(() => m.default));
         import('./UserManager').then((m) => setUserManagerView(() => m.default));
         import('./ProfileSettings').then((m) => setProfileSettingsView(() => m.default));
+        import('./PermissionsManager').then((m) => setPermissionsView(() => m.default));
     }, []);
 
     async function handleLogout() {
@@ -264,9 +293,12 @@ export default function AdminLayout({ children }: Props) {
                                             : currentView === 'users' ? UserManagerView
                                                 : currentView === 'profile' ? ProfileSettingsView
                                                     : currentView === 'gallery' ? GalleryView
-                                                        : DashboardView;
+                                                        : currentView === 'roles' ? PermissionsView
+                                                            : DashboardView;
 
-    const navItems = getNavItems(t as any, userRole).filter(item =>
+    const navItems = ALL_NAV_ITEMS(t as any).filter(item =>
+        userPermissions.includes(item.id) || userRole === 'admin'
+    ).filter(item =>
         item.label.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
