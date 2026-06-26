@@ -22,6 +22,11 @@ async function handleCallback(context: any): Promise<Response> {
     console.log("=== TILOPAY CALLBACK START ===");
 
     try {
+        if (!supabaseAdmin) {
+            console.error('Callback: supabaseAdmin not configured');
+            return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/payment-error?error=config` } });
+        }
+
         const params: Record<string, any> = {};
 
         // 1. Get parameters from URL
