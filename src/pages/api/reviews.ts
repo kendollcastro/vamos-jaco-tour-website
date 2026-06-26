@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { createClient } from '@supabase/supabase-js';
+import { sanitize, sanitizeEmail } from '../../lib/sanitize';
 
 export const prerender = false;
 
@@ -92,17 +93,32 @@ export const POST: APIRoute = async ({ request }) => {
             });
         }
 
+        // Sanitize all user inputs
+        const sanitizedName = sanitize(author_name, 100);
+        const sanitizedEmail = author_email ? sanitizeEmail(author_email) : null;
+        const sanitizedTitle = title ? sanitize(title, 200) : null;
+        const sanitizedText = sanitize(text, 5000);
+
+        if (!sanitizedName) {
+            return new Response(JSON.stringify({ 
+                error: 'Author name is required' 
+            }), {
+                status: 400,
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
+
         const { data, error } = await supabase
             .from('tour_reviews')
             .insert({
                 tour_id,
-                author_name,
-                author_email: author_email || null,
+                author_name: sanitizedName,
+                author_email: sanitizedEmail,
                 rating,
-                title: title || null,
-                text,
+                title: sanitizedTitle,
+                text: sanitizedText,
                 is_verified: false,
-                is_published: false, // Require moderation
+                is_published: false,
             })
             .select()
             .single();

@@ -4,6 +4,7 @@ import { sendBookingNotifications } from '../../../lib/email-service';
 import { createPaymentSession } from '../../../lib/tilopay';
 import { checkRateLimit, getClientIP } from '../../../lib/rate-limit';
 import { calculateServerPrice, validatePrice } from '../../../lib/price-calculator';
+import { sanitize, sanitizeEmail, sanitizePhone } from '../../../lib/sanitize';
 
 export const POST: APIRoute = async ({ request }) => {
     // Rate limiting: 10 requests per minute per IP
@@ -61,10 +62,11 @@ export const POST: APIRoute = async ({ request }) => {
             });
         }
 
-        // Sanitize inputs
-        const sanitizedName = customerName.trim().slice(0, 100);
-        const sanitizedEmail = customerEmail.trim().toLowerCase().slice(0, 254);
-        const sanitizedPhone = (customerPhone || '').trim().slice(0, 20);
+        // Sanitize all user inputs
+        const sanitizedName = sanitize(customerName, 100);
+        const sanitizedEmail = sanitizeEmail(customerEmail);
+        const sanitizedPhone = sanitizePhone(customerPhone || '');
+        const sanitizedTourName = sanitize(tourName || tourId, 200);
 
         // 2. Server-side price calculation and validation
         const priceResult = await calculateServerPrice({
@@ -124,7 +126,7 @@ export const POST: APIRoute = async ({ request }) => {
                 customer_name: sanitizedName,
                 customer_email: sanitizedEmail,
                 customer_phone: sanitizedPhone,
-                tour_name: tourName || tourId,
+                tour_name: sanitizedTourName,
                 booking_date: formattedDate,
                 total_amount: priceResult.total,
                 status: 'pending',
@@ -168,7 +170,7 @@ export const POST: APIRoute = async ({ request }) => {
                     customerName: sanitizedName,
                     customerEmail: sanitizedEmail,
                     customerPhone: sanitizedPhone || 'N/A',
-                    tourName: tourName || tourId,
+                    tourName: sanitizedTourName,
                     tourDate: formattedDate,
                     adults: adults || 1,
                     children: children || 0,
