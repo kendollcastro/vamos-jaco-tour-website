@@ -1,18 +1,23 @@
 import { defineMiddleware } from 'astro:middleware';
 
-const CSP = [
-    "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com",
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "font-src 'self' https://fonts.gstatic.com",
-    "img-src 'self' https: data: blob:",
-    "connect-src 'self' https://yebtzzqngiurwddrvhry.supabase.co https://www.google-analytics.com",
-    "frame-src 'none'",
-    "frame-ancestors 'none'",
-    "base-uri 'self'",
-    "form-action 'self'",
-    "upgrade-insecure-requests",
-].join('; ');
+const SUPABASE_URL = import.meta.env.PUBLIC_SUPABASE_URL || 'https://ddukdjdiqjvfjywuhnpn.supabase.co';
+
+function buildCSP(): string {
+    const supabase = SUPABASE_URL.replace(/\/+$/, '');
+    return [
+        "default-src 'self'",
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com",
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+        "font-src 'self' https://fonts.gstatic.com",
+        `img-src 'self' https: data: blob: ${supabase}`,
+        `connect-src 'self' ${supabase} https://www.google-analytics.com`,
+        "frame-src 'none'",
+        "frame-ancestors 'none'",
+        "base-uri 'self'",
+        "form-action 'self'",
+        "upgrade-insecure-requests",
+    ].join('; ');
+}
 
 export const onRequest = defineMiddleware((context, next) => {
     const response = next();
@@ -24,7 +29,7 @@ export const onRequest = defineMiddleware((context, next) => {
         const contentType = headers.get('content-type') || '';
         if (contentType.includes('text/html') || !headers.has('content-security-policy')) {
             if (!headers.has('content-security-policy')) {
-                headers.set('content-security-policy', CSP);
+                headers.set('content-security-policy', buildCSP());
             }
             if (!headers.has('strict-transport-security')) {
                 headers.set('strict-transport-security', 'max-age=63072000; includeSubDomains; preload');
