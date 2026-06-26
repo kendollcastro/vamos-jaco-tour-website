@@ -189,8 +189,15 @@ export default function AdminLayout({ children }: Props) {
         let cancelled = false;
 
         async function loadSession() {
-            const { data: { session } } = await supabase.auth.getSession();
-            const token = session?.access_token;
+            // Read token directly from localStorage (more reliable than getSession)
+            let token: string | undefined;
+            try {
+                const raw = localStorage.getItem('sb-ddukdjdiqjvfjywuhnpn-auth-token');
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    token = parsed.access_token;
+                }
+            } catch {}
 
             const headers: Record<string, string> = { 'Content-Type': 'application/json' };
             if (token) headers['Authorization'] = `Bearer ${token}`;
