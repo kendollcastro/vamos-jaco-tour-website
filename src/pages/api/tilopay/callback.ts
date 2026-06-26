@@ -62,11 +62,6 @@ async function handleCallback(context: any): Promise<Response> {
         const isSuccess = isSuccessResponse(params);
         const transactionId = params.tpt || params.auth || '';
 
-        if (!supabaseAdmin) {
-            console.error("SUPABASE NOT CONFIGURED");
-            return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/?payment=error` } });
-        }
-
         // 5. Lookup the booking
         const { data: booking, error: fetchError } = await supabaseAdmin
             .from('bookings')
@@ -156,7 +151,7 @@ async function handleCallback(context: any): Promise<Response> {
             tilopay_response: { failed_at: new Date().toISOString() }
         }).eq('id', bookingId);
 
-        return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/checkout?error=${encodeURIComponent(params.message || 'Payment Declined')}` } });
+        return new Response(null, { status: 302, headers: { Location: `${SITE_URL}/checkout?error=${encodeURIComponent(String(params.message || 'Payment Declined').slice(0, 100))}` } });
 
     } catch (err) {
         console.error("CALLBACK EXCEPTION:", err);
