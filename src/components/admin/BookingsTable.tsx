@@ -558,6 +558,12 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                                                         onClick={() => {
                                                             const printWindow = window.open('', '_blank');
                                                             if (printWindow && booking) {
+                                                                const escape = (s: any) => String(s ?? '')
+                                                                    .replace(/&/g, '&amp;')
+                                                                    .replace(/</g, '&lt;')
+                                                                    .replace(/>/g, '&gt;')
+                                                                    .replace(/"/g, '&quot;')
+                                                                    .replace(/'/g, '&#39;');
                                                                 printWindow.document.write(`
                                                                     <!DOCTYPE html>
                                                                     <html>
@@ -594,23 +600,23 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                                                                                 <p>Adventure Booking Confirmation</p>
                                                                             </div>
                                                                         </div>
-                                                                        <div class="booking-id">Booking ID: ${booking.id.slice(0, 8).toUpperCase()}</div>
+                                                                        <div class="booking-id">Booking ID: ${escape(booking.id).slice(0, 8).toUpperCase()}</div>
                                                                         <div class="grid">
                                                                             <div class="section">
                                                                                 <h3>Customer</h3>
-                                                                                <p>${booking.customer_name}</p>
+                                                                                <p>${escape(booking.customer_name)}</p>
                                                                             </div>
                                                                             <div class="section">
                                                                                 <h3>Email</h3>
-                                                                                <p style="font-size: 14px;">${booking.customer_email}</p>
+                                                                                <p style="font-size: 14px;">${escape(booking.customer_email)}</p>
                                                                             </div>
                                                                             <div class="section">
                                                                                 <h3>Phone</h3>
-                                                                                <p>${booking.customer_phone || 'N/A'}</p>
+                                                                                <p>${escape(booking.customer_phone || 'N/A')}</p>
                                                                             </div>
                                                                             <div class="section">
                                                                                 <h3>Tour Experience</h3>
-                                                                                <p>${booking.tour_name}</p>
+                                                                                <p>${escape(booking.tour_name)}</p>
                                                                             </div>
                                                                             <div class="section">
                                                                                 <h3>Tour Date</h3>
