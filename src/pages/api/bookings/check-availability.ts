@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { supabaseAdmin } from '../../../lib/supabase';
+import { isVehicleTour } from '../../../lib/price-calculator';
 
 export const prerender = false;
 
@@ -31,7 +32,7 @@ export const POST: APIRoute = async ({ request }) => {
         // Get tour capacity
         const { data: tour, error: tourError } = await supabaseAdmin
             .from('tours')
-            .select('max_participants, name_en, name_es')
+            .select('max_participants, name_en, name_es, slug')
             .eq('id', tourId)
             .single();
 
@@ -46,6 +47,7 @@ export const POST: APIRoute = async ({ request }) => {
         }
 
         const maxParticipants = tour.max_participants || 10;
+        const vehicleTour = isVehicleTour(tour.slug || '');
 
         // Get all bookings for that date and tour (confirmed, paid, pending)
         let query = supabaseAdmin
@@ -73,9 +75,9 @@ export const POST: APIRoute = async ({ request }) => {
             });
         }
 
-        // Calculate total booked participants
+        // For vehicle tours, count adults (vehicles), not total guests
         const totalBooked = (existingBookings || []).reduce((sum, booking) => {
-            return sum + (booking.adults || 0) + (booking.children || 0);
+            return vehicleTour ? (booking.adults || 0) : sum + (booking.adults || 0) + (booking.children || 0);
         }, 0);
 
         const requestedGuests = parseInt(guests) || 1;

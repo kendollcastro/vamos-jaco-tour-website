@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import { supabaseAdmin } from '../../../lib/supabase';
 import { createPaymentSession } from '../../../lib/tilopay';
-import { calculateServerPrice, validatePrice } from '../../../lib/price-calculator';
+import { calculateServerPrice, validatePrice, isVehicleTour } from '../../../lib/price-calculator';
 
 export const prerender = false;
 
@@ -94,15 +94,17 @@ export const POST: APIRoute = async ({ request }) => {
 
         // 5. Check availability before proceeding (overbooking prevention)
         let maxParticipants = 10;
+        let vehicleTour = false;
         if (supabaseAdmin) {
             const { data: tourData } = await supabaseAdmin
                 .from('tours')
-                .select('max_participants')
+                .select('max_participants, slug')
                 .eq('id', tourUuid)
                 .single();
             
             maxParticipants = tourData?.max_participants || 10;
-            const requestedGuests = (adults || 1) + (children || 0);
+            vehicleTour = isVehicleTour(tourData?.slug || tourId);
+            const requestedGuests = vehicleTour ? (adults || 1) : (adults || 1) + (children || 0);
             
             const { data: existingBookings } = await supabaseAdmin
                 .from('bookings')
@@ -112,7 +114,7 @@ export const POST: APIRoute = async ({ request }) => {
                 .in('status', ['confirmed', 'paid', 'pending']);
             
             const totalBooked = (existingBookings || []).reduce((sum: number, b: any) => {
-                return sum + (b.adults || 0) + (b.children || 0);
+                return vehicleTour ? (b.adults || 0) : (b.adults || 0) + (b.children || 0);
             }, 0);
             
             if ((totalBooked + requestedGuests) > maxParticipants) {

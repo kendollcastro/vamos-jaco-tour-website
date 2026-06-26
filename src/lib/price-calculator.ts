@@ -14,6 +14,12 @@ const TOUR_PRICES: Record<string, { adultPrice: number; childPrice: number }> = 
     'sport-fishing': { adultPrice: 150, childPrice: 100 },
 };
 
+const VEHICLE_TOUR_SLUGS = ['side-by-side-tour', 'jet-ski-tour', 'jaco-atv-adventure'];
+
+export function isVehicleTour(tourId: string): boolean {
+    return VEHICLE_TOUR_SLUGS.includes(tourId);
+}
+
 interface PricingOption {
     duration: string;
     price: number;
