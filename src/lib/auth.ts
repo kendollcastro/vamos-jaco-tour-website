@@ -1,9 +1,9 @@
-import { supabase } from './supabase';
+import { supabase, supabaseAdmin } from './supabase';
 
 /**
- * Verify that the request comes from an authenticated admin user.
- * Checks the Authorization Bearer token against Supabase Auth.
- * Optionally checks if the user's email is in the allowed admin list.
+ * Verify that the request comes from an authenticated admin or secretary user.
+ * Checks the Authorization Bearer token against Supabase Auth,
+ * then verifies the user has admin/secretary role in the profiles table.
  */
 export async function verifyAdmin(request: Request): Promise<{ authorized: boolean; userId?: string; error?: string }> {
     if (!supabase) {
@@ -24,11 +24,19 @@ export async function verifyAdmin(request: Request): Promise<{ authorized: boole
             return { authorized: false, error: 'Invalid or expired token' };
         }
 
-        // Optional: Check if user email is in admin list
-        // const adminEmails = (import.meta.env.ADMIN_EMAILS || '').split(',').map((e: string) => e.trim());
-        // if (adminEmails.length > 0 && !adminEmails.includes(user.email || '')) {
-        //     return { authorized: false, error: 'User is not an admin' };
-        // }
+        // Verify the user has an admin or secretary role in profiles
+        if (supabaseAdmin) {
+            const { data: profile } = await supabaseAdmin
+                .from('profiles')
+                .select('role')
+                .eq('id', user.id)
+                .single();
+
+            const role = (profile as any)?.role;
+            if (!role || !['admin', 'secretary'].includes(role)) {
+                return { authorized: false, error: 'User does not have admin privileges' };
+            }
+        }
 
         return { authorized: true, userId: user.id };
     } catch (err) {
