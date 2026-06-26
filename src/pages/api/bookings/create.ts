@@ -9,7 +9,7 @@ import { sanitize, sanitizeEmail, sanitizePhone } from '../../../lib/sanitize';
 export const POST: APIRoute = async ({ request }) => {
     // Rate limiting: 10 requests per minute per IP
     const ip = getClientIP(request);
-    const { limited, resetIn } = checkRateLimit(ip, { windowMs: 60000, max: 10 });
+    const { limited, resetIn } = await checkRateLimit(ip, { windowMs: 60000, max: 10 });
     
     if (limited) {
         return new Response(JSON.stringify({ 
