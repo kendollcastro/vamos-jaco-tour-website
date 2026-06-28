@@ -16,8 +16,19 @@ const TOUR_PRICES: Record<string, { adultPrice: number; childPrice: number }> = 
 
 const VEHICLE_TOUR_SLUGS = ['side-by-side-tour', 'jet-ski-tour', 'jaco-atv-adventure'];
 
+/** How many passengers fit in one vehicle/machine for each vehicle tour. */
+const VEHICLE_CAPACITY: Record<string, number> = {
+    'jaco-atv-adventure': 1,
+    'jet-ski-tour': 2,
+    'side-by-side-tour': 4,
+};
+
 export function isVehicleTour(tourId: string): boolean {
     return VEHICLE_TOUR_SLUGS.includes(tourId);
+}
+
+export function getVehicleCapacity(tourId: string): number {
+    return VEHICLE_CAPACITY[tourId] || 1;
 }
 
 interface PricingOption {
@@ -109,12 +120,11 @@ export async function calculateServerPrice(params: CalculatePriceParams): Promis
     // Calculate subtotal
     let subtotal = 0;
     
-    // Vehicle tours have different pricing
-    const isVehicleTour = ['side-by-side-tour', 'jet-ski-tour', 'jaco-atv-adventure'].includes(tourId);
-    
+    // Vehicle tours are priced per vehicle, not per passenger
     if (isVehicleTour) {
-        // Adults represent number of vehicles, extra passengers cost $20 each
-        subtotal = (adults * adultPrice) + (extraPassengers * 20);
+        const capacity = getVehicleCapacity(tourId);
+        const vehicles = Math.max(1, Math.ceil(adults / capacity));
+        subtotal = (vehicles * adultPrice) + (extraPassengers * 20);
     } else {
         subtotal = (adults * adultPrice) + (children * childPrice);
     }

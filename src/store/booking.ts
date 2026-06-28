@@ -1,4 +1,5 @@
 import { persistentAtom } from '@nanostores/persistent';
+import { isVehicleTour, getVehicleCapacity } from '../lib/price-calculator';
 
 export interface BookingState {
     tourId: string | null;
@@ -94,11 +95,11 @@ function calculateTotal() {
     let total = 0;
     const totalGuests = adults + children;
 
-    // Specific pricing rules for vehicle-based tours
-    if (tourId === 'side-by-side-tour' || tourId === 'jet-ski-tour' || tourId === 'jaco-atv-adventure') {
-        // Base price covers the vehicle (calculated as 'adults' representing number of vehicles)
-        // Extra passengers cost $20 each
-        total = (adults * pricePerAdult) + (current.extraPassengers * 20);
+    // Vehicle tours are priced per vehicle, not per passenger
+    if (isVehicleTour(tourId || '')) {
+        const capacity = getVehicleCapacity(tourId || '');
+        const vehicles = Math.max(1, Math.ceil(adults / capacity));
+        total = (vehicles * pricePerAdult) + (current.extraPassengers * 20);
     } else {
         // Standard per-person pricing
         total = (adults * pricePerAdult) + (children * pricePerChild);

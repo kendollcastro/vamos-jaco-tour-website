@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { supabaseAdmin } from '../../../lib/supabase';
-import { isVehicleTour } from '../../../lib/price-calculator';
+import { isVehicleTour, getVehicleCapacity } from '../../../lib/price-calculator';
 
 export const prerender = false;
 
@@ -75,13 +75,16 @@ export const POST: APIRoute = async ({ request }) => {
             });
         }
 
-        // For vehicle tours, count adults (vehicles), not total guests
+        // For vehicle tours, count vehicles (passengers / capacity), not total guests
         const totalBooked = (existingBookings || []).reduce((sum, booking) => {
-            return vehicleTour ? (booking.adults || 0) : sum + (booking.adults || 0) + (booking.children || 0);
+            return vehicleTour
+                ? sum + Math.max(1, Math.ceil((booking.adults || 0) / getVehicleCapacity(tour.slug || '')))
+                : sum + (booking.adults || 0) + (booking.children || 0);
         }, 0);
 
         const requestedGuests = parseInt(guests) || 1;
-        const available = (totalBooked + requestedGuests) <= maxParticipants;
+        const requestedVehicles = vehicleTour ? Math.max(1, Math.ceil(requestedGuests / getVehicleCapacity(tour.slug || ''))) : requestedGuests;
+        const available = (totalBooked + requestedVehicles) <= maxParticipants;
         const remainingSpots = Math.max(0, maxParticipants - totalBooked);
 
         return new Response(JSON.stringify({

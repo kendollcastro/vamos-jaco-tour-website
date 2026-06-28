@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { supabaseAdmin } from '../../../lib/supabase';
-import { isVehicleTour } from '../../../lib/price-calculator';
+import { isVehicleTour, getVehicleCapacity } from '../../../lib/price-calculator';
 
 export const prerender = false;
 
@@ -91,7 +91,10 @@ async function handleCallback(context: any): Promise<Response> {
 
             const maxParticipants = tourData?.max_participants || 10;
             const vehicleTour = isVehicleTour(tourData?.slug || '');
-            const requestedGuests = vehicleTour ? (booking.adults || 1) : (booking.adults || 1) + (booking.children || 0);
+            const capacity = vehicleTour ? getVehicleCapacity(tourData?.slug || '') : 1;
+            const requestedGuests = vehicleTour
+                ? Math.max(1, Math.ceil((booking.adults || 1) / capacity))
+                : (booking.adults || 1) + (booking.children || 0);
 
             const { data: existingBookings } = await supabaseAdmin
                 .from('bookings')
@@ -102,7 +105,9 @@ async function handleCallback(context: any): Promise<Response> {
                 .neq('id', bookingId);
 
             const totalBooked = (existingBookings || []).reduce((sum: number, b: any) => {
-                return vehicleTour ? (b.adults || 0) : (b.adults || 0) + (b.children || 0);
+                return vehicleTour
+                    ? sum + Math.max(1, Math.ceil((b.adults || 0) / capacity))
+                    : sum + (b.adults || 0) + (b.children || 0);
             }, 0);
 
             if ((totalBooked + requestedGuests) > maxParticipants) {
