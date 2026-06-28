@@ -13,12 +13,13 @@ interface PricingOption {
 
 interface BookingSidebarProps {
     tourId: string;
+    tourSlug: string;
     tourTitle: string;
     price: number;
     durationOptions?: PricingOption[];
 }
 
-export default function BookingSidebar({ tourId, tourTitle, price, durationOptions }: BookingSidebarProps) {
+export default function BookingSidebar({ tourId, tourSlug, tourTitle, price, durationOptions }: BookingSidebarProps) {
     const $booking = useStore(bookingStore);
     const $language = useStore(language);
     const [selectedDurationIdx, setSelectedDurationIdx] = useState(0);
@@ -99,13 +100,13 @@ export default function BookingSidebar({ tourId, tourTitle, price, durationOptio
 
     useEffect(() => {
         if (packages && packages.length > 0) {
-            setBookingTour(tourId, tourTitle, packages[0].adultPrice, packages[0].childPrice, packages[0].variation_id, packages[0].duration);
+            setBookingTour(tourId, tourSlug, tourTitle, packages[0].adultPrice, packages[0].childPrice, packages[0].variation_id, packages[0].duration);
         }
-    }, [tourId, tourTitle, price, packages]);
+    }, [tourId, tourSlug, tourTitle, price, packages]);
 
     const handleDurationChange = (index: number) => {
         setSelectedDurationIdx(index);
-        setBookingTour(tourId, tourTitle, packages[index].adultPrice, packages[index].childPrice, packages[index].variation_id, packages[index].duration);
+        setBookingTour(tourId, tourSlug, tourTitle, packages[index].adultPrice, packages[index].childPrice, packages[index].variation_id, packages[index].duration);
         
         // Clear selected time if it's no longer available with new duration
         const newAvailableTimes = getAvailableTimesForDuration(index);

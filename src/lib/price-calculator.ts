@@ -39,6 +39,7 @@ interface PricingOption {
 
 interface CalculatePriceParams {
     tourId: string;
+    tourSlug?: string;
     adults: number;
     children: number;
     extraPassengers?: number;
@@ -58,10 +59,11 @@ interface PriceResult {
  * This prevents price manipulation from the frontend.
  */
 export async function calculateServerPrice(params: CalculatePriceParams): Promise<PriceResult> {
-    const { tourId, adults, children, extraPassengers = 0, variationId, pricePerAdult: providedPrice } = params;
+    const { tourId, tourSlug: providedSlug, adults, children, extraPassengers = 0, variationId, pricePerAdult: providedPrice } = params;
     
     let adultPrice = 0;
     let childPrice = 0;
+    let tourSlug = providedSlug || '';
     
     if (providedPrice && providedPrice > 0) {
         adultPrice = providedPrice;
@@ -72,7 +74,7 @@ export async function calculateServerPrice(params: CalculatePriceParams): Promis
                 // Try by slug first, then by UUID
                 let { data: tour, error } = await supabaseAdmin
                     .from('tours')
-                    .select('price_base, pricing_options')
+                    .select('price_base, pricing_options, slug')
                     .eq('slug', tourId)
                     .single();
                 
@@ -80,13 +82,14 @@ export async function calculateServerPrice(params: CalculatePriceParams): Promis
                     // Fallback: try by UUID
                     const result = await supabaseAdmin
                         .from('tours')
-                        .select('price_base, pricing_options')
+                        .select('price_base, pricing_options, slug')
                         .eq('id', tourId)
                         .single();
                     tour = result.data;
                 }
                 
                 if (tour) {
+                    if (!tourSlug) tourSlug = tour.slug || '';
                     adultPrice = tour.price_base || 0;
 
                     // If variationId provided, find the specific pricing option
@@ -120,9 +123,12 @@ export async function calculateServerPrice(params: CalculatePriceParams): Promis
     // Calculate subtotal
     let subtotal = 0;
     
+    const slugOrId = tourSlug || tourId;
+    const vehicleTour = isVehicleTour(slugOrId);
+    
     // Vehicle tours are priced per vehicle, not per passenger
-    if (isVehicleTour) {
-        const capacity = getVehicleCapacity(tourId);
+    if (vehicleTour) {
+        const capacity = getVehicleCapacity(slugOrId);
         const vehicles = Math.max(1, Math.ceil(adults / capacity));
         subtotal = (vehicles * adultPrice) + (extraPassengers * 20);
     } else {

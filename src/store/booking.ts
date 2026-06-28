@@ -3,6 +3,7 @@ import { isVehicleTour, getVehicleCapacity } from '../lib/price-calculator';
 
 export interface BookingState {
     tourId: string | null;
+    tourSlug: string | null;
     tourTitle: string | null;
     date: string | null; // Stored as ISO string
     time: string | null;
@@ -19,6 +20,7 @@ export interface BookingState {
 
 const INITIAL_STATE: BookingState = {
     tourId: null,
+    tourSlug: null,
     tourTitle: null,
     date: null,
     time: null,
@@ -38,11 +40,12 @@ export const bookingStore = persistentAtom<BookingState>('booking_cart', INITIAL
     decode: JSON.parse,
 });
 
-export function setBookingTour(id: string, title: string, adultPrice: number, childPrice: number = 0, variationId?: number, duration?: string) {
+export function setBookingTour(id: string, slug: string, title: string, adultPrice: number, childPrice: number = 0, variationId?: number, duration?: string) {
     const current = bookingStore.get();
     bookingStore.set({
         ...current,
         tourId: id,
+        tourSlug: slug,
         tourTitle: title,
         pricePerAdult: adultPrice,
         pricePerChild: childPrice,
@@ -90,14 +93,13 @@ export function setExtraPassengers(count: number) {
 
 function calculateTotal() {
     const current = bookingStore.get();
-    const { tourId, adults, children, pricePerAdult, pricePerChild } = current;
+    const { tourSlug, adults, children, pricePerAdult, pricePerChild } = current;
     
     let total = 0;
     const totalGuests = adults + children;
 
-    // Vehicle tours are priced per vehicle, not per passenger
-    if (isVehicleTour(tourId || '')) {
-        const capacity = getVehicleCapacity(tourId || '');
+    if (isVehicleTour(tourSlug || '')) {
+        const capacity = getVehicleCapacity(tourSlug || '');
         const vehicles = Math.max(1, Math.ceil(adults / capacity));
         total = (vehicles * pricePerAdult) + (current.extraPassengers * 20);
     } else {
