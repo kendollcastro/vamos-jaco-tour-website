@@ -512,7 +512,7 @@ import Layout from "../layouts/Layout.astro";
     function isVehicleTourSlug(slugOrTitle: string | null): boolean {
         if (!slugOrTitle) return false;
         const v = slugOrTitle.toLowerCase();
-        return v.includes('side-by-side') || v.includes('jet-ski') || v.includes('atv');
+        return v.includes('side-by-side') || v.includes('side by side') || v.includes('jet-ski') || v.includes('jet ski') || v.includes('atv');
     }
 
     function vehicleName(slugOrTitle: string | null): string {
@@ -613,6 +613,7 @@ import Layout from "../layouts/Layout.astro";
                     customerPhone: formData.phone,
                     tourId: state.tourId,
                     tourName: state.tourTitle,
+                    tourSlug: state.tourSlug,
                     date: state.date,
                     time: state.time,
                     totalAmount: price.totalPrice,

@@ -41,6 +41,7 @@ export const POST: APIRoute = async ({ request }) => {
             language = 'en',
             variationId,
             pricePerAdult,
+            tourSlug,
             duration
         } = body;
 
@@ -71,6 +72,7 @@ export const POST: APIRoute = async ({ request }) => {
         // 2. Server-side price calculation and validation
         const priceResult = await calculateServerPrice({
             tourId,
+            tourSlug,
             adults: adults || 1,
             children: children || 0,
             extraPassengers: extraPassengers || 0,

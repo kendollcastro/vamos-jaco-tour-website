@@ -64,6 +64,18 @@ export async function calculateServerPrice(params: CalculatePriceParams): Promis
     let adultPrice = 0;
     let childPrice = 0;
     let tourSlug = providedSlug || '';
+
+    // Always try to resolve the slug from the DB (needed for vehicle tour detection)
+    if (!tourSlug && supabaseAdmin) {
+        try {
+            let { data: tour } = await supabaseAdmin
+                .from('tours')
+                .select('slug')
+                .eq('id', tourId)
+                .single();
+            if (tour?.slug) tourSlug = tour.slug;
+        } catch {}
+    }
     
     if (providedPrice && providedPrice > 0) {
         adultPrice = providedPrice;
@@ -74,7 +86,7 @@ export async function calculateServerPrice(params: CalculatePriceParams): Promis
                 // Try by slug first, then by UUID
                 let { data: tour, error } = await supabaseAdmin
                     .from('tours')
-                    .select('price_base, pricing_options, slug')
+                    .select('price_base, pricing_options')
                     .eq('slug', tourId)
                     .single();
                 
@@ -82,14 +94,13 @@ export async function calculateServerPrice(params: CalculatePriceParams): Promis
                     // Fallback: try by UUID
                     const result = await supabaseAdmin
                         .from('tours')
-                        .select('price_base, pricing_options, slug')
+                        .select('price_base, pricing_options')
                         .eq('id', tourId)
                         .single();
                     tour = result.data;
                 }
                 
                 if (tour) {
-                    if (!tourSlug) tourSlug = tour.slug || '';
                     adultPrice = tour.price_base || 0;
 
                     // If variationId provided, find the specific pricing option
