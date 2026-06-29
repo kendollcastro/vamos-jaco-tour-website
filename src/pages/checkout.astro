@@ -508,15 +508,49 @@ import Layout from "../layouts/Layout.astro";
         });
     };
 
+    // Vehicle tour detection — works with both slugs and titles
+    function isVehicleTourSlug(slugOrTitle: string | null): boolean {
+        if (!slugOrTitle) return false;
+        const v = slugOrTitle.toLowerCase();
+        return v.includes('side-by-side') || v.includes('jet-ski') || v.includes('atv');
+    }
+
+    function vehicleName(slugOrTitle: string | null): string {
+        if (!slugOrTitle) return 'Vehicles';
+        const v = slugOrTitle.toLowerCase();
+        if (v.includes('side-by-side') || v.includes('buggy')) return 'Buggies';
+        if (v.includes('jet-ski')) return 'Jet Skis';
+        if (v.includes('atv')) return 'ATVs';
+        return 'Vehicles';
+    }
+
+    // Recalculate total if cart is stale (e.g. missing tourSlug from old localStorage)
+    function recalculateTotal(state: Record<string, any>) {
+        let total = 0;
+        const vehicle = isVehicleTourSlug(state.tourSlug || state.tourTitle);
+        if (vehicle) {
+            const capacity = state.tourSlug === 'side-by-side-tour' || (!state.tourSlug && state.tourTitle?.toLowerCase().includes('side-by-side')) ? 4
+                : state.tourSlug === 'jet-ski-tour' || (!state.tourSlug && state.tourTitle?.toLowerCase().includes('jet-ski')) ? 2
+                : 1;
+            const vehicles = Math.max(1, Math.ceil(state.adults / capacity));
+            total = (vehicles * state.pricePerAdult) + (state.extraPassengers * 20);
+        } else {
+            total = (state.adults * state.pricePerAdult) + (state.children * state.pricePerChild);
+        }
+        const iva = total * 0.13;
+        const finalTotal = total + iva;
+        return { subtotal: total, iva, totalPrice: finalTotal };
+    }
+
     // Subscribe to store
     bookingStore.subscribe((state) => {
         if (summaryContainer && state.tourId) {
-            const isVehicleTour = state.tourId === 'side-by-side-tour' || state.tourId === 'jet-ski-tour' || state.tourId === 'jaco-atv-adventure';
+            const vehicle = isVehicleTourSlug(state.tourSlug || state.tourTitle);
+            const price = recalculateTotal(state);
             
             let guestsHtml = `${state.adults} Adults, ${state.children} Kids`;
-            if (isVehicleTour) {
-                const vehicleName = state.tourId === 'side-by-side-tour' ? 'Buggies' : (state.tourId === 'jet-ski-tour' ? 'Jet Skis' : 'ATVs');
-                guestsHtml = `${state.adults} ${vehicleName}, ${state.extraPassengers} Extra Pax`;
+            if (vehicle) {
+                guestsHtml = `${state.adults} ${vehicleName(state.tourSlug || state.tourTitle)}, ${state.extraPassengers || 0} Extra Pax`;
             }
 
             // Update Main Summary List
@@ -535,11 +569,10 @@ import Layout from "../layouts/Layout.astro";
             `;
             
             // Update Prices
-            const subtotal = state.totalPrice - state.ivaAmount;
-            if (subtotalEl) subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
-            if (taxesEl) taxesEl.textContent = `$${state.ivaAmount.toFixed(2)}`;
-            if (totalEl) totalEl.textContent = `$${state.totalPrice.toFixed(2)}`;
-            if (mobileTotalEl) mobileTotalEl.textContent = `$${state.totalPrice.toFixed(2)}`;
+            if (subtotalEl) subtotalEl.textContent = `$${price.subtotal.toFixed(2)}`;
+            if (taxesEl) taxesEl.textContent = `$${price.iva.toFixed(2)}`;
+            if (totalEl) totalEl.textContent = `$${price.totalPrice.toFixed(2)}`;
+            if (mobileTotalEl) mobileTotalEl.textContent = `$${price.totalPrice.toFixed(2)}`;
 
         } else if (summaryContainer) {
             summaryContainer.innerHTML = `<p class="text-gray-500 text-sm">No tour selected.</p>`;
@@ -567,6 +600,9 @@ import Layout from "../layouts/Layout.astro";
                 phone: fullPhoneInput.value || inputPhone.value.trim(),
             };
 
+            // Recalculate price on the client to match server-side logic
+            const price = recalculateTotal(state);
+
             // Use /initiate - does NOT create booking, just gets payment URL
             const res = await fetch("/api/bookings/initiate", {
                 method: "POST",
@@ -579,7 +615,7 @@ import Layout from "../layouts/Layout.astro";
                     tourName: state.tourTitle,
                     date: state.date,
                     time: state.time,
-                    totalAmount: state.totalPrice,
+                    totalAmount: price.totalPrice,
                     adults: state.adults,
                     children: state.children,
                     extraPassengers: state.extraPassengers || 0,
