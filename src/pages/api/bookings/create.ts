@@ -42,6 +42,7 @@ export const POST: APIRoute = async ({ request }) => {
             variationId,
             pricePerAdult,
             tourSlug,
+            time,
             duration
         } = body;
 
@@ -130,6 +131,7 @@ export const POST: APIRoute = async ({ request }) => {
                 customer_phone: sanitizedPhone,
                 tour_name: sanitizedTourName,
                 booking_date: formattedDate,
+                booking_time: time || null,
                 total_amount: priceResult.total,
                 status: 'pending',
                 adults: adults || 1,

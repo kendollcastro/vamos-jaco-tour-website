@@ -158,6 +158,7 @@ export const POST: APIRoute = async ({ request }) => {
             customer_email: sanitizedEmail,
             customer_phone: sanitizedPhone,
             booking_date: formattedDate,
+            booking_time: time || null,
             adults: adults || 1,
             children: children || 0,
             total_amount: priceResult.total,

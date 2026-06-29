@@ -16,6 +16,7 @@ interface BookingDetails {
     customer_phone: string;
     booking_date: string;
     booking_time?: string;
+    duration?: string;
     adults: number;
     children: number;
     total_amount: number;
