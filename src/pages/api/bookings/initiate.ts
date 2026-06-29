@@ -218,11 +218,16 @@ export const POST: APIRoute = async ({ request }) => {
 
             } catch (paymentError: any) {
                 console.error('TiloPay Integration Error:', paymentError);
+                // Booking was already created. Return partial success so user
+                // still gets a confirmation and admin can follow up.
                 return new Response(JSON.stringify({
-                    success: false,
-                    message: 'Payment service unavailable'
+                    success: true,
+                    pendingId: orderId,
+                    requiresRedirect: false,
+                    requiresManualPayment: true,
+                    message: 'Booking saved. We will contact you to complete payment.'
                 }), { 
-                    status: 502,
+                    status: 200,
                     headers: { 'Content-Type': 'application/json' }
                 });
             }

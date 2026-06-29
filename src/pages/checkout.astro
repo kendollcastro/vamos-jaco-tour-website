@@ -631,8 +631,10 @@ import Layout from "../layouts/Layout.astro";
             const data = await res.json();
             
             if (data.success && data.requiresRedirect && data.paymentUrl) {
-                // Redirect directly to TiloPay, data is now handled via DB persistence
                 window.location.href = data.paymentUrl;
+            } else if (data.success && data.requiresManualPayment) {
+                alert('Booking saved! We will contact you to complete payment.');
+                window.location.href = '/';
             } else {
                 alert("Payment initialization failed: " + (data.message || "Unknown error"));
             }
