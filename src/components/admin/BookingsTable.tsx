@@ -8,10 +8,11 @@ import { adminTranslations } from '../../lib/admin-translations';
 import AddBookingModal from './AddBookingModal';
 import DeleteConfirmModal from './DeleteConfirmModal';
 import BookingDetailsModal from './BookingDetailsModal';
+import BulkDeleteModal from './BulkDeleteModal';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '../ui/table';
-import { Search, RefreshCw, Download, Calendar, X, Plus, MoreHorizontal, Eye, Check, Mail, Printer, Trash2, CheckCircle, FileText } from 'lucide-react';
+import { Search, RefreshCw, Download, Calendar, X, Plus, MoreHorizontal, Eye, Check, Mail, Printer, Trash2, CheckCircle, FileText, CheckSquare } from 'lucide-react';
 
 interface Booking {
     id: string;
@@ -70,6 +71,8 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
     const [dateTo, setDateTo] = useState('');
     const [detailsModalOpen, setDetailsModalOpen] = useState(false);
     const [selectedBookingDetails, setSelectedBookingDetails] = useState<Booking | null>(null);
+    const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+    const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
     const isDemo = !supabase;
 
     async function handleRefresh() {
@@ -184,6 +187,36 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
         setBookingToDelete(null);
     }
 
+    async function confirmBulkDelete(ids: string[]) {
+        if (isDemo) {
+            setBookings(prev => prev.filter(b => !ids.includes(b.id)));
+            setSelectedIds(new Set());
+            setBulkDeleteOpen(false);
+            onToast?.(lang === 'en' ? `${ids.length} bookings deleted` : `${ids.length} reservas eliminadas`);
+            return;
+        }
+
+        if (!supabase) return;
+        let successCount = 0;
+        for (const id of ids) {
+            const booking = bookings.find(b => b.id === id);
+            const { error } = await supabase.from('bookings').delete().eq('id', id);
+            if (!error) {
+                await logAudit({
+                    action: 'delete',
+                    table_name: 'bookings',
+                    record_id: id,
+                    summary: `Deleted booking: ${booking?.customer_name || id} - ${booking?.tour_name || ''}`
+                });
+                successCount++;
+            }
+        }
+        fetchBookings();
+        setSelectedIds(new Set());
+        setBulkDeleteOpen(false);
+        onToast?.(lang === 'en' ? `${successCount} bookings deleted` : `${successCount} reservas eliminadas`);
+    }
+
     function exportToCSV() {
         const headers = ['Date', 'Customer', 'Email', 'Phone', 'Tour', 'Adults', 'Children', 'Amount', 'Status'];
         const rows = filtered.map(b => [
@@ -261,6 +294,18 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                         <Download className="w-4 h-4" />
                         <span className="hidden md:inline">{lang === 'en' ? 'Export' : 'Exportar'}</span>
                     </Button>
+
+                    {/* Bulk Delete Button */}
+                    {selectedIds.size > 0 && (
+                        <Button
+                            variant="destructive"
+                            onClick={() => setBulkDeleteOpen(true)}
+                            className="gap-2 rounded-full shadow-sm shrink-0"
+                        >
+                            <Trash2 className="w-4 h-4" />
+                            {lang === 'en' ? `Delete (${selectedIds.size})` : `Eliminar (${selectedIds.size})`}
+                        </Button>
+                    )}
 
                     {/* Status Filter */}
                     <div className="flex p-1.5 bg-gray-100 dark:bg-black/20 rounded-lg border border-gray-200 dark:border-white/5 w-full sm:w-auto overflow-x-auto hide-scrollbar">
@@ -349,6 +394,16 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                 booking={selectedBookingDetails}
             />
 
+            <BulkDeleteModal
+                isOpen={bulkDeleteOpen}
+                onClose={() => setBulkDeleteOpen(false)}
+                onConfirm={confirmBulkDelete}
+                bookings={Array.from(selectedIds).map(id => {
+                    const b = bookings.find(bk => bk.id === id);
+                    return { id, customerName: b?.customer_name || '', tourName: b?.tour_name || '' };
+                })}
+            />
+
             {/* Table */}
             <div className="bg-white dark:bg-[#0A0A0A] rounded-2xl border border-gray-200 dark:border-white/5 overflow-hidden shadow-sm transition-colors duration-300">
                 {loading ? (
@@ -389,22 +444,53 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                     <Table>
                         <TableHeader>
                             <TableRow className="border-b border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-white/5">
-                                <TableHead className="text-left px-6 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider">{lang === 'en' ? 'Date' : 'Fecha'}</TableHead>
-                                <TableHead className="text-left px-6 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider">{lang === 'en' ? 'Customer' : 'Cliente'}</TableHead>
-                                <TableHead className="text-left px-6 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider hidden md:table-cell">{lang === 'en' ? 'Tour' : 'Tour'}</TableHead>
-                                <TableHead className="text-left px-6 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider">{lang === 'en' ? 'Amount' : 'Monto'}</TableHead>
-                                <TableHead className="text-left px-6 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider">{lang === 'en' ? 'Status' : 'Estado'}</TableHead>
-                                <TableHead className="text-left px-6 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider">{lang === 'en' ? 'Actions' : 'Acciones'}</TableHead>
+                                <TableHead className="w-12 px-4 py-4">
+                                    <input
+                                        type="checkbox"
+                                        checked={filtered.length > 0 && selectedIds.size === filtered.length}
+                                        indeterminate={selectedIds.size > 0 && selectedIds.size < filtered.length}
+                                        onChange={() => {
+                                            if (selectedIds.size === filtered.length) {
+                                                setSelectedIds(new Set());
+                                            } else {
+                                                setSelectedIds(new Set(filtered.map(b => b.id)));
+                                            }
+                                        }}
+                                        className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary focus:ring-primary cursor-pointer"
+                                    />
+                                </TableHead>
+                                <TableHead className="text-left px-4 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider">{lang === 'en' ? 'Date' : 'Fecha'}</TableHead>
+                                <TableHead className="text-left px-4 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider">{lang === 'en' ? 'Customer' : 'Cliente'}</TableHead>
+                                <TableHead className="text-left px-4 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider hidden md:table-cell">{lang === 'en' ? 'Tour' : 'Tour'}</TableHead>
+                                <TableHead className="text-left px-4 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider">{lang === 'en' ? 'Amount' : 'Monto'}</TableHead>
+                                <TableHead className="text-left px-4 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider">{lang === 'en' ? 'Status' : 'Estado'}</TableHead>
+                                <TableHead className="text-left px-4 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider">{lang === 'en' ? 'Actions' : 'Acciones'}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody className="divide-y divide-gray-100 dark:divide-white/5">
                             {filtered.map((booking) => (
                                 <TableRow key={booking.id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
-                                    <TableCell className="px-6 py-4">
+                                    <TableCell className="px-4 py-4">
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedIds.has(booking.id)}
+                                            onChange={() => {
+                                                const next = new Set(selectedIds);
+                                                if (next.has(booking.id)) {
+                                                    next.delete(booking.id);
+                                                } else {
+                                                    next.add(booking.id);
+                                                }
+                                                setSelectedIds(next);
+                                            }}
+                                            className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary focus:ring-primary cursor-pointer"
+                                        />
+                                    </TableCell>
+                                    <TableCell className="px-4 py-4">
                                         <div className="text-gray-900 dark:text-white text-sm font-bold">{new Date(booking.booking_date).toLocaleDateString()}</div>
                                         <div className="text-gray-500 text-xs font-medium">{new Date(booking.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                                     </TableCell>
-                                    <TableCell className="px-6 py-4">
+                                    <TableCell className="px-4 py-4">
                                         <div className="flex items-center gap-3">
                                             <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary text-sm font-black shrink-0 shadow-sm">
                                                 {booking.customer_name?.charAt(0)?.toUpperCase() || '?'}
@@ -421,11 +507,11 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                                             </div>
                                         </div>
                                     </TableCell>
-                                    <TableCell className="px-6 py-4 hidden md:table-cell">
+                                    <TableCell className="px-4 py-4 hidden md:table-cell">
                                         <p className="text-gray-900 dark:text-white font-bold leading-tight line-clamp-1">{booking.tour_name}</p>
                                         <p className="text-gray-500 text-xs font-medium">{booking.adults} adults, {booking.children} kids</p>
                                     </TableCell>
-                                    <TableCell className="px-6 py-4">
+                                    <TableCell className="px-4 py-4">
                                         <span className="text-gray-900 dark:text-white font-black text-base">${Number(booking.total_amount).toLocaleString()}</span>
                                         {booking.tilopay_order_id && (
                                             <div className="mt-1 flex items-center gap-1.5 text-[10px] text-green-600 dark:text-green-500/90 font-bold bg-green-500/20 w-max px-2 py-0.5 rounded border border-green-500/30">
@@ -437,7 +523,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                                             <div className="mt-1 text-[10px] text-gray-400 font-medium">Cash / Manual</div>
                                         )}
                                     </TableCell>
-                                    <TableCell className="px-6 py-4">
+                                    <TableCell className="px-4 py-4">
                                         <span className={`inline-flex px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm ${
                                             STATUS_STYLES[booking.status] 
                                             ? (typeof document !== 'undefined' && document.documentElement.classList.contains('dark')
@@ -448,7 +534,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                                             {booking.status}
                                         </span>
                                     </TableCell>
-                                    <TableCell className="px-6 py-4">
+                                    <TableCell className="px-4 py-4">
                                         <div className="relative">
                                             <Button
                                                 variant="ghost"
