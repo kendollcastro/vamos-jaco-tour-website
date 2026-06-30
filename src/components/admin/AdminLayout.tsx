@@ -231,6 +231,18 @@ export default function AdminLayout({ children }: Props) {
                     setUserPermissions(mods);
                 }
             } catch {}
+
+            // Check for per-user permission overrides
+            try {
+                const usersRes = await fetch('/api/admin/users/permissions', { headers });
+                const usersData = await usersRes.json();
+                if (cancelled || !usersData.users) return;
+                const myUserId = (await supabase!.auth.getUser()).data.user?.id;
+                const myProfile = usersData.users.find((u: any) => u.id === myUserId);
+                if (myProfile?.permissions && Array.isArray(myProfile.permissions) && myProfile.permissions.length > 0) {
+                    setUserPermissions(myProfile.permissions);
+                }
+            } catch {}
         }
 
         loadSession();

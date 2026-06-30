@@ -41,7 +41,7 @@ export const GET: APIRoute = async ({ request }) => {
         if (profileClient) {
             const { data: profile } = await profileClient
                 .from('profiles')
-                .select('role, full_name')
+                .select('role, full_name, permissions')
                 .eq('id', userId)
                 .single();
 
@@ -49,13 +49,26 @@ export const GET: APIRoute = async ({ request }) => {
                 role = (profile as any).role || 'secretary';
                 name = (profile as any).full_name || '';
             }
+
+            return new Response(JSON.stringify({
+                authenticated: true,
+                userId,
+                role,
+                name,
+                permissions: (profile as any)?.permissions || null,
+            }), {
+                status: 200,
+                headers: { 'Content-Type': 'application/json' },
+            });
         }
 
+        // Fallback when no DB client (shouldn't reach here if supabase is set)
         return new Response(JSON.stringify({
             authenticated: true,
             userId,
             role,
             name,
+            permissions: null,
         }), {
             status: 200,
             headers: { 'Content-Type': 'application/json' },
