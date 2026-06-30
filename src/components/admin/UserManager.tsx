@@ -163,11 +163,14 @@ export default function UserManager() {
                                 <div key={profile.id} className="p-4 flex items-center justify-between hover:bg-accent/50 transition-colors">
                                     <div className="flex items-center gap-3">
                                         <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${isAdmin ? 'bg-amber-500/10 text-amber-600' : 'bg-blue-500/10 text-blue-600'}`}>
-                                            {profile.email.charAt(0).toUpperCase()}
+                                            {(profile.full_name || profile.email).charAt(0).toUpperCase()}
                                         </div>
                                         <div>
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-sm font-semibold">{profile.email}</span>
+                                            <div className="flex items-center gap-2 flex-wrap">
+                                                {profile.full_name && (
+                                                    <span className="text-sm font-semibold">{profile.full_name}</span>
+                                                )}
+                                                <span className={`text-xs ${profile.full_name ? 'text-muted-foreground' : 'text-sm font-semibold'}`}>{profile.email}</span>
                                                 <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${isAdmin ? 'bg-amber-500/10 text-amber-600' : 'bg-blue-500/10 text-blue-600'}`}>
                                                     {isAdmin ? 'Admin' : 'Secretary'}
                                                 </span>
@@ -177,9 +180,6 @@ export default function UserManager() {
                                                     </span>
                                                 )}
                                             </div>
-                                            {profile.full_name && (
-                                                <p className="text-xs text-muted-foreground">{profile.full_name}</p>
-                                            )}
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2">

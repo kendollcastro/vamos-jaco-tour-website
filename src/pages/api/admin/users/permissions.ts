@@ -36,8 +36,59 @@ export const GET: APIRoute = async ({ request }) => {
     if (!dbClient) {
         return new Response(JSON.stringify({ error: 'DB not configured' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
     }
-    const { data } = await dbClient.from('profiles').select('id, email, full_name, role, permissions').order('email');
-    return new Response(JSON.stringify({ users: data || [] }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+
+    // 1. Get all auth users (admin API)
+    let authUsers: { id: string; email?: string }[] = [];
+    if (supabaseAdmin) {
+        try {
+            const { data } = await supabaseAdmin.auth.admin.listUsers();
+            authUsers = (data?.users || []).map(u => ({ id: u.id, email: u.email }));
+        } catch (e) {
+            console.error('Failed to list auth users:', e);
+        }
+    }
+
+    // 2. Get all profiles
+    const { data: profilesData } = await dbClient.from('profiles').select('*');
+    const profilesMap = new Map((profilesData || []).map((p: any) => [p.id, p]));
+
+    // 3. Merge: all auth users + profiles, sorted by email
+    const seen = new Set<string>();
+    const merged: any[] = [];
+
+    for (const au of authUsers) {
+        seen.add(au.id);
+        const p = profilesMap.get(au.id);
+        merged.push({
+            id: au.id,
+            email: au.email || p?.email || '',
+            full_name: p?.full_name || '',
+            role: p?.role || 'secretary',
+            permissions: p?.permissions || null,
+            created_at: p?.created_at || '',
+        });
+    }
+
+    // Add any profiles without auth user entry (shouldn't happen, but safe)
+    for (const p of (profilesData || [])) {
+        if (!seen.has((p as any).id)) {
+            merged.push({
+                id: (p as any).id,
+                email: (p as any).email || '',
+                full_name: (p as any).full_name || '',
+                role: (p as any).role || 'secretary',
+                permissions: (p as any).permissions || null,
+                created_at: (p as any).created_at || '',
+            });
+        }
+    }
+
+    merged.sort((a: any, b: any) => a.email.localeCompare(b.email));
+
+    return new Response(JSON.stringify({ users: merged }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+    });
 };
 
 // PUT: update a single user's permissions
