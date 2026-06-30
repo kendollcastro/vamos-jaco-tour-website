@@ -172,7 +172,7 @@ export default function TeamManager() {
                             <TableHead className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
-                    <TableBody className="divide-y divide-gray-100 dark:divide-white/5">
+                    <TableBody className="divide-y divide-border/60">
                         {members.map(member => (
                             <TableRow key={member.id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
                                 <TableCell className="px-6 py-4 whitespace-nowrap">

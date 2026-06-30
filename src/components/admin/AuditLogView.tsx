@@ -74,7 +74,7 @@ export default function AuditLogView() {
                             {loading ? 'Loading...' : 'No audit entries yet.'}
                         </div>
                     ) : (
-                        <div className="divide-y">
+                        <div className="divide-y divide-border/60">
                             {entries.map((entry) => (
                                 <div key={entry.id} className="p-4 hover:bg-accent/50 transition-colors">
                                     <div className="flex items-start gap-3">
