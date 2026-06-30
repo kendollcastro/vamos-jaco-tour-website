@@ -76,7 +76,24 @@ export default function UserManager() {
 
     function openPermissions(user: Profile) {
         setEditUser(user);
-        setEditModules(user.permissions || []);
+        if (user.permissions && Array.isArray(user.permissions) && user.permissions.length > 0) {
+            setEditModules(user.permissions);
+        } else {
+            // No per-user overrides — initialize with role defaults
+            const savedRole = user.role;
+            const token = getAccessToken();
+            const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+            fetch('/api/admin/permissions', { headers })
+                .then(r => r.json())
+                .then(data => {
+                    const roleDefaults = (data.permissions || [])
+                        .filter((p: any) => p.role === savedRole)
+                        .map((p: any) => p.module);
+                    setEditModules(roleDefaults);
+                })
+                .catch(() => setEditModules([]));
+        }
     }
 
     function toggleModule(mod: string) {

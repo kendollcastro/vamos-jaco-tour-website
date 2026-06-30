@@ -3,6 +3,12 @@ import { supabase, supabaseAdmin } from '../../../lib/supabase';
 
 export const prerender = false;
 
+const ALL_MODULES = [
+    'dashboard', 'tours', 'bookings', 'calendar', 'subscribers',
+    'gallery', 'team', 'website', 'emails', 'commissions',
+    'auditLog', 'users', 'profile', 'roles',
+];
+
 export const GET: APIRoute = async ({ request }) => {
     if (!supabase) {
         return new Response(JSON.stringify({ authenticated: false }), {
@@ -21,7 +27,6 @@ export const GET: APIRoute = async ({ request }) => {
             const { data: { user }, error } = await supabase.auth.getUser(token);
             if (!error && user) userId = user.id;
         } else {
-            // Fallback to session cookie
             const { data: { user }, error } = await supabase.auth.getUser();
             if (!error && user) userId = user.id;
         }
@@ -35,11 +40,11 @@ export const GET: APIRoute = async ({ request }) => {
 
         let role = 'secretary';
         let name = '';
+        let permissions: string[] | null = null;
 
-        // Try service-role client first, fall back to anon (both use same URL)
-        const profileClient = supabaseAdmin || supabase;
-        if (profileClient) {
-            const { data: profile } = await profileClient
+        const dbClient = supabaseAdmin || supabase;
+        if (dbClient) {
+            const { data: profile } = await dbClient
                 .from('profiles')
                 .select('role, full_name, permissions')
                 .eq('id', userId)
@@ -48,6 +53,22 @@ export const GET: APIRoute = async ({ request }) => {
             if (profile) {
                 role = (profile as any).role || 'secretary';
                 name = (profile as any).full_name || '';
+
+                // Get role defaults from role_permissions
+                const { data: rolePerms } = await dbClient
+                    .from('role_permissions')
+                    .select('module')
+                    .eq('role', role);
+
+                const roleDefaults: string[] = (rolePerms || []).map((r: any) => r.module);
+                const userOverrides: string[] | null = (profile as any)?.permissions || null;
+
+                // Merge: per-user overrides take precedence, fall back to role defaults
+                if (userOverrides && Array.isArray(userOverrides) && userOverrides.length > 0) {
+                    permissions = userOverrides;
+                } else {
+                    permissions = roleDefaults.length > 0 ? roleDefaults : (role === 'admin' ? [...ALL_MODULES] : []);
+                }
             }
 
             return new Response(JSON.stringify({
@@ -55,14 +76,13 @@ export const GET: APIRoute = async ({ request }) => {
                 userId,
                 role,
                 name,
-                permissions: (profile as any)?.permissions || null,
+                permissions,
             }), {
                 status: 200,
                 headers: { 'Content-Type': 'application/json' },
             });
         }
 
-        // Fallback when no DB client (shouldn't reach here if supabase is set)
         return new Response(JSON.stringify({
             authenticated: true,
             userId,

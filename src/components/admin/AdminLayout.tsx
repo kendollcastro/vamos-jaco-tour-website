@@ -79,9 +79,6 @@ const ALL_NAV_ITEMS = (t: typeof adminTranslations.en) => [
     { id: 'roles' as AdminView, label: 'Roles' },
 ];
 
-const getNavItems = (t: typeof adminTranslations.en, role: string) =>
-    ALL_NAV_ITEMS(t).filter(item => !item.adminOnly || role === 'admin');
-
 const VALID_VIEWS = ALL_NAV_ITEMS({ nav: {} } as any).map(i => i.id);
 
 export default function AdminLayout({ children }: Props) {
@@ -158,7 +155,10 @@ export default function AdminLayout({ children }: Props) {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, []);
 
-    // Auth (no profile query — role is loaded lazily from localStorage)
+    // Track current user ID to detect user switches
+    const [userId, setUserId] = useState<string | null>(null);
+
+    // Auth + track userId
     useEffect(() => {
         if (!supabase) {
             setAuthenticated(false);
@@ -171,25 +171,36 @@ export default function AdminLayout({ children }: Props) {
             setAuthenticated(!!session);
             if (session?.user?.email) setUserEmail(session.user.email);
             if (session?.user?.user_metadata?.full_name) setUserName(session.user.user_metadata.full_name);
+            if (session?.user?.id) setUserId(session.user.id);
         });
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             setAuthenticated(!!session);
             if (session?.user?.email) setUserEmail(session.user.email);
             if (session?.user?.user_metadata?.full_name) setUserName(session.user.user_metadata.full_name);
+            if (session?.user?.id) setUserId(session.user.id);
+            if (!session) {
+                // User logged out — reset stale state
+                setUserRole('secretary');
+                setUserPermissions([]);
+                setUserName('');
+                setUserEmail('');
+                setUserId(null);
+                localStorage.removeItem('user_role');
+                localStorage.removeItem('user_full_name');
+            }
         });
         return () => subscription.unsubscribe();
     }, []);
 
-    // Fetch role and permissions from server
+    // Fetch role and merged permissions from server (runs on mount AND on user switch)
     useEffect(() => {
-        if (!supabase) {
-            setUserRole('admin');
+        if (!supabase || !userId) {
+            if (!userId) setUserRole('admin');
             return;
         }
         let cancelled = false;
 
         async function loadSession() {
-            // Read token directly from localStorage (more reliable than getSession)
             let token: string | undefined;
             try {
                 const raw = localStorage.getItem('sb-ddukdjdiqjvfjywuhnpn-auth-token');
@@ -209,45 +220,21 @@ export default function AdminLayout({ children }: Props) {
                 if (meData.authenticated && meData.role) {
                     setUserRole(meData.role);
                     setUserName(meData.name || '');
+                    setUserPermissions(meData.permissions || []);
                     localStorage.setItem('user_role', meData.role);
                     localStorage.setItem('user_full_name', meData.name || '');
                 } else {
                     setUserRole('secretary');
+                    setUserPermissions([]);
                 }
             } catch (err) {
                 console.error('Failed to fetch admin role:', err);
             }
-
-            // Load permissions for the user's role
-            try {
-                const permsRes = await fetch('/api/admin/permissions', { headers });
-                const permsData = await permsRes.json();
-                if (cancelled) return;
-                if (permsData.permissions) {
-                    const savedRole = localStorage.getItem('user_role') || 'secretary';
-                    const mods = permsData.permissions
-                        .filter((p: any) => p.role === savedRole)
-                        .map((p: any) => p.module);
-                    setUserPermissions(mods);
-                }
-            } catch {}
-
-            // Check for per-user permission overrides
-            try {
-                const usersRes = await fetch('/api/admin/users/permissions', { headers });
-                const usersData = await usersRes.json();
-                if (cancelled || !usersData.users) return;
-                const myUserId = (await supabase!.auth.getUser()).data.user?.id;
-                const myProfile = usersData.users.find((u: any) => u.id === myUserId);
-                if (myProfile?.permissions && Array.isArray(myProfile.permissions) && myProfile.permissions.length > 0) {
-                    setUserPermissions(myProfile.permissions);
-                }
-            } catch {}
         }
 
         loadSession();
         return () => { cancelled = true; };
-    }, []);
+    }, [userId]);
 
     // Lazy-import view components
     const [DashboardView, setDashboardView] = useState<React.ComponentType | null>(null);
@@ -285,6 +272,13 @@ export default function AdminLayout({ children }: Props) {
     async function handleLogout() {
         if (supabase) await supabase.auth.signOut();
         setAuthenticated(false);
+        setUserRole('secretary');
+        setUserPermissions([]);
+        setUserName('');
+        setUserEmail('');
+        setUserId(null);
+        localStorage.removeItem('user_role');
+        localStorage.removeItem('user_full_name');
     }
 
     if (authenticated === null) {
