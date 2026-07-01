@@ -842,7 +842,7 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                                     ? 'Are you sure you want to delete this commission entry? This action cannot be undone.'
                                     : '¿Estás seguro de eliminar esta comisión? Esta acción no se puede deshacer.'}
                             </p>
-                            <div className="rounded-lg border bg-muted/50 p-4 space-y-1 text-sm">
+                            <div className="rounded-lg border border-border/20 bg-muted/50 p-4 space-y-1 text-sm">
                                 <p><span className="font-medium">{lang === 'en' ? 'Customer' : 'Cliente'}:</span> {deleteTarget.customer_name}</p>
                                 <p><span className="font-medium">{lang === 'en' ? 'Tour' : 'Tour'}:</span> {deleteTarget.tour_name}</p>
                                 <p><span className="font-medium">{lang === 'en' ? 'Date' : 'Fecha'}:</span> {new Date(deleteTarget.date).toLocaleDateString()}</p>

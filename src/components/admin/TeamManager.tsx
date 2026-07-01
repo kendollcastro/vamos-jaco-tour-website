@@ -423,7 +423,7 @@ export default function TeamManager() {
                             <p className="text-muted-foreground">
                                 Are you sure you want to delete <strong>{deleteTarget.name}</strong>? This action cannot be undone.
                             </p>
-                            <div className="rounded-lg border bg-muted/50 p-4 space-y-1 text-sm">
+                            <div className="rounded-lg border border-border/20 bg-muted/50 p-4 space-y-1 text-sm">
                                 <p><span className="font-medium">Name:</span> {deleteTarget.name}</p>
                                 <p><span className="font-medium">Position:</span> {deleteTarget.position_en || '-'}</p>
                             </div>

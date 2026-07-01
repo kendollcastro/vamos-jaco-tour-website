@@ -66,7 +66,7 @@ export default function ProfileSettings({ onToast }: Props) {
                 </div>
             </div>
 
-            <div className="bg-card border rounded-2xl p-6 space-y-6">
+            <div className="bg-card border border-border/20 rounded-2xl p-6 space-y-6">
                 {loading ? (
                     <div className="flex items-center justify-center py-8">
                         <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />

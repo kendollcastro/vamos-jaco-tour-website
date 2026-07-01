@@ -67,7 +67,7 @@ export default function AuditLogView() {
                 </Button>
             </div>
 
-            <div className="bg-card border rounded-2xl overflow-hidden">
+            <div className="bg-card border border-border/20 rounded-2xl overflow-hidden">
                 <ScrollArea className="h-[600px]">
                     {entries.length === 0 ? (
                         <div className="text-center text-muted-foreground py-16">
