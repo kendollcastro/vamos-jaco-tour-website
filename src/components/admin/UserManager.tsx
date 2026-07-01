@@ -248,7 +248,7 @@ export default function UserManager() {
                         return (
                             <div
                                 key={profile.id}
-                                className="group relative bg-card border rounded-2xl p-5 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/5 hover:border-amber-500/20 hover:-translate-y-0.5"
+                                className="group relative bg-card border border-border/40 rounded-2xl p-5 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/5 hover:border-amber-500/20 hover:-translate-y-0.5"
                                 style={{ animationDelay: `${index * 40}ms` }}
                             >
                                 {/* Accent bar */}
