@@ -80,8 +80,8 @@ export default function AddBookingModal({ isOpen, onClose, onSuccess, prefillDat
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white dark:bg-dark-soft rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl border border-gray-200 dark:border-white/5 animate-in zoom-in-95 duration-200">
-                <div className="p-6 border-b border-gray-100 dark:border-white/5 flex items-center justify-between bg-gray-50 dark:bg-black/20">
+            <div className="bg-white dark:bg-dark-soft rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl border border-border/20 animate-in zoom-in-95 duration-200">
+                <div className="p-6 border-b border-border/20 flex items-center justify-between bg-gray-50 dark:bg-black/20">
                     <h3 className="text-xl font-black text-gray-900 dark:text-white flex items-center gap-2">
                         <Tag className="w-5 h-5 text-primary" />
                         Add New Booking

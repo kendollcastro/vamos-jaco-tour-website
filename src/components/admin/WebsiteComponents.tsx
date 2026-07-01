@@ -141,7 +141,7 @@ export default function WebsiteComponents() {
                             key={comp.id}
                             variant="ghost"
                             onClick={() => setActiveComponent(comp.id)}
-                            className="text-left bg-white dark:bg-dark-soft rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-white/5 hover:border-primary dark:hover:border-primary transition-all group flex flex-col gap-4 h-auto"
+                            className="text-left bg-white dark:bg-dark-soft rounded-2xl p-6 shadow-sm border border-border/20 hover:border-primary dark:hover:border-primary transition-all group flex flex-col gap-4 h-auto"
                         >
                             <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${comp.bg}`}>
                                 <comp.icon className={`w-6 h-6 ${comp.color}`} />
@@ -193,8 +193,8 @@ export default function WebsiteComponents() {
             )}
 
             {activeComponent === 'trust_bar' && (
-                <div className="bg-white dark:bg-dark-soft rounded-2xl shadow-sm border border-gray-200 dark:border-white/5 overflow-hidden">
-                    <div className="px-6 py-5 border-b border-gray-200 dark:border-white/5 flex justify-between items-center bg-gray-50 dark:bg-black/20">
+                <div className="bg-white dark:bg-dark-soft rounded-2xl shadow-sm border border-border/20 overflow-hidden">
+                    <div className="px-6 py-5 border-b border-border/20 flex justify-between items-center bg-gray-50 dark:bg-black/20">
                         <div>
                             <h2 className="text-lg font-bold text-gray-900 dark:text-white">Trust Bar Items</h2>
                             <p className="text-sm text-gray-500">Manage the items displayed in the Trust Bar.</p>

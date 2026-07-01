@@ -220,7 +220,7 @@ export default function DashboardStats({ onNavigate, onToast }: { onNavigate?: (
             <div className="space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {[1, 2, 3, 4].map((i) => (
-                        <div key={i} className="bg-white dark:bg-[#111111] rounded-[24px] border border-gray-200 dark:border-white/5 p-6 animate-pulse shadow-sm">
+                        <div key={i} className="bg-white dark:bg-[#111111] rounded-[24px] border border-border/20 p-6 animate-pulse shadow-sm">
                             <div className="h-4 bg-gray-200 dark:bg-white/10 rounded w-2/3 mb-3" />
                             <div className="h-8 bg-gray-200 dark:bg-white/10 rounded w-1/2" />
                         </div>

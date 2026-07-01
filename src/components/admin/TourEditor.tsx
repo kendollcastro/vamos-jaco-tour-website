@@ -217,7 +217,7 @@ export default function TourEditor({ tour, onClose }: Props) {
                 {/* Left Column: Main Fields */}
                 <div className="lg:col-span-2 space-y-6">
                     {/* Language Tabs */}
-                    <div className="bg-white dark:bg-dark-soft rounded-3xl border border-gray-200 dark:border-white/5 p-6 shadow-sm transition-colors duration-300">
+                    <div className="bg-white dark:bg-dark-soft rounded-3xl border border-border/20 p-6 shadow-sm transition-colors duration-300">
                         <div className="flex gap-2 mb-6">
                             {(['en', 'es'] as LangTab[]).map((lang) => (
                                 <Button
@@ -278,7 +278,7 @@ export default function TourEditor({ tour, onClose }: Props) {
                     </div>
 
                     {/* Pricing Options */}
-                    <div className="bg-white dark:bg-dark-soft rounded-3xl border border-gray-200 dark:border-white/5 p-6 shadow-sm transition-colors duration-300">
+                    <div className="bg-white dark:bg-dark-soft rounded-3xl border border-border/20 p-6 shadow-sm transition-colors duration-300">
                         <div className="flex items-center justify-between mb-5">
                             <h3 className="text-gray-900 dark:text-white font-bold text-sm">Pricing Options</h3>
                             <Button
@@ -328,7 +328,7 @@ export default function TourEditor({ tour, onClose }: Props) {
                     </div>
 
                     {/* Gallery */}
-                    <div className="bg-white dark:bg-dark-soft rounded-3xl border border-gray-200 dark:border-white/5 p-6 shadow-sm transition-colors duration-300">
+                    <div className="bg-white dark:bg-dark-soft rounded-3xl border border-border/20 p-6 shadow-sm transition-colors duration-300">
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-gray-900 dark:text-white font-bold text-sm flex items-center gap-2">
                                 <ImageIcon className="w-4 h-4 text-brand-teal" />
@@ -387,7 +387,7 @@ export default function TourEditor({ tour, onClose }: Props) {
                 {/* Right Sidebar */}
                 <div className="space-y-6">
                     {/* Basic Info */}
-                    <div className="bg-white dark:bg-dark-soft rounded-3xl border border-gray-200 dark:border-white/5 p-6 space-y-5 shadow-sm transition-colors duration-300">
+                    <div className="bg-white dark:bg-dark-soft rounded-3xl border border-border/20 p-6 space-y-5 shadow-sm transition-colors duration-300">
                         <h3 className="text-gray-900 dark:text-white font-bold text-sm">Details</h3>
 
                         <div>
@@ -476,7 +476,7 @@ export default function TourEditor({ tour, onClose }: Props) {
                     </div>
 
                     {/* Badge */}
-                    <div className="bg-white dark:bg-dark-soft rounded-3xl border border-gray-200 dark:border-white/5 p-6 space-y-4 shadow-sm transition-colors duration-300">
+                    <div className="bg-white dark:bg-dark-soft rounded-3xl border border-border/20 p-6 space-y-4 shadow-sm transition-colors duration-300">
                         <h3 className="text-gray-900 dark:text-white font-bold text-sm">Badge</h3>
                         <div>
                             <Label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">Badge Text</Label>
@@ -512,7 +512,7 @@ export default function TourEditor({ tour, onClose }: Props) {
                     </div>
 
                     {/* Featured Image */}
-                    <div className="bg-white dark:bg-dark-soft rounded-3xl border border-gray-200 dark:border-white/5 p-6 space-y-4 shadow-sm transition-colors duration-300">
+                    <div className="bg-white dark:bg-dark-soft rounded-3xl border border-border/20 p-6 space-y-4 shadow-sm transition-colors duration-300">
                         <h3 className="text-gray-900 dark:text-white font-bold text-sm">Featured Image</h3>
 
                         {form.image_url ? (

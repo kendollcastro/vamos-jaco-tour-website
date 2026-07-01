@@ -438,7 +438,7 @@ export default function AdminLayout({ children }: Props) {
     return (
         <div className="min-h-screen bg-background text-foreground flex">
             {/* Desktop Sidebar */}
-            <aside className="hidden lg:flex lg:flex-col lg:w-64 border-r bg-card">
+            <aside className="hidden lg:flex lg:flex-col lg:w-64 border-r border-muted-foreground/15 bg-card">
                 <NavContent />
             </aside>
 
@@ -452,7 +452,7 @@ export default function AdminLayout({ children }: Props) {
             {/* Main Content */}
             <main className="flex-1 flex flex-col h-screen overflow-hidden">
                 {/* Top Bar */}
-                <header className="sticky top-0 z-30 bg-background/95 backdrop-blur-xl border-b px-4 lg:px-8 py-3 flex items-center justify-between gap-4">
+                <header className="sticky top-0 z-30 bg-background/95 backdrop-blur-xl border-b border-muted-foreground/15 px-4 lg:px-8 py-3 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-4 flex-1">
                         <Button variant="ghost" size="icon" onClick={() => setMobileSidebarOpen(true)} className="lg:hidden">
                             <Menu className="h-5 w-5" />

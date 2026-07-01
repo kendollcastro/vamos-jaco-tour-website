@@ -98,7 +98,7 @@ export default function TourList() {
             {loading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                     {[1, 2, 3].map((i) => (
-                        <div key={i} className="bg-white dark:bg-[#0A0A0A] rounded-2xl border border-gray-200 dark:border-white/5 p-5 animate-pulse shadow-sm">
+                        <div key={i} className="bg-white dark:bg-[#0A0A0A] rounded-2xl border border-border/20 p-5 animate-pulse shadow-sm">
                             <div className="h-32 bg-gray-100 dark:bg-white/5 rounded-xl mb-4" />
                             <div className="h-4 bg-gray-200 dark:bg-white/10 rounded w-3/4 mb-2" />
                             <div className="h-3 bg-gray-100 dark:bg-white/5 rounded w-1/2" />
@@ -106,7 +106,7 @@ export default function TourList() {
                     ))}
                 </div>
             ) : tours.length === 0 ? (
-                <div className="bg-white dark:bg-[#0A0A0A] rounded-2xl border border-gray-200 dark:border-white/5 p-12 text-center shadow-sm">
+                <div className="bg-white dark:bg-[#0A0A0A] rounded-2xl border border-border/20 p-12 text-center shadow-sm">
                     <ImageIcon className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" strokeWidth={1} />
                     <p className="text-gray-500 dark:text-gray-400 mb-2 font-medium">No tours yet</p>
                     <p className="text-gray-400 dark:text-gray-600 text-sm mb-4">Add your first tour to get started</p>
@@ -123,7 +123,7 @@ export default function TourList() {
                     {tours.map((tour) => (
                         <div
                             key={tour.id}
-                            className="bg-white dark:bg-[#0A0A0A] rounded-2xl border border-gray-200 dark:border-white/5 overflow-hidden group hover:border-gray-300 dark:hover:border-white/10 transition-all duration-300 shadow-sm hover:shadow-xl hover:-translate-y-1 flex flex-col"
+                            className="bg-white dark:bg-[#0A0A0A] rounded-2xl border border-border/20 overflow-hidden group hover:border-gray-300 dark:hover:border-white/10 transition-all duration-300 shadow-sm hover:shadow-xl hover:-translate-y-1 flex flex-col"
                         >
                             {/* Image Container */}
                             <div className="h-48 bg-gray-100 dark:bg-dark relative overflow-hidden">
@@ -180,7 +180,7 @@ export default function TourList() {
                                 </p>
 
                                 {/* Action Buttons */}
-                                <div className="mt-auto pt-4 border-t border-gray-100 dark:border-white/5 flex gap-2 w-full">
+                                <div className="mt-auto pt-4 border-t border-border/20 flex gap-2 w-full">
                                     <AuditInfo recordId={tour.id} />
                                     <Button
                                         variant="ghost"

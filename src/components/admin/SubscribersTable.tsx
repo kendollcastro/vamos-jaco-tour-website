@@ -96,7 +96,7 @@ export default function SubscribersTable() {
                 </div>
             </div>
 
-            <div className="bg-white dark:bg-dark-soft rounded-3xl border border-gray-200 dark:border-white/5 overflow-hidden shadow-sm">
+            <div className="bg-white dark:bg-dark-soft rounded-3xl border border-border/20 overflow-hidden shadow-sm">
                 {loading ? (
                     <div className="p-8 space-y-3">
                         {[1, 2, 3].map((i) => (
@@ -111,7 +111,7 @@ export default function SubscribersTable() {
                 ) : (
                     <Table>
                         <TableHeader>
-                            <TableRow className="border-b border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-white/5">
+                            <TableRow className="border-b border-border/20 bg-muted/30">
                                 <TableHead className="px-6 py-4 text-gray-800 dark:text-gray-200 font-black text-[10px] uppercase tracking-[0.2em]">Email Address</TableHead>
                                 <TableHead className="px-6 py-4 text-gray-800 dark:text-gray-200 font-black text-[10px] uppercase tracking-[0.2em]">Joined Date</TableHead>
                                 <TableHead className="px-6 py-4 text-gray-800 dark:text-gray-200 font-black text-[10px] uppercase tracking-[0.2em]">Status</TableHead>

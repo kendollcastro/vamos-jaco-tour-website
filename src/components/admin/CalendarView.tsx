@@ -382,7 +382,7 @@ export default function CalendarView() {
             {selectedDate && selectedDateBookings.length > 0 && !showDetailsModal && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setSelectedDate(null)}>
                     <div className="bg-white dark:bg-[#111111] rounded-3xl max-w-lg w-full max-h-[80vh] overflow-hidden shadow-2xl" onClick={(e) => e.stopPropagation()}>
-                        <div className="p-6 border-b border-gray-200 dark:border-white/5">
+                        <div className="p-6 border-b border-border/20">
                             <div className="flex items-center justify-between">
                                 <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                                     {selectedDate.toLocaleDateString(lang === 'en' ? 'en-US' : 'es-ES', { 

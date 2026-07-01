@@ -96,7 +96,7 @@ export default function SalesChart({ onToast }: { onToast?: (message: string) =>
 
     if (loading) {
         return (
-            <div className="bg-white dark:bg-dark-soft rounded-[20px] border border-gray-200 dark:border-white/5 p-6 animate-pulse shadow-sm transition-colors duration-300">
+            <div className="bg-white dark:bg-dark-soft rounded-[20px] border border-border/20 p-6 animate-pulse shadow-sm transition-colors duration-300">
                 <div className="h-4 bg-gray-200 dark:bg-white/10 rounded w-40 mb-6" />
                 <div className="flex items-end gap-3 h-40">
                     {[1, 2, 3, 4, 5, 6, 7].map((i) => (
@@ -108,7 +108,7 @@ export default function SalesChart({ onToast }: { onToast?: (message: string) =>
     }
 
     return (
-        <div className="bg-white dark:bg-[#0A0A0A] rounded-2xl border border-gray-200 dark:border-white/5 p-6 shadow-sm transition-colors duration-300">
+        <div className="bg-white dark:bg-[#0A0A0A] rounded-2xl border border-border/20 p-6 shadow-sm transition-colors duration-300">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                 <div>
                     <h3 className="text-gray-900 dark:text-white font-bold text-lg">Revenue Trends</h3>
@@ -116,7 +116,7 @@ export default function SalesChart({ onToast }: { onToast?: (message: string) =>
                 </div>
 
                 {/* Tabs */}
-                <div className="flex p-1 bg-gray-100 dark:bg-black/20 rounded-xl max-w-fit border border-gray-200 dark:border-white/5">
+                <div className="flex p-1 bg-gray-100 dark:bg-black/20 rounded-xl max-w-fit border border-border/20">
                     <Button variant="ghost" className="px-4 py-1.5 text-xs font-semibold rounded-lg bg-white dark:bg-dark shadow-sm text-gray-900 dark:text-white h-auto">Week</Button>
                     <Button variant="ghost" onClick={() => onToast ? onToast('Monthly charting requires Pro Analytics.') : alert('Pro Add-on Required')} className="px-4 py-1.5 text-xs font-medium rounded-lg text-gray-500 hover:text-gray-900 dark:hover:text-white h-auto">Month</Button>
                     <Button variant="ghost" onClick={() => onToast ? onToast('Yearly charting requires Pro Analytics.') : alert('Pro Add-on Required')} className="px-4 py-1.5 text-xs font-medium rounded-lg text-gray-500 hover:text-gray-900 dark:hover:text-white h-auto">Year</Button>
