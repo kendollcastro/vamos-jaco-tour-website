@@ -682,7 +682,7 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                                     <th className="px-4 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground whitespace-nowrap text-right">{lang === 'en' ? 'Actions' : 'Acciones'}</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-border/40">
+                            <tbody className="divide-y divide-border/20">
                                 {paginated.map((c) => (
                                     <tr key={c.id} className="hover:bg-muted/30 transition-colors group">
                                         <td className="px-4 py-4 text-sm text-foreground whitespace-nowrap">

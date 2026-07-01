@@ -48,7 +48,7 @@ export default function BulkDeleteModal({ isOpen, onClose, onConfirm, bookings }
                         </Button>
                     </div>
 
-                    <div className="bg-muted/30 rounded-xl max-h-48 overflow-y-auto mb-6 divide-y divide-border/60">
+                    <div className="bg-muted/30 rounded-xl max-h-48 overflow-y-auto mb-6 divide-y divide-border/20">
                         {bookings.map((b) => (
                             <div key={b.id} className="flex items-center justify-between px-4 py-3">
                                 <div className="min-w-0 flex-1">

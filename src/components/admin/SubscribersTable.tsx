@@ -118,9 +118,9 @@ export default function SubscribersTable() {
                                 <TableHead className="px-6 py-4 text-gray-800 dark:text-gray-200 font-black text-[10px] uppercase tracking-[0.2em] text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
-                        <TableBody className="divide-y divide-border/60">
+                        <TableBody className="divide-y divide-border/20">
                             {filtered.map((sub) => (
-                                <TableRow key={sub.id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
+                                <TableRow key={sub.id} className="hover:bg-accent/50 transition-colors group">
                                     <TableCell className="px-6 py-4 font-bold text-gray-900 dark:text-white">
                                         {sub.email}
                                     </TableCell>

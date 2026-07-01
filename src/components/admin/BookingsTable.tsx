@@ -467,9 +467,9 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                                 <TableHead className="text-left px-4 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider">{lang === 'en' ? 'Actions' : 'Acciones'}</TableHead>
                             </TableRow>
                         </TableHeader>
-                        <TableBody className="divide-y divide-border/60">
+                        <TableBody className="divide-y divide-border/20">
                             {filtered.map((booking) => (
-                                <TableRow key={booking.id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
+                                <TableRow key={booking.id} className="hover:bg-accent/50 transition-colors group">
                                     <TableCell className="px-4 py-4">
                                         <input
                                             type="checkbox"
