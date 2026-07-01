@@ -548,7 +548,7 @@ export default function AdminLayout({ children }: Props) {
                     toast ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0 pointer-events-none',
                 )}>
                     {toast && (
-                        <div className="flex items-center gap-3 px-5 py-4 rounded-lg border border-border/20 bg-card text-card-foreground shadow-2xl">
+                        <div className="flex items-center gap-3 px-5 py-4 rounded-lg border border-border/40 bg-card text-card-foreground shadow-2xl">
                             <div className={cn(
                                 'w-8 h-8 rounded-full flex items-center justify-center shrink-0',
                                 toast.type === 'success' ? 'bg-emerald-500/10' : 'bg-blue-500/10',

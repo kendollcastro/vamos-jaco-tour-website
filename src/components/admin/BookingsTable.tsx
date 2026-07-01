@@ -308,7 +308,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                     )}
 
                     {/* Status Filter */}
-                    <div className="flex p-1.5 bg-gray-100 dark:bg-black/20 rounded-lg border border-border/20 w-full sm:w-auto overflow-x-auto hide-scrollbar">
+                    <div className="flex p-1.5 bg-gray-100 dark:bg-black/20 rounded-lg border border-border/40 w-full sm:w-auto overflow-x-auto hide-scrollbar">
                         {[
                             { key: 'all', en: 'All', es: 'Todos' },
                             { key: 'confirmed', en: 'Confirmed', es: 'Confirmado' },
@@ -405,11 +405,11 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
             />
 
             {/* Table */}
-            <div className="bg-white dark:bg-[#0A0A0A] rounded-2xl border border-border/20 overflow-hidden shadow-sm transition-colors duration-300">
+            <div className="bg-white dark:bg-[#0A0A0A] rounded-2xl border border-border/40 overflow-hidden shadow-sm transition-colors duration-300">
                 {loading ? (
                     <div className="p-6">
                         {/* Header skeleton */}
-                        <div className="flex items-center gap-4 pb-4 mb-4 border-b border-border/20">
+                        <div className="flex items-center gap-4 pb-4 mb-4 border-b border-border/40">
                             <div className="w-24 h-4 bg-gray-100 dark:bg-white/5 rounded animate-pulse" />
                             <div className="w-32 h-4 bg-gray-100 dark:bg-white/5 rounded animate-pulse" />
                             <div className="w-40 h-4 bg-gray-100 dark:bg-white/5 rounded animate-pulse hidden md:block" />
@@ -419,7 +419,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                         </div>
                         {/* Row skeletons */}
                         {[1, 2, 3, 4, 5, 6].map((i) => (
-                            <div key={i} className="flex items-center gap-4 py-4 border-b border-border/10 last:border-0">
+                            <div key={i} className="flex items-center gap-4 py-4 border-b border-border/20 last:border-0">
                                 <div className="w-24 h-4 bg-gray-100 dark:bg-white/5 rounded animate-pulse" />
                                 <div className="flex items-center gap-3 w-48">
                                     <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-white/5 animate-pulse" />
@@ -443,7 +443,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                 ) : (
                     <Table>
                         <TableHeader>
-                            <TableRow className="border-b border-border/20 bg-muted/30">
+                            <TableRow className="border-b border-border/40 bg-muted/30">
                                 <TableHead className="w-12 px-4 py-4">
                                     <input
                                         type="checkbox"
@@ -467,7 +467,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                                 <TableHead className="text-left px-4 py-4 text-gray-500 dark:text-gray-400 font-bold text-[11px] uppercase tracking-wider">{lang === 'en' ? 'Actions' : 'Acciones'}</TableHead>
                             </TableRow>
                         </TableHeader>
-                        <TableBody className="divide-y divide-border/20">
+                        <TableBody className="divide-y divide-border/30">
                             {filtered.map((booking) => (
                                 <TableRow key={booking.id} className="hover:bg-accent/50 transition-colors group">
                                     <TableCell className="px-4 py-4">
@@ -560,7 +560,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                                                 <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-[#111111] rounded-xl shadow-xl border border-gray-200 dark:border-white/10 z-50 py-2 animate-in fade-in slide-in-from-top-2">
                                                     {booking.status === 'pending' && (
                                                         <>
-                                                            <div className="border-t border-border/20 my-1" />
+                                                            <div className="border-t border-border/40 my-1" />
                                                         </>
                                                     )}
                                                     
@@ -582,7 +582,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                                                                 <Check className="w-4 h-4" />
                                                                 {lang === 'en' ? 'Mark Completed' : 'Marcar Completado'}
                                                             </Button>
-                                                            <div className="border-t border-border/20 my-1" />
+                                                            <div className="border-t border-border/40 my-1" />
                                                         </>
                                                     )}
 
@@ -604,7 +604,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                                                                 <Check className="w-4 h-4" />
                                                                 {lang === 'en' ? 'Mark Completed' : 'Marcar Completado'}
                                                             </Button>
-                                                            <div className="border-t border-border/20 my-1" />
+                                                            <div className="border-t border-border/40 my-1" />
                                                         </>
                                                     )}
 
@@ -618,7 +618,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                                                                 <Check className="w-4 h-4" />
                                                                 {lang === 'en' ? 'Mark Completed' : 'Marcar Completado'}
                                                             </Button>
-                                                            <div className="border-t border-border/20 my-1" />
+                                                            <div className="border-t border-border/40 my-1" />
                                                         </>
                                                     )}
                                                     <Button
@@ -742,7 +742,7 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                                                         <Printer className="w-4 h-4" />
                                                         {lang === 'en' ? 'Print' : 'Imprimir'}
                                                     </Button>
-                                                    <div className="border-t border-border/20 my-1" />
+                                                    <div className="border-t border-border/40 my-1" />
                                                     <Button
                                                         variant="ghost"
                                                         onClick={() => { deleteBooking(booking.id); }}

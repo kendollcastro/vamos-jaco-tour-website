@@ -201,7 +201,7 @@ export default function MediaGallery() {
                 {loading ? (
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
                         {[1, 2, 3, 4, 5, 6].map(i => (
-                            <div key={i} className="aspect-square bg-gray-100 dark:bg-dark-soft rounded-[20px] border border-border/20 animate-pulse" />
+                            <div key={i} className="aspect-square bg-gray-100 dark:bg-dark-soft rounded-[20px] border border-border/40 animate-pulse" />
                         ))}
                     </div>
                 ) : filtered.length === 0 ? (
@@ -218,7 +218,7 @@ export default function MediaGallery() {
                                 onClick={() => setSelectedImage(img)}
                                 className={`group relative aspect-square rounded-[16px] overflow-hidden border cursor-pointer bg-gray-50 dark:bg-dark-soft transition-all ${selectedImage?.path === img.path
                                     ? 'border-primary ring-2 ring-primary/30'
-                                    : 'border-border/20 hover:border-gray-300 dark:hover:border-white/15'
+                                    : 'border-border/40 hover:border-gray-300 dark:hover:border-white/15'
                                     }`}
                             >
                                 <img
@@ -243,10 +243,10 @@ export default function MediaGallery() {
                         ))}
                     </div>
                 ) : (
-                    <div className="bg-white dark:bg-dark-soft rounded-3xl border border-border/20 overflow-hidden shadow-sm transition-colors">
+                    <div className="bg-white dark:bg-dark-soft rounded-3xl border border-border/40 overflow-hidden shadow-sm transition-colors">
                         <Table>
                             <TableHeader>
-                                <TableRow className="border-b border-border/20 bg-muted/30">
+                                <TableRow className="border-b border-border/40 bg-muted/30">
                                     <TableHead className="px-4 py-2.5 text-gray-500 dark:text-gray-400 font-medium text-xs">Preview</TableHead>
                                     <TableHead className="px-4 py-2.5 text-gray-500 dark:text-gray-400 font-medium text-xs">Name</TableHead>
                                     <TableHead className="px-4 py-2.5 text-gray-500 dark:text-gray-400 font-medium text-xs hidden md:table-cell">Folder</TableHead>
@@ -307,7 +307,7 @@ export default function MediaGallery() {
             >
                 {selectedImage && (
                     <>
-                        <div className="flex items-center justify-between p-4 border-b border-border/20">
+                        <div className="flex items-center justify-between p-4 border-b border-border/40">
                             <h3 className="text-gray-900 dark:text-white font-bold text-sm">Asset Details</h3>
                             <Button
                                 variant="ghost"
@@ -351,7 +351,7 @@ export default function MediaGallery() {
                                 </div>
                             </div>
 
-                            <div className="pt-4 space-y-2 border-t border-border/20">
+                            <div className="pt-4 space-y-2 border-t border-border/40">
                                 <Button
                                     variant="outline"
                                     onClick={() => copyPath(selectedImage!.path)}

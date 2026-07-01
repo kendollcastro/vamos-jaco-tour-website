@@ -125,7 +125,7 @@ export default function PermissionsManager({ onToast }: { onToast?: (msg: string
 
             <div className="grid gap-6">
                 {ROLES.map(role => (
-                    <div key={role} className="bg-card border border-border/20 rounded-2xl overflow-hidden">
+                    <div key={role} className="bg-card border border-border/40 rounded-2xl overflow-hidden">
                         <div className="px-6 py-4 border-b bg-muted/30">
                             <div className="flex items-center gap-3">
                                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold ${

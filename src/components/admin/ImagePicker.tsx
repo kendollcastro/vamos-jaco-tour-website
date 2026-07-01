@@ -106,7 +106,7 @@ export default function ImagePicker({ isOpen, onClose, onSelect, multiple = fals
             {/* Modal */}
             <div className="relative bg-white dark:bg-dark-soft border border-gray-200 dark:border-white/10 rounded-[20px] w-full max-w-3xl max-h-[80vh] flex flex-col shadow-2xl transition-colors duration-300">
                 {/* Header */}
-                <div className="flex items-center justify-between px-5 py-4 border-b border-border/20 transition-colors">
+                <div className="flex items-center justify-between px-5 py-4 border-b border-border/40 transition-colors">
                     <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-xl bg-brand-teal/10 flex items-center justify-center">
                             <ImageIcon className="w-5 h-5 text-brand-teal" strokeWidth={1.5} />
@@ -131,7 +131,7 @@ export default function ImagePicker({ isOpen, onClose, onSelect, multiple = fals
                 </div>
 
                 {/* Toolbar */}
-                <div className="flex items-center justify-between px-5 py-3 border-b border-border/20 transition-colors">
+                <div className="flex items-center justify-between px-5 py-3 border-b border-border/40 transition-colors">
                     <Select
                         value={folder}
                         onValueChange={(value) => setFolder(value)}
@@ -218,7 +218,7 @@ export default function ImagePicker({ isOpen, onClose, onSelect, multiple = fals
                 </div>
 
                 {/* Footer */}
-                <div className="flex items-center justify-between px-5 py-3 border-t border-border/20 transition-colors">
+                <div className="flex items-center justify-between px-5 py-3 border-t border-border/40 transition-colors">
                     <span className="text-gray-500 text-xs">
                         {selectedPaths.length > 0
                             ? `${selectedPaths.length} selected`

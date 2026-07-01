@@ -161,10 +161,10 @@ export default function TeamManager() {
                 </div>
             )}
 
-            <div className="bg-white dark:bg-dark-soft border border-border/20 rounded-3xl overflow-hidden shadow-sm transition-colors duration-300">
+            <div className="bg-white dark:bg-dark-soft border border-border/40 rounded-3xl overflow-hidden shadow-sm transition-colors duration-300">
                 <Table>
                     <TableHeader>
-                        <TableRow className="border-b border-border/20 bg-muted/30">
+                        <TableRow className="border-b border-border/40 bg-muted/30">
                             <TableHead className="px-6 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Member</TableHead>
                             <TableHead className="px-6 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Position</TableHead>
                             <TableHead className="px-6 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</TableHead>
@@ -172,7 +172,7 @@ export default function TeamManager() {
                             <TableHead className="px-6 py-4 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
-                    <TableBody className="divide-y divide-border/20">
+                    <TableBody className="divide-y divide-border/30">
                         {members.map(member => (
                             <TableRow key={member.id} className="hover:bg-accent/50 transition-colors group">
                                 <TableCell className="px-6 py-4 whitespace-nowrap">
@@ -244,7 +244,7 @@ export default function TeamManager() {
                         onClick={() => !loading && handleCloseEditor()}
                     />
                     <div className="relative z-50 w-full max-w-2xl bg-white dark:bg-dark border-l border-gray-200 dark:border-white/10 h-full overflow-y-auto shadow-2xl transition-colors duration-300">
-                        <div className="sticky top-0 bg-white/95 dark:bg-dark/95 backdrop-blur-sm border-b border-border/20 px-6 py-4 flex items-center justify-between z-10 transition-colors duration-300">
+                        <div className="sticky top-0 bg-white/95 dark:bg-dark/95 backdrop-blur-sm border-b border-border/40 px-6 py-4 flex items-center justify-between z-10 transition-colors duration-300">
                             <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                                 {currentMember ? 'Edit Team Member' : 'New Team Member'}
                             </h2>
@@ -297,7 +297,7 @@ export default function TeamManager() {
                                     </div>
                                 </div>
 
-                                <div className="space-y-4 pt-4 border-t border-border/20">
+                                <div className="space-y-4 pt-4 border-t border-border/40">
                                     <h3 className="text-sm font-bold text-primary uppercase tracking-wider mb-2">Image</h3>
                                     <div className="flex items-start gap-4">
                                         <div className="w-24 h-24 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 overflow-hidden flex items-center justify-center shrink-0">
@@ -332,7 +332,7 @@ export default function TeamManager() {
                                     </div>
                                 </div>
 
-                                <div className="space-y-4 pt-4 border-t border-border/20">
+                                <div className="space-y-4 pt-4 border-t border-border/40">
                                     <h3 className="text-sm font-bold text-primary uppercase tracking-wider mb-2">Social Links (Optional)</h3>
                                     <div className="space-y-3">
                                         <div className="space-y-1.5">
@@ -362,7 +362,7 @@ export default function TeamManager() {
                                     </div>
                                 </div>
 
-                                <div className="space-y-4 pt-4 border-t border-border/20">
+                                <div className="space-y-4 pt-4 border-t border-border/40">
                                     <h3 className="text-sm font-bold text-primary uppercase tracking-wider mb-2">Settings</h3>
                                     <div className="flex gap-6">
                                         <div className="flex-1 space-y-1.5">
@@ -392,7 +392,7 @@ export default function TeamManager() {
                                     </div>
                                 </div>
 
-                                <div className="pt-6 border-t border-border/20 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-dark py-4 transition-colors duration-300">
+                                <div className="pt-6 border-t border-border/40 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-dark py-4 transition-colors duration-300">
                                     <Button
                                         type="button"
                                         variant="ghost"
@@ -423,7 +423,7 @@ export default function TeamManager() {
                             <p className="text-muted-foreground">
                                 Are you sure you want to delete <strong>{deleteTarget.name}</strong>? This action cannot be undone.
                             </p>
-                            <div className="rounded-lg border border-border/20 bg-muted/50 p-4 space-y-1 text-sm">
+                            <div className="rounded-lg border border-border/40 bg-muted/50 p-4 space-y-1 text-sm">
                                 <p><span className="font-medium">Name:</span> {deleteTarget.name}</p>
                                 <p><span className="font-medium">Position:</span> {deleteTarget.position_en || '-'}</p>
                             </div>

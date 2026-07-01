@@ -393,7 +393,7 @@ export default function UserManager() {
                                             className={`relative flex items-center gap-3 px-4 py-3 rounded-2xl text-left transition-all duration-200 ${
                                                 on
                                                     ? 'bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/25 shadow-sm'
-                                                    : 'bg-transparent border border-transparent hover:bg-accent/50 hover:border-border/60'
+                                                    : 'bg-transparent border border-transparent hover:bg-accent/50 hover:border-border/40'
                                             }`}
                                         >
                                             <div className={`w-5 h-5 rounded-lg border-2 flex items-center justify-center shrink-0 transition-all duration-200 ${

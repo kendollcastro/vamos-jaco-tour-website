@@ -67,14 +67,14 @@ export default function AuditLogView() {
                 </Button>
             </div>
 
-            <div className="bg-card border border-border/20 rounded-2xl overflow-hidden">
+            <div className="bg-card border border-border/40 rounded-2xl overflow-hidden">
                 <ScrollArea className="h-[600px]">
                     {entries.length === 0 ? (
                         <div className="text-center text-muted-foreground py-16">
                             {loading ? 'Loading...' : 'No audit entries yet.'}
                         </div>
                     ) : (
-                        <div className="divide-y divide-border/20">
+                        <div className="divide-y divide-border/30">
                             {entries.map((entry) => (
                                 <div key={entry.id} className="p-4 hover:bg-accent/50 transition-colors">
                                     <div className="flex items-start gap-3">

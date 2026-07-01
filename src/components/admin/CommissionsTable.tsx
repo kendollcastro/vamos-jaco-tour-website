@@ -605,7 +605,7 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                             ))}
                         </SelectContent>
                     </Select>
-                    <div className="flex items-center gap-1 bg-background/80 border border-border/60 rounded-lg p-1">
+                    <div className="flex items-center gap-1 bg-background/80 border border-border/40 rounded-lg p-1">
                         <Input
                             type="date"
                             value={dateFrom}
@@ -663,7 +663,7 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="bg-muted/50 border-b border-border/60">
+                                <tr className="bg-muted/50 border-b border-border/40">
                                     <th className="px-4 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground whitespace-nowrap">{lang === 'en' ? 'Date' : 'Fecha'}</th>
                                     <th className="px-4 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground whitespace-nowrap">{lang === 'en' ? 'Tour' : 'Tour'}</th>
                                     <th className="px-4 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground whitespace-nowrap">{lang === 'en' ? 'Customer' : 'Cliente'}</th>
@@ -682,7 +682,7 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                                     <th className="px-4 py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground whitespace-nowrap text-right">{lang === 'en' ? 'Actions' : 'Acciones'}</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-border/20">
+                            <tbody className="divide-y divide-border/30">
                                 {paginated.map((c) => (
                                     <tr key={c.id} className="hover:bg-muted/30 transition-colors group">
                                         <td className="px-4 py-4 text-sm text-foreground whitespace-nowrap">
@@ -842,7 +842,7 @@ export default function CommissionsTable({ onToast }: { onToast?: (message: stri
                                     ? 'Are you sure you want to delete this commission entry? This action cannot be undone.'
                                     : '¿Estás seguro de eliminar esta comisión? Esta acción no se puede deshacer.'}
                             </p>
-                            <div className="rounded-lg border border-border/20 bg-muted/50 p-4 space-y-1 text-sm">
+                            <div className="rounded-lg border border-border/40 bg-muted/50 p-4 space-y-1 text-sm">
                                 <p><span className="font-medium">{lang === 'en' ? 'Customer' : 'Cliente'}:</span> {deleteTarget.customer_name}</p>
                                 <p><span className="font-medium">{lang === 'en' ? 'Tour' : 'Tour'}:</span> {deleteTarget.tour_name}</p>
                                 <p><span className="font-medium">{lang === 'en' ? 'Date' : 'Fecha'}:</span> {new Date(deleteTarget.date).toLocaleDateString()}</p>

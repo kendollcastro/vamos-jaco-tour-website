@@ -93,7 +93,7 @@ export default function AdminLogin({ onAuth }: { onAuth: () => void }) {
                 </div>
 
                 {/* Login Card */}
-                <div className="bg-white dark:bg-[#0A0A0A] rounded-2xl border border-border/20 p-8 space-y-5 shadow-xl transition-colors duration-300">
+                <div className="bg-white dark:bg-[#0A0A0A] rounded-2xl border border-border/40 p-8 space-y-5 shadow-xl transition-colors duration-300">
                     {/* Demo mode banner */}
                     {isDemo && (
                         <div className="bg-brand-teal/10 border border-brand-teal/30 rounded-xl px-4 py-3 text-brand-teal text-sm flex items-start gap-2">
