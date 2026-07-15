@@ -5,12 +5,12 @@ import { language } from '../store';
 import AnimatedCounter from './AnimatedCounter';
 
 const StatItem = ({ stat }: { stat: { value: string; label: string; icon: any; color: string; hexColor: string } }) => {
-    const numericValue = parseInt(stat.value.replace(/\D/g, ''));
-    const suffix = stat.value.replace(/[0-9]/g, '');
+    const isStar = stat.value.includes('★');
+    const numericValue = isStar ? parseFloat(stat.value) : parseInt(stat.value.replace(/\D/g, ''));
+    const suffix = stat.value.replace(/[0-9.]/g, '');
 
     return (
         <div className="relative bg-[#0d0d0d] p-6 lg:p-8 rounded-3xl border border-white/10 group transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(0,0,0,0.8)]" style={{ borderColor: stat.hexColor || '#ff3b3b' }}>
-            {/* Graphic background */}
             <div className="absolute inset-0 bg-gradient-to-b from-white/[0.03] to-transparent bg-opacity-0 rounded-3xl group-hover:opacity-100 transition-opacity"></div>
 
             <div className="relative z-10">
@@ -19,7 +19,11 @@ const StatItem = ({ stat }: { stat: { value: string; label: string; icon: any; c
                 </div>
                 <div>
                     <h4 className="text-4xl font-black text-white italic tracking-tighter drop-shadow-lg">
-                        <AnimatedCounter end={numericValue} suffix={suffix} />
+                        {isStar ? (
+                            <span className="text-4xl font-black text-white italic tracking-tighter drop-shadow-lg">{stat.value}</span>
+                        ) : (
+                            <AnimatedCounter end={numericValue} suffix={suffix} initial={numericValue} />
+                        )}
                     </h4>
                     <p className="text-gray-400 font-bold uppercase tracking-widest text-[11px] mt-2">{stat.label}</p>
                 </div>
@@ -54,10 +58,10 @@ export default function AboutSection() {
             description: "Vamos Jacó isn't just a travel agency; we are your adrenaline dealers. We craft raw, heart-pounding adventures and unforgettable extreme experiences. Drop the boring tours and buckle up for the ride of your life.",
             cta: "CHOOSE YOUR ADVENTURE",
             stats: [
-                { value: "2k+", label: "Adventures Survived", icon: ShieldAlert, color: "bg-brand-yellow", hexColor: "#ffca28" },
-                { value: "50+", label: "Extreme Routes", icon: Globe, color: "bg-brand-orange", hexColor: "#ff7b00" },
-                { value: "12k+", label: "Adrenaline Junkies", icon: Flame, color: "bg-primary", hexColor: "#dc3522" },
-                { value: "98%", label: "Epic Ratings", icon: Trophy, color: "bg-brand-teal", hexColor: "#00b4d8" },
+                { value: "5k+", label: "Adventures Survived", icon: ShieldAlert, color: "bg-brand-yellow", hexColor: "#ffca28" },
+                { value: "12+", label: "Extreme Routes", icon: Globe, color: "bg-brand-orange", hexColor: "#ff7b00" },
+                { value: "8k+", label: "Adrenaline Junkies", icon: Flame, color: "bg-primary", hexColor: "#dc3522" },
+                { value: "4.5★", label: "Epic Ratings", icon: Trophy, color: "bg-brand-teal", hexColor: "#00b4d8" },
             ]
         },
         es: {
@@ -66,10 +70,10 @@ export default function AboutSection() {
             description: "Vamos Jacó no es una simple agencia de viajes; somos tus proveedores de adrenalina. Diseñamos aventuras crudas y emocionantes. Deja de lado los tours aburridos y prepárate para la experiencia de tu vida.",
             cta: "ELIGE TU AVENTURA",
             stats: [
-                { value: "2k+", label: "Aventuras Superadas", icon: ShieldAlert, color: "bg-brand-yellow", hexColor: "#ffca28" },
-                { value: "50+", label: "Rutas Extremas", icon: Globe, color: "bg-brand-orange", hexColor: "#ff7b00" },
-                { value: "12k+", label: "Adictos a la Adrenalina", icon: Flame, color: "bg-primary", hexColor: "#dc3522" },
-                { value: "98%", label: "Calificaciones Épicas", icon: Trophy, color: "bg-brand-teal", hexColor: "#00b4d8" },
+                { value: "5k+", label: "Aventuras Superadas", icon: ShieldAlert, color: "bg-brand-yellow", hexColor: "#ffca28" },
+                { value: "12+", label: "Rutas Extremas", icon: Globe, color: "bg-brand-orange", hexColor: "#ff7b00" },
+                { value: "8k+", label: "Adictos a la Adrenalina", icon: Flame, color: "bg-primary", hexColor: "#dc3522" },
+                { value: "4.5★", label: "Calificaciones Épicas", icon: Trophy, color: "bg-brand-teal", hexColor: "#00b4d8" },
             ]
         }
     };

@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 interface AnimatedCounterProps {
     end: number;
     suffix?: string;
+    initial?: number;
     duration?: number;
     className?: string;
 }
@@ -10,12 +11,22 @@ interface AnimatedCounterProps {
 export default function AnimatedCounter({
     end,
     suffix = '',
+    initial,
     duration = 2000,
     className = '',
 }: AnimatedCounterProps) {
-    const [count, setCount] = useState(0);
+    const fallback = initial ?? end;
+    const [count, setCount] = useState(fallback);
     const [isVisible, setIsVisible] = useState(false);
     const ref = useRef<HTMLSpanElement>(null);
+    const hasReset = useRef(false);
+
+    useEffect(() => {
+        if (!hasReset.current) {
+            hasReset.current = true;
+            setCount(0);
+        }
+    }, []);
 
     useEffect(() => {
         const el = ref.current;
