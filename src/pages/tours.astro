@@ -75,9 +75,66 @@ const breadcrumbs = getBreadcrumbSchema([
         </div>
 
         <div class="max-w-7xl mx-auto px-6">
-            {/* Filterable Grid handled internally for dynamic count */}
+            <!-- Server-rendered tour grid for SEO (visible without JS) -->
+            <div id="tour-grid-static" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+                {
+                    tours.slice(0, 100).map((tour) => (
+                        <a href={`/tours/${tour.slug}`} class="block h-full group">
+                            <div class="group bg-dark-soft rounded-[25px] overflow-hidden shadow-premium hover:shadow-2xl transition-premium h-full flex flex-col border border-white/5 relative">
+                                <div class="relative h-52 md:h-64 overflow-hidden p-2 md:p-3 pb-0">
+                                    <div class="relative h-full w-full rounded-[15px] overflow-hidden">
+                                        <img
+                                            src={tour.image_url}
+                                            alt={tour.title.en}
+                                            loading="lazy"
+                                            decoding="async"
+                                            class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                                        />
+                                        {
+                                            tour.badge && (
+                                                <div class="absolute top-3 right-3 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide z-10"
+                                                    class:list={[
+                                                        tour.badge.color === 'yellow' && 'bg-yellow-400 text-gray-900',
+                                                        tour.badge.color === 'red' && 'bg-red-500 text-white',
+                                                        tour.badge.color === 'green' && 'bg-green-500 text-white',
+                                                    ]}
+                                                >
+                                                    {tour.badge.text}
+                                                </div>
+                                            )
+                                        }
+                                    </div>
+                                </div>
+                                <div class="px-6 py-5 flex flex-col flex-grow">
+                                    <h3 class="text-xl font-heading font-bold text-white mb-2 line-clamp-2 leading-tight tracking-tight group-hover:text-primary transition-colors">
+                                        {tour.title.en}
+                                    </h3>
+                                    <div class="flex items-center gap-3 text-gray-400 text-xs mb-4">
+                                        <div class="flex items-center gap-1">
+                                            <svg class="w-3.5 h-3.5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                            <span>{tour.location}</span>
+                                        </div>
+                                        <div class="w-1 h-1 bg-gray-600 rounded-full"></div>
+                                        <div class="flex items-center gap-1">
+                                            <svg class="w-3.5 h-3.5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                            <span>{tour.duration}</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-end justify-between mb-4 mt-auto">
+                                        <span class="bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-full font-bold text-xs flex items-center gap-1.5 transition-premium shadow-lg shadow-primary/30">
+                                            {tour.price === 0 ? 'Free' : `From $${tour.price.toFixed(2)}`}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    ))
+                }
+            </div>
+
+            <!-- Client-side interactive filter (enhances on JS load) -->
             <TourFilter 
-                client:load 
+                client:only="react"
                 initialTours={tours} 
                 defaultLimit={100} 
                 title={{ en: "Choose Your Next Experience", es: "Elige Tu Próxima Experiencia" }}

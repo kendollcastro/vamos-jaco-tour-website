@@ -33,7 +33,14 @@ export default function TourFilter({
     const [displayLimit, setDisplayLimit] = useState(defaultLimit); // Limit initial display
     const [searchQuery, setSearchQuery] = useState('');
 
-    useEffect(() => { setMounted(true); }, []);
+    useEffect(() => {
+        setMounted(true);
+
+        const staticGrid = document.getElementById('tour-grid-static');
+        if (staticGrid) {
+            staticGrid.style.display = 'none';
+        }
+    }, []);
 
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
