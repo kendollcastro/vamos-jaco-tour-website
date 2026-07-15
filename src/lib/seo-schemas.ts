@@ -17,9 +17,6 @@ export interface TourSEO {
     duration?: string;
     location?: string;
     url: string;
-    category?: string;
-    rating?: number;
-    reviewCount?: number;
     telephone?: string;
 }
 
@@ -127,13 +124,14 @@ export function getLocalBusinessSchema() {
 export function getTourSchema(tour: TourSEO) {
     const telephone = tour.telephone || BUSINESS_PHONE.replace(/[\s-]/g, '');
 
-    const schema: Record<string, any> = {
+    return {
         '@context': 'https://schema.org',
         '@type': 'TouristAttraction',
         name: tour.name,
         description: tour.description,
         url: tour.url,
-        touristType: tour.category || 'Adventure',
+        image: tour.image,
+        touristType: 'Adventure',
         location: {
             '@type': 'Place',
             name: 'Jacó, Costa Rica',
@@ -146,8 +144,9 @@ export function getTourSchema(tour: TourSEO) {
         offers: {
             '@type': 'Offer',
             price: tour.price,
-            priceCurrency: tour.currency || 'USD',
+            priceCurrency: 'USD',
             availability: 'https://schema.org/InStock',
+            url: tour.url,
         },
         provider: {
             '@type': 'LocalBusiness',
@@ -156,18 +155,6 @@ export function getTourSchema(tour: TourSEO) {
             url: SITE_URL,
         },
     };
-
-    if (tour.rating && tour.reviewCount) {
-        schema.aggregateRating = {
-            '@type': 'AggregateRating',
-            ratingValue: tour.rating,
-            bestRating: 5,
-            worstRating: 1,
-            ratingCount: tour.reviewCount,
-        };
-    }
-
-    return schema;
 }
 
 /**
