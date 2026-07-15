@@ -2,7 +2,7 @@
 import Layout from "../../layouts/Layout.astro";
 import { getAllTours, getTourById, type Tour } from "../../data/tours";
 import { getTourSchema, getBreadcrumbSchema } from "../../lib/seo-schemas";
-import { stripMarkdown } from "../../lib/utils";
+import { stripMarkdown, getMetaDescription } from "../../lib/utils";
 import TourCard from "../../components/TourCard";
 import NewsletterSection from "../../components/NewsletterSection";
 import BookingSidebar from "../../components/BookingSidebar";
@@ -69,7 +69,7 @@ const remainingDescription = {
 
 <Layout
     title={tour.seo?.title || `${tour.title.en} | Vamos Jacó Tours`}
-    description={tour.seo?.description || stripMarkdown(tour.description.en).substring(0, 160)}
+    description={getMetaDescription(tour.seo, tour.description.en)}
     image={tour.seo?.image || tour.image_url}
     keywords={`${tour.title.en}, ${tour.category} tour Jacó, adventure tour Costa Rica, ${tour.location}`}
     jsonLd={schemas}
