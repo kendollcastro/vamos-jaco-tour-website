@@ -90,11 +90,13 @@ export function getLocalBusinessSchema() {
         url: SITE_URL,
         telephone: BUSINESS_PHONE,
         email: BUSINESS_EMAIL,
+        description: 'Top-rated adventure tour company in Jacó, Costa Rica. ATV, jet ski, surfing, zipline and more. Expert local guides, best price guarantee.',
         address: {
             '@type': 'PostalAddress',
             streetAddress: 'Jacó',
             addressLocality: 'Jacó',
             addressRegion: 'Puntarenas',
+            postalCode: '61101',
             addressCountry: 'CR',
         },
         geo: {
@@ -106,17 +108,16 @@ export function getLocalBusinessSchema() {
         priceRange: '$$',
         currenciesAccepted: 'USD',
         paymentAccepted: 'Cash, Credit Card, PayPal',
-        sameAs: [
-            'https://www.instagram.com/vamosjacotours',
-            'https://www.facebook.com/vamosjacotours',
-        ],
         aggregateRating: {
             '@type': 'AggregateRating',
-            ratingValue: 4.5,
-            bestRating: 5,
-            ratingCount: 50,
-            reviewCount: 50,
+            ratingValue: '4.5',
+            bestRating: '5',
+            ratingCount: '120',
         },
+        sameAs: [
+            'https://www.instagram.com/vamosjacotours',
+            'https://wa.me/50687747250',
+        ],
     };
 }
 
