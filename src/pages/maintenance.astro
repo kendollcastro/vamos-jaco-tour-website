@@ -1,0 +1,201 @@
+---
+const SITE_URL = import.meta.env.PUBLIC_SITE_URL || 'https://www.vamosjacotours.com';
+const CONTACT_WHATSAPP = import.meta.env.PUBLIC_WHATSAPP || 'https://wa.me/50688888888';
+const CONTACT_EMAIL = import.meta.env.PUBLIC_CONTACT_EMAIL || 'info@vamosjacotours.com';
+---
+
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="theme-color" content="#dc3522" />
+		<meta name="robots" content="noindex, nofollow" />
+		<title>Vamos Jacó Tours | En Mantenimiento</title>
+		<meta
+			name="description"
+			content="Vamos Jacó Tours está en mantenimiento. Estaremos de vuelta muy pronto."
+		/>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"
+			rel="stylesheet"
+		/>
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+			:root {
+				--brand-red: #dc3522;
+				--brand-red-dark: #b02113;
+				--brand-teal: #03a696;
+				--text: #1f2937;
+				--muted: #6b7280;
+			}
+			body {
+				font-family: "Poppins", system-ui, -apple-system, sans-serif;
+				background: radial-gradient(circle at top, #fff5f2 0%, #ffffff 55%);
+				color: var(--text);
+				min-height: 100vh;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				padding: 2rem;
+				line-height: 1.6;
+			}
+			.card {
+				text-align: center;
+				max-width: 560px;
+				width: 100%;
+			}
+			.logo {
+				width: 120px;
+				height: auto;
+				margin: 0 auto 2rem;
+				display: block;
+			}
+			.pulse-ring {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.6rem;
+				padding: 0.45rem 1.1rem;
+				border-radius: 999px;
+				background: #fff;
+				border: 1px solid #fecaca;
+				color: var(--brand-red-dark);
+				font-size: 0.85rem;
+				font-weight: 600;
+				letter-spacing: 0.05em;
+				text-transform: uppercase;
+				margin-bottom: 1.75rem;
+			}
+			.dot {
+				width: 10px;
+				height: 10px;
+				border-radius: 50%;
+				background: var(--brand-red);
+				animation: pulse 1.4s ease-in-out infinite;
+			}
+			@keyframes pulse {
+				0%,
+				100% {
+					opacity: 1;
+					transform: scale(1);
+				}
+				50% {
+					opacity: 0.4;
+					transform: scale(0.75);
+				}
+			}
+			h1 {
+				font-size: clamp(1.8rem, 5vw, 2.6rem);
+				font-weight: 800;
+				letter-spacing: -0.02em;
+				margin-bottom: 1rem;
+				color: #111827;
+			}
+			h1 span {
+				color: var(--brand-red);
+			}
+			p {
+				color: var(--muted);
+				font-size: 1.05rem;
+				margin-bottom: 1.5rem;
+			}
+			.contacts {
+				display: flex;
+				flex-wrap: wrap;
+				justify-content: center;
+				gap: 0.75rem;
+				margin-top: 1.5rem;
+			}
+			.contacts a {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.5rem;
+				padding: 0.65rem 1.25rem;
+				border-radius: 999px;
+				font-size: 0.9rem;
+				font-weight: 600;
+				text-decoration: none;
+				transition: transform 0.15s ease, box-shadow 0.15s ease;
+			}
+			.contacts a.primary {
+				background: var(--brand-red);
+				color: #fff;
+			}
+			.contacts a.primary:hover {
+				background: var(--brand-red-dark);
+				transform: translateY(-2px);
+			}
+			.contacts a.secondary {
+				background: #fff;
+				color: var(--text);
+				border: 1px solid #e5e7eb;
+			}
+			.contacts a.secondary:hover {
+				border-color: var(--brand-red);
+				color: var(--brand-red-dark);
+				transform: translateY(-2px);
+			}
+			.footer {
+				margin-top: 2.5rem;
+				font-size: 0.8rem;
+				color: #9ca3af;
+			}
+			@media (prefers-color-scheme: dark) {
+				body {
+					background: radial-gradient(circle at top, #1a1110 0%, #0b0b0e 55%);
+					color: #e5e7eb;
+				}
+				h1 {
+					color: #f9fafb;
+				}
+				p {
+					color: #9ca3af;
+				}
+				.pulse-ring {
+					background: #1f1f24;
+					border-color: #3f2422;
+				}
+				.contacts a.secondary {
+					background: #1f1f24;
+					border-color: #33333b;
+					color: #e5e7eb;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div class="card">
+			<img
+				src="/logo.png"
+				alt="Vamos Jacó Tours"
+				class="logo"
+				width="120"
+				height="120"
+			/>
+			<div class="pulse-ring">
+				<span class="dot"></span>
+				<span>En mantenimiento</span>
+			</div>
+			<h1>Estamos <span>trabajando</span> para ti</h1>
+			<p>
+				Nuestro sitio está en mantenimiento mientras mejoramos la experiencia de
+				compra. Estaremos de vuelta muy pronto.
+			</p>
+			<p lang="en" style="font-size: 0.95rem; font-style: italic">
+				We're performing a quick maintenance. We'll be back shortly.
+			</p>
+			<div class="contacts">
+				<a class="primary" href={CONTACT_WHATSAPP}>WhatsApp</a>
+				<a class="secondary" href={`mailto:${CONTACT_EMAIL}`}>Email</a>
+			</div>
+			<p class="footer">© {new Date().getFullYear()} Vamos Jacó Tours · Jacó, Costa Rica</p>
+		</div>
+	</body>
+</html>
