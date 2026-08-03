@@ -40,9 +40,9 @@ function buildCSP(): string {
     ].join('; ');
 }
 
-export const onRequest = defineMiddleware((context, next) => {
+export const onRequest = defineMiddleware(async (context, next) => {
     if (MAINTENANCE_MODE && !isMaintenanceBypassed(context) && shouldBlock(context.url.pathname)) {
-        const maintenanceResponse = context.rewrite(MAINTENANCE_PAGE);
+        const maintenanceResponse = await context.rewrite(MAINTENANCE_PAGE);
         const headers = new Headers(maintenanceResponse.headers);
         headers.set('retry-after', '3600');
         headers.set('cache-control', 'no-store, must-revalidate');
