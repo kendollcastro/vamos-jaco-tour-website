@@ -368,9 +368,13 @@ export default function BookingSidebar({ tourId, tourSlug, tourTitle, price, dur
                                         {$language === 'en' ? 'Security Hold' : 'Depósito'}
                                     </p>
                                     <p className="leading-tight">
-                                        {$language === 'en' 
-                                            ? '$1000 credit card hold. Released in 24h as per bank policy.' 
-                                            : 'Hold de $1000 en tarjeta. Liberación en 24h según banco.'
+                                        {tourId === 'jet-ski-tour'
+                                            ? ($language === 'en'
+                                                ? `$${Math.max(1, $booking.adults) * 500} credit card hold ($${Math.max(1, $booking.adults)} × $500 per jet ski). Released in 24h as per bank policy.`
+                                                : `Hold de $${Math.max(1, $booking.adults) * 500} en tarjeta ($${Math.max(1, $booking.adults)} × $500 por jetski). Liberación en 24h según banco.`)
+                                            : ($language === 'en' 
+                                                ? '$1000 credit card hold. Released in 24h as per bank policy.' 
+                                                : 'Hold de $1000 en tarjeta. Liberación en 24h según banco.')
                                         }
                                     </p>
                                 </div>
