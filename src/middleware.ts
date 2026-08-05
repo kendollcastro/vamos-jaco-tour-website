@@ -14,9 +14,10 @@ function isMaintenanceBypassed(context: APIContext): boolean {
 }
 
 function shouldBlock(pathname: string): boolean {
-    // Always allow assets, API/webhook endpoints and the maintenance page itself
+    // Always allow assets, API/webhook endpoints, the admin dashboard and the maintenance page itself
     if (pathname.startsWith('/_astro/')) return false;
     if (pathname.startsWith('/api/')) return false;
+    if (pathname === '/admin' || pathname.startsWith('/admin/')) return false;
     if (pathname === '/maintenance' || pathname.startsWith('/maintenance/')) return false;
     // Static files (e.g. /favicon.svg, /robots.txt, /images/...) end with a file extension
     if (/\.\w+$/.test(pathname)) return false;
