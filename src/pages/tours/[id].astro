@@ -1,8 +1,9 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import { getAllTours, getTourById, type Tour } from "../../data/tours";
-import { getTourSchema, getBreadcrumbSchema } from "../../lib/seo-schemas";
+import { getTourSchema, getBreadcrumbSchema, getFAQSchema } from "../../lib/seo-schemas";
 import { stripMarkdown, getMetaDescription } from "../../lib/utils";
+import { getTourSeoOverride } from "../../data/tour-seo-overrides";
 import TourCard from "../../components/TourCard";
 import NewsletterSection from "../../components/NewsletterSection";
 import BookingSidebar from "../../components/BookingSidebar";
@@ -11,6 +12,7 @@ import TourAccordion from "../../components/TourAccordion";
 import TranslatedText from "../../components/TranslatedText";
 import TranslatedMarkdown from "../../components/TranslatedMarkdown";
 import TourInfoList from "../../components/TourInfoList";
+import TourFaqSection from "../../components/TourFaqSection";
 import { marked } from "marked";
 
 // In SSR mode, getStaticPaths is not used.
@@ -36,9 +38,11 @@ const otherTours = allTours.filter((t) => t.category !== tour.category && t.id !
 const relatedTours = [...sameTours, ...otherTours].slice(0, 3);
 
 // SEO schemas
+const seoOverride = getTourSeoOverride(tour.slug);
+
 const tourSchema = getTourSchema({
     name: tour.title.en,
-    description: stripMarkdown(tour.description.en).substring(0, 200),
+    description: seoOverride?.schemaDescription || stripMarkdown(tour.description.en).substring(0, 200),
     image: tour.image_url,
     price: tour.price,
     duration: tour.duration,
@@ -56,6 +60,18 @@ const breadcrumbs = getBreadcrumbSchema([
 
 const schemas = [tourSchema, breadcrumbs];
 
+// FAQPage structured data for optimized tours
+if (seoOverride?.faqs?.en) {
+    const faqSchema = getFAQSchema(seoOverride.faqs.en);
+    if (faqSchema) schemas.push(faqSchema);
+}
+
+// Per-tour SEO overrides (title / meta / H1)
+const pageTitle = seoOverride?.title || tour.seo?.title || `${tour.title.en} | Vamos Jacó Tours`;
+const pageDescription = seoOverride?.metaDescription || getMetaDescription(tour.seo, tour.description.en);
+const h1Content = seoOverride ? { en: seoOverride.h1.en, es: seoOverride.h1.es } : tour.title;
+const aboutHeading = seoOverride?.sectionHeading || { en: "About This Tour", es: "Acerca de este Tour" };
+
 const leadDescription = {
     en: tour.description?.en ? tour.description.en.split("\n\n")[0] : "",
     es: tour.description?.es ? tour.description.es.split("\n\n")[0] : "",
@@ -68,8 +84,8 @@ const remainingDescription = {
 ---
 
 <Layout
-    title={tour.seo?.title || `${tour.title.en} | Vamos Jacó Tours`}
-    description={getMetaDescription(tour.seo, tour.description.en)}
+    title={pageTitle}
+    description={pageDescription}
     image={tour.seo?.image || tour.image_url}
     keywords={`${tour.title.en}, ${tour.category} tour Jacó, adventure tour Costa Rica, ${tour.location}`}
     jsonLd={schemas}
@@ -161,7 +177,7 @@ const remainingDescription = {
                         <h1
                             class="text-4xl md:text-6xl font-black text-white uppercase tracking-tight italic drop-shadow-2xl leading-[0.95]"
                         >
-                            <TranslatedText client:load content={tour.title} fallback={tour.title.en} />
+                            <TranslatedText client:load content={h1Content} fallback={h1Content.en} />
                         </h1>
 
                         <!-- Meta -->
@@ -282,34 +298,46 @@ const remainingDescription = {
                                 <span
                                     class="w-8 h-1 bg-gradient-to-r from-primary to-brand-orange rounded-full"
                                 ></span>
-                                <TranslatedText client:load content={{en: "About This Tour", es: "Acerca de este Tour"}} />
+                                <TranslatedText client:load content={aboutHeading} />
                             </h2>
 
                             <div class="space-y-8">
-                                {/* Lead Paragraph */}
-                                <TranslatedMarkdown
-                                    client:load
-                                    content={leadDescription}
-                                    className="text-gray-300 text-lg md:text-xl leading-[1.8] font-light [&>p]:mb-6 last:[&>p]:mb-0 [&_strong]:text-white [&_strong]:font-semibold [&>ul]:list-disc [&>ul]:pl-5 [&>ul]:mb-6 [&>ul>li]:mb-3 [&>ul>li::marker]:text-brand-orange [&>ol]:list-decimal [&>ol]:pl-5 [&>ol]:mb-6 [&>ol>li]:mb-3 [&>h3]:text-xl [&>h3]:font-bold [&>h3]:text-white [&>h3]:mb-4 [&>h3]:mt-8 first:[&>h3]:mt-0"
-                                />
-
                                 {
-                                    /* Accordion for the rest of the content (if any) */
-                                }
-                                {
-                                    tour.description.en.split("\n\n").length >
-                                        1 && (
-                                        <TourAccordion
-                                            client:visible
-                                            items={[
-                                                {
-                                                    id: "details",
-                                                    title: {en: "The Experience", es: "La Experiencia"},
-                                                    content: remainingDescription,
-                                                    iconName: "info",
-                                                },
-                                            ]}
+                                    seoOverride ? (
+                                        <TranslatedMarkdown
+                                            client:load
+                                            content={seoOverride.longDescription}
+                                            className="text-gray-300 text-lg md:text-xl leading-[1.8] font-light [&>p]:mb-6 last:[&>p]:mb-0 [&_strong]:text-white [&_strong]:font-semibold [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-white [&>h2]:mb-4 [&>h2]:mt-8 first:[&>h2]:mt-0 [&>ul]:list-disc [&>ul]:pl-5 [&>ul]:mb-6 [&>ul>li]:mb-3 [&>ul>li::marker]:text-brand-orange [&>ol]:list-decimal [&>ol]:pl-5 [&>ol]:mb-6 [&>ol>li]:mb-3"
                                         />
+                                    ) : (
+                                        <>
+                                            {/* Lead Paragraph */}
+                                            <TranslatedMarkdown
+                                                client:load
+                                                content={leadDescription}
+                                                className="text-gray-300 text-lg md:text-xl leading-[1.8] font-light [&>p]:mb-6 last:[&>p]:mb-0 [&_strong]:text-white [&_strong]:font-semibold [&>ul]:list-disc [&>ul]:pl-5 [&>ul]:mb-6 [&>ul>li]:mb-3 [&>ul>li::marker]:text-brand-orange [&>ol]:list-decimal [&>ol]:pl-5 [&>ol]:mb-6 [&>ol>li]:mb-3 [&>h3]:text-xl [&>h3]:font-bold [&>h3]:text-white [&>h3]:mb-4 [&>h3]:mt-8 first:[&>h3]:mt-0"
+                                            />
+
+                                            {
+                                                /* Accordion for the rest of the content (if any) */
+                                            }
+                                            {
+                                                tour.description.en.split("\n\n").length >
+                                                    1 && (
+                                                    <TourAccordion
+                                                        client:visible
+                                                        items={[
+                                                            {
+                                                                id: "details",
+                                                                title: {en: "The Experience", es: "La Experiencia"},
+                                                                content: remainingDescription,
+                                                                iconName: "info",
+                                                            },
+                                                        ]}
+                                                    />
+                                                )
+                                            }
+                                        </>
                                     )
                                 }
                             </div>
@@ -320,6 +348,13 @@ const remainingDescription = {
 
                         <!-- What's Included -->
                         <TourInfoList client:visible type="includes" data={tour.includes} />
+
+                        <!-- SEO FAQ section (only for optimized tours) -->
+                        {seoOverride?.faqs && (
+                            <div class="pt-4">
+                                <TourFaqSection client:visible faqs={seoOverride.faqs} />
+                            </div>
+                        )}
                     </div>
 
                     <!-- Right: Pricing Sidebar -->
