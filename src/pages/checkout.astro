@@ -3,17 +3,21 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout
-    title="Checkout | Vamos Jacó Tours"
-    description="Complete your booking with Vamos Jacó Tours. Secure payment processing."
+    title="Request Your Tour | Vamos Jacó Tours"
+    description="Request your tour booking with Vamos Jacó Tours. We will confirm via WhatsApp and you can pay on arrival."
     robots="noindex, nofollow"
 >
     <div class="min-h-screen bg-dark pt-32 pb-20">
         <div class="max-w-4xl mx-auto px-6">
             <h1
-                class="text-4xl md:text-5xl font-black text-white mb-8 border-b border-white/10 pb-6"
+                class="text-4xl md:text-5xl font-black text-white mb-2 border-b border-white/10 pb-6"
+                data-i18n="h1Title"
             >
-                Checkout
+                Request Your Tour
             </h1>
+            <p class="text-gray-400 mb-8 -mt-4" data-i18n="requestSubtitle">
+                No payment required today. Reserve your spot, we confirm via WhatsApp, and you can pay on arrival.
+            </p>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <!-- Left: Booking Summary -->
@@ -111,7 +115,7 @@ import Layout from "../layouts/Layout.astro";
                         </form>
                     </div>
 
-                    <!-- Payment Method -->
+                    <!-- Payment Info (no online payment) -->
                     <div
                         class="bg-dark-soft rounded-2xl border border-white/10 p-6 md:p-8"
                     >
@@ -122,36 +126,19 @@ import Layout from "../layouts/Layout.astro";
                                 class="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center text-sm font-bold"
                                 >2</span
                             >
-                            Payment Method
+                            Payment
                         </h2>
 
                         <div class="space-y-4">
-                            <!-- TiloPay -->
                             <div
-                                class="bg-white/5 rounded-xl p-4 border border-primary/30 flex items-center gap-4"
+                                class="bg-green-500/10 border border-green-500/20 rounded-xl p-4 flex items-start gap-3"
                             >
-                                <div
-                                    class="w-12 h-12 bg-white rounded-lg flex items-center justify-center p-1"
-                                >
-                                    <img
-                                        src="/images/tilopay-logo.svg"
-                                        alt="TiloPay"
-                                        class="object-contain"
-                                    />
-                                </div>
+                                <svg class="w-5 h-5 text-green-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                                 <div>
-                                    <h4 class="text-white font-bold">
-                                        Credit / Debit Card
-                                    </h4>
-                                    <p class="text-xs text-gray-400">
-                                        Secure payment via TiloPay
+                                    <h4 class="text-white font-bold" data-i18n="noPayNowTitle">No payment now</h4>
+                                    <p class="text-xs text-gray-400 mt-1" data-i18n="payOnArrivalText">
+                                        You can pay when you arrive at the tour (cash or card), or ask us on WhatsApp for a secure payment link.
                                     </p>
-                                </div>
-                                <div class="ml-auto">
-                                    <div
-                                        class="w-5 h-5 rounded-full border-4 border-primary bg-white shadow-[0_0_10px_rgba(255,87,34,0.3)]"
-                                    >
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -203,13 +190,17 @@ import Layout from "../layouts/Layout.astro";
                                     id="summary-total">--</span
                                 >
                             </div>
+                            <p class="text-xs text-gray-500 mt-3" data-i18n="dueOnArrival">
+                                Total due on arrival (no online payment).
+                            </p>
                         </div>
 
                         <button
                             id="pay-button-desktop"
                             class="hidden md:flex w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-95 items-center justify-center gap-2"
+                            data-i18n="desktopBtn"
                         >
-                            Pay Securely
+                            Confirm Booking Request
                             <svg
                                 class="w-5 h-5"
                                 fill="none"
@@ -219,9 +210,8 @@ import Layout from "../layouts/Layout.astro";
                                     stroke-linecap="round"
                                     stroke-linejoin="round"
                                     stroke-width="2"
-                                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                                ></path>
-                            </svg>
+                                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg
+                            >
                         </button>
 
                         <div id="mobile-checkout-summary" class="md:hidden sticky bottom-4 left-0 right-0 z-50 px-2 pointer-events-none">
@@ -233,8 +223,9 @@ import Layout from "../layouts/Layout.astro";
                                 <button
                                     id="mobile-pay-trigger"
                                     class="flex-1 bg-white text-primary font-black px-4 py-3 rounded-xl text-xs uppercase tracking-tighter transition-all active:scale-95 shadow-lg truncate"
+                                    data-i18n="mobileBtn"
                                 >
-                                    PAY NOW
+                                    REQUEST BOOKING
                                 </button>
                             </div>
                         </div>
@@ -263,12 +254,15 @@ import Layout from "../layouts/Layout.astro";
                     </div>
                 </div>
 
-                <h2 class="text-4xl font-black text-white mb-4 tracking-tighter uppercase">Booking Confirmed!</h2>
-                <p class="text-gray-400 font-medium mb-8 leading-relaxed">
-                    Thank you for booking with Vamos Jacó! A confirmation email with all the details of your adventure has been sent to your inbox.
+                <h2 class="text-4xl font-black text-white mb-4 tracking-tighter uppercase" data-i18n="modalTitle">Request Received!</h2>
+                <p class="text-gray-400 font-medium mb-8 leading-relaxed" id="modal-text" data-i18n="modalText">
+                    Thank you! We will confirm your tour via WhatsApp. You can pay on arrival (cash or card) or ask us for a secure payment link on WhatsApp.
                 </p>
 
                 <div class="space-y-4">
+                    <a href="https://wa.me/50687747250" target="_blank" rel="noopener" class="block w-full bg-green-500 text-white font-black py-4 rounded-2xl hover:bg-green-600 transition-all active:scale-95 text-sm uppercase tracking-widest shadow-xl">
+                        Chat on WhatsApp
+                    </a>
                     <a href="/" class="block w-full bg-white text-dark font-black py-4 rounded-2xl hover:bg-gray-100 transition-all active:scale-95 text-sm uppercase tracking-widest shadow-xl">
                         Return Home
                     </a>
@@ -439,6 +433,40 @@ import Layout from "../layouts/Layout.astro";
     const desktopPayBtn = document.getElementById("pay-button-desktop") as HTMLButtonElement;
     const mobilePayBtn = document.getElementById("mobile-pay-trigger") as HTMLButtonElement;
 
+    // Bilingual UI strings (page SSR defaults to English)
+    const I18N: Record<string, { en: string; es: string }> = {
+        h1Title: { en: "Request Your Tour", es: "Solicita tu Tour" },
+        requestSubtitle: {
+            en: "No payment required today. Reserve your spot, we confirm via WhatsApp, and you can pay on arrival.",
+            es: "Sin pago requerido hoy. Reserva tu cupo, confirmamos por WhatsApp y puedes pagar al llegar.",
+        },
+        noPayNowTitle: { en: "No payment now", es: "Sin pago ahora" },
+        payOnArrivalText: {
+            en: "You can pay when you arrive at the tour (cash or card), or ask us on WhatsApp for a secure payment link.",
+            es: "Puedes pagar cuando llegues al tour (efectivo o tarjeta), o pedirnos un link de pago seguro por WhatsApp.",
+        },
+        dueOnArrival: { en: "Total due on arrival (no online payment).", es: "Total a pagar al llegar (sin pago en línea)." },
+        desktopBtn: { en: "Confirm Booking Request", es: "Confirmar Solicitud" },
+        mobileBtn: { en: "REQUEST BOOKING", es: "SOLICITAR RESERVA" },
+        modalTitle: { en: "Request Received!", es: "¡Solicitud Recibida!" },
+        modalText: {
+            en: "Thank you! We will confirm your tour via WhatsApp. You can pay on arrival (cash or card) or ask us for a secure payment link on WhatsApp.",
+            es: "¡Gracias! Confirmaremos tu tour por WhatsApp. Puedes pagar al llegar (efectivo o tarjeta) o pedirnos un link de pago seguro por WhatsApp.",
+        },
+    };
+
+    function applyTranslations() {
+        const lang = language.get();
+        document.querySelectorAll("[data-i18n]").forEach(el => {
+            const key = el.getAttribute("data-i18n");
+            const entry = key && I18N[key];
+            if (entry) el.textContent = lang === "es" ? entry.es : entry.en;
+        });
+    }
+
+    language.subscribe(() => applyTranslations());
+    applyTranslations();
+
     // Form inputs
     const inputFirstName = document.getElementById("input-firstName") as HTMLInputElement;
     const inputLastName = document.getElementById("input-lastName") as HTMLInputElement;
@@ -499,11 +527,16 @@ import Layout from "../layouts/Layout.astro";
 
     // Helper for updating pay buttons state
     const setPayButtonsLoading = (isLoading: boolean) => {
-        const btns = [desktopPayBtn, mobilePayBtn];
-        btns.forEach(btn => {
+        const lang = language.get();
+        const idleText = lang === 'es' ? 'Confirmar Solicitud' : 'Confirm Booking Request';
+        const idleTextMobile = lang === 'es' ? 'SOLICITAR RESERVA' : 'REQUEST BOOKING';
+        const btns: Array<HTMLButtonElement | null> = [desktopPayBtn, mobilePayBtn];
+        btns.forEach((btn, i) => {
             if (btn) {
                 btn.disabled = isLoading;
-                btn.innerText = isLoading ? "Processing..." : "Pay Securely";
+                btn.innerText = isLoading
+                    ? (lang === 'es' ? 'Enviando...' : 'Processing...')
+                    : (i === 0 ? idleText : idleTextMobile);
             }
         });
     };
@@ -579,12 +612,20 @@ import Layout from "../layouts/Layout.astro";
         }
     });
 
-    // Payment Logic
+    // Payment Logic — now creates a booking request without online payment
+    const successModal = document.getElementById("success-modal") as HTMLElement;
+    const modalTextEl = document.getElementById("modal-text") as HTMLElement;
+
+    function showSuccessModal() {
+        applyTranslations();
+        successModal.classList.add("show");
+    }
+
     const handlePayment = async () => {
         const state = bookingStore.get();
         const currentLang = language.get();
         if (!state.tourId) {
-            alert("Please select a tour first.");
+            alert(currentLang === 'es' ? 'Por favor selecciona un tour primero.' : "Please select a tour first.");
             return;
         }
 
@@ -603,7 +644,7 @@ import Layout from "../layouts/Layout.astro";
             // Recalculate price on the client to match server-side logic
             const price = recalculateTotal(state);
 
-            // Use /initiate - does NOT create booking, just gets payment URL
+            // Creates the pending booking request (no payment / no redirect)
             const res = await fetch("/api/bookings/initiate", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -620,7 +661,6 @@ import Layout from "../layouts/Layout.astro";
                     adults: state.adults,
                     children: state.children,
                     extraPassengers: state.extraPassengers || 0,
-                    paymentMethod: 'card',
                     language: currentLang,
                     pricePerAdult: state.pricePerAdult,
                     variationId: state.variationId,
@@ -629,22 +669,24 @@ import Layout from "../layouts/Layout.astro";
             });
 
             const data = await res.json();
-            
-            if (data.success && data.requiresRedirect && data.paymentUrl) {
-                window.location.href = data.paymentUrl;
-            } else if (data.success && data.requiresManualPayment) {
-                alert('Booking saved! We will contact you to complete payment.');
-                window.location.href = '/';
+
+            if (data.success) {
+                showSuccessModal();
             } else {
-                alert("Payment initialization failed: " + (data.message || "Unknown error"));
+                alert(data.message || (currentLang === 'es' ? 'No se pudo enviar la solicitud.' : "Couldn't submit your request."));
             }
         } catch (e) {
             console.error(e);
-            alert("An error occurred. Please try again.");
+            alert(currentLang === 'es' ? 'Ocurrió un error. Inténtalo de nuevo.' : "An error occurred. Please try again.");
         } finally {
             setPayButtonsLoading(false);
         }
     };
+
+    // Close modal on backdrop click
+    successModal.querySelector('.absolute.inset-0')?.addEventListener('click', () => {
+        successModal.classList.remove('show');
+    });
 
     // Check for errors in URL on load
     window.addEventListener('DOMContentLoaded', () => {

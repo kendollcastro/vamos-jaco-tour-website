@@ -516,11 +516,11 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                                         {booking.tilopay_order_id && (
                                             <div className="mt-1 flex items-center gap-1.5 text-[10px] text-green-600 dark:text-green-500/90 font-bold bg-green-500/20 w-max px-2 py-0.5 rounded border border-green-500/30">
                                                 <CheckCircle className="w-3 h-3" />
-                                                TiloPay - Paid
+                                                Paid Online
                                             </div>
                                         )}
                                         {!booking.tilopay_order_id && (
-                                            <div className="mt-1 text-[10px] text-gray-400 font-medium">Cash / Manual</div>
+                                            <div className="mt-1 text-[10px] text-gray-400 font-medium">Pay on site</div>
                                         )}
                                     </TableCell>
                                     <TableCell className="px-4 py-4">

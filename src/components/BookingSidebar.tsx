@@ -239,7 +239,7 @@ export default function BookingSidebar({ tourId, tourSlug, tourTitle, price, dur
                     {!$booking.date && (
                         <div className="bg-primary/10 border border-primary/20 rounded-lg p-2 flex items-center gap-2 mt-1">
                             <Info className="w-3 h-3 text-primary" />
-                            <span className="text-[10px] text-gray-400">Select a date in the calendar above to enable checkout.</span>
+                            <span className="text-[10px] text-gray-400">Select a date in the calendar above to continue.</span>
                         </div>
                     )}
                 </div>
@@ -404,7 +404,7 @@ export default function BookingSidebar({ tourId, tourSlug, tourTitle, price, dur
                             }
                         }}
                     >
-                        <TranslatedText content={{en: "Proceed to Checkout", es: "Proceder al Pago"}} />
+                        <TranslatedText content={{en: "Request Booking", es: "Solicitar Reserva"}} />
                         <CheckCircle className="w-5 h-5" />
                     </a>
 
@@ -423,7 +423,7 @@ export default function BookingSidebar({ tourId, tourSlug, tourTitle, price, dur
                     </div>
 
                     <p className="text-center text-xs text-gray-500">
-                        <TranslatedText content={{en: "Instant confirmation • Secure Payment", es: "Confirmación instantánea • Pago seguro"}} />
+                        <TranslatedText content={{en: "No payment now • We confirm via WhatsApp • Pay on arrival", es: "Sin pago ahora • Confirmamos por WhatsApp • Paga al llegar"}} />
                     </p>
                 </div>
             </div>

@@ -150,8 +150,11 @@ export async function sendBookingNotifications(data: BookingEmailData, logoOverr
                     <td style="padding:10px 0;font-weight:700;font-size:15px;color:#111827;text-align:right;border-top:1px solid #fee2e2;">${guestsStr}</td>
                   </tr>
                   <tr>
-                    <td style="padding:16px 0 4px;font-weight:800;font-size:17px;color:${BRAND_COLOR};border-top:2px solid #fee2e2;">${isEs ? 'Total Pagado' : 'Total Paid'}</td>
+                    <td style="padding:16px 0 4px;font-weight:800;font-size:17px;color:${BRAND_COLOR};border-top:2px solid #fee2e2;">${isEs ? 'Total a Pagar' : 'Total to Pay'}</td>
                     <td style="padding:16px 0 4px;font-weight:800;font-size:22px;color:${BRAND_COLOR};text-align:right;border-top:2px solid #fee2e2;">$${totalAmount.toFixed(2)}</td>
+                  </tr>
+                  <tr>
+                    <td colspan="2" style="padding:6px 0 0;color:#6b7280;font-size:12px;text-align:right;">${isEs ? 'Se paga al llegar al tour' : 'Due on arrival at the tour'}</td>
                   </tr>
                 </table>
               </td>
@@ -170,8 +173,8 @@ export async function sendBookingNotifications(data: BookingEmailData, logoOverr
                 <p style="margin:0;font-size:14px;color:#92400e;line-height:1.5;">
                   <strong>${isEs ? '¿Qué sigue?' : "What's Next?"}</strong><br />
                   ${isEs
-                      ? 'Nuestro equipo se pondrá en contacto por WhatsApp para coordinar la hora de recogida y el punto de encuentro.'
-                      : 'Our concierge team will reach out via WhatsApp to finalize your pickup time and meeting point.'}
+                      ? 'Nuestro equipo se pondrá en contacto por WhatsApp para coordinar la hora de recogida y el punto de encuentro. No necesitas pagar ahora: puedes pagar al llegar o pedirnos un link de pago seguro por WhatsApp.'
+                      : 'Our concierge team will reach out via WhatsApp to finalize your pickup time and meeting point. No payment is needed now — you can pay on arrival or request a secure payment link via WhatsApp.'}
                 </p>
               </td>
             </tr>
@@ -215,7 +218,7 @@ export async function sendBookingNotifications(data: BookingEmailData, logoOverr
             from: FROM_EMAIL,
             replyTo: customerEmail,
             to: ADMIN_EMAIL,
-            subject: `🚨 NEW BOOKING: ${customerName} - ${tourName}`,
+            subject: `🕐 BOOKING REQUEST: ${customerName} - ${tourName} (UNPAID)`,
             html: `<!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -230,7 +233,7 @@ export async function sendBookingNotifications(data: BookingEmailData, logoOverr
       <tr>
         <td align="center" bgcolor="${ACCENT_COLOR}" style="padding:26px 24px;">
           <p style="margin:0 0 4px;color:rgba(255,255,255,0.8);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:3px;">Internal Notification</p>
-          <h2 style="margin:0;color:#ffffff;font-size:26px;font-weight:900;">New Sale! 💰</h2>
+          <h2 style="margin:0;color:#ffffff;font-size:26px;font-weight:900;">New Booking Request ⏳</h2>
         </td>
       </tr>
       <tr>
@@ -256,9 +259,14 @@ export async function sendBookingNotifications(data: BookingEmailData, logoOverr
               <td style="padding:10px 0;font-weight:700;font-size:14px;color:#111827;text-align:right;border-bottom:1px solid #f3f4f6;">${adults + children}</td>
             </tr>
             <tr>
-              <td style="padding:16px 0 0;font-weight:900;font-size:16px;color:${BRAND_COLOR};">Value</td>
+              <td style="padding:16px 0 0;font-weight:900;font-size:16px;color:${BRAND_COLOR};">Value (UNPAID)</td>
               <td style="padding:16px 0 0;font-weight:900;font-size:22px;color:${BRAND_COLOR};text-align:right;">$${totalAmount.toFixed(2)}</td>
             </tr>
+          </table>
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:16px;">
+            <tr><td style="padding:0 0 20px;color:#6b7280;font-size:13px;line-height:1.5;">
+              <strong>Payment not received.</strong> Contact the customer via WhatsApp to confirm the tour and arrange payment on arrival or send a payment link.
+            </td></tr>
           </table>
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:28px;">
             <tr><td align="center">

@@ -167,7 +167,7 @@ export default function BookingDetailsModal({ isOpen, onClose, booking }: Bookin
                     {hasTilopayData && (
                         <div className={`${getBgCards(isDarkMode)} rounded-xl p-5 ${getBorderCards(isDarkMode)}`}>
                             <h3 className={`text-xs font-bold ${getTextSecondary(isDarkMode)} uppercase tracking-wider mb-3`}>
-                                💳 TiloPay Payment
+                                💳 Payment
                             </h3>
                             <div className="grid grid-cols-2 gap-4">
                                 {booking.tilopay_order_id && (

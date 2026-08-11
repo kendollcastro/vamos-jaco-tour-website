@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { supabaseAdmin } from '../../../lib/supabase';
-import { createPaymentSession } from '../../../lib/tilopay';
+import { sendBookingNotifications } from '../../../lib/email-service';
 import { calculateServerPrice, validatePrice, isVehicleTour, getVehicleCapacity } from '../../../lib/price-calculator';
 import { sanitize, sanitizeEmail, sanitizePhone } from '../../../lib/sanitize';
 
@@ -21,7 +21,6 @@ export const POST: APIRoute = async ({ request }) => {
             children,
             totalAmount,
             extraPassengers,
-            paymentMethod = 'card',
             language = 'en',
             variationId,
             pricePerAdult,
@@ -177,67 +176,28 @@ export const POST: APIRoute = async ({ request }) => {
             });
         }
 
-        // 7. Handle TiloPay Gateway for Card Payments
-        if (paymentMethod === 'card') {
-            try {
-                const paymentUrl = await createPaymentSession({
-                    amount: priceResult.total,
-                    orderNumber: orderId,
-                    language: language as 'en' | 'es',
-                    customer: {
-                        firstName: sanitizedName.split(' ')[0],
-                        lastName: sanitizedName.split(' ').slice(1).join(' ') || 'Customer',
-                        email: sanitizedEmail,
-                        phone: sanitizedPhone || '00000000'
-                    }
-                });
-
-                return new Response(JSON.stringify({
-                    success: true,
-                    pendingId: orderId,
-                    paymentData: {
-                        customerName: sanitizedName,
-                        customerEmail: sanitizedEmail,
-                        customerPhone: sanitizedPhone,
-                        tourId: tourUuid,
-                        tourName: sanitizedTourName,
-                        date,
-                        formattedDate,
-                        adults: adults || 1,
-                        children: children || 0,
-                        extraPassengers: extraPassengers || 0,
-                        totalAmount: priceResult.total,
-                        language
-                    },
-                    paymentUrl,
-                    requiresRedirect: true
-                }), { 
-                    status: 200,
-                    headers: { 'Content-Type': 'application/json' }
-                });
-
-            } catch (paymentError: any) {
-                console.error('TiloPay Integration Error:', paymentError);
-                // Booking was already created. Return partial success so user
-                // still gets a confirmation and admin can follow up.
-                return new Response(JSON.stringify({
-                    success: true,
-                    pendingId: orderId,
-                    requiresRedirect: false,
-                    requiresManualPayment: true,
-                    message: 'Booking saved. We will contact you to complete payment.'
-                }), { 
-                    status: 200,
-                    headers: { 'Content-Type': 'application/json' }
-                });
-            }
-        }
+        // 7. Booking request created — no online payment (TiloPay removed).
+        //    Client pays on arrival or via a payment link sent by the team.
+        sendBookingNotifications({
+            customerName: sanitizedName,
+            customerEmail: sanitizedEmail,
+            customerPhone: sanitizedPhone || 'N/A',
+            tourName: sanitizedTourName,
+            tourDate: formattedDate,
+            adults: adults || 1,
+            children: children || 0,
+            totalAmount: priceResult.total,
+            language: language as 'en' | 'es'
+        }).catch(e => console.error('Booking email failed:', e));
 
         return new Response(JSON.stringify({
-            success: false,
-            message: 'Cash payments not supported in this flow'
-        }), { 
-            status: 400,
+            success: true,
+            bookingId: orderId,
+            requiresRedirect: false,
+            requiresManualPayment: true,
+            message: 'Booking request saved. We will confirm via WhatsApp.'
+        }), {
+            status: 200,
             headers: { 'Content-Type': 'application/json' }
         });
 
