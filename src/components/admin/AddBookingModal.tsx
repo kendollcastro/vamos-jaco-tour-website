@@ -68,6 +68,28 @@ export default function AddBookingModal({ isOpen, onClose, onSuccess, prefillDat
                     summary: `Created booking for ${formData.customer_name} - ${formData.tour_name}`
                 });
             }
+
+            // Send booking notification emails (customer confirmation + admin alert)
+            try {
+                await fetch('/api/admin/send-booking-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        customerName: formData.customer_name,
+                        customerEmail: formData.customer_email,
+                        customerPhone: formData.customer_phone,
+                        tourName: formData.tour_name,
+                        bookingDate: formData.booking_date,
+                        adults: formData.adults,
+                        children: formData.children,
+                        totalAmount: formData.total_amount,
+                        language: 'en'
+                    })
+                });
+            } catch (emailErr) {
+                console.error('AddBookingModal: failed to send booking emails:', emailErr);
+            }
+
             onSuccess();
             onClose();
         } catch (err) {
