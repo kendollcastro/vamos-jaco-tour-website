@@ -6,18 +6,19 @@ import type { TourFaqEntry } from '../data/tour-seo-overrides';
 
 interface TourFaqSectionProps {
     faqs: { en: TourFaqEntry[]; es: TourFaqEntry[] };
+    heading: { en: string; es: string };
 }
 
-export default function TourFaqSection({ faqs }: TourFaqSectionProps) {
+export default function TourFaqSection({ faqs, heading }: TourFaqSectionProps) {
     const $language = useStore(language);
     const list = faqs[$language] || faqs.en;
-    const heading = $language === 'en' ? 'Jet Ski in Jacó — FAQ' : 'Jet Ski en Jacó — Preguntas Frecuentes';
+    const faqHeading = heading[$language] || heading.en;
 
     return (
         <section>
             <h2 className="text-3xl font-black text-white mb-6 flex items-center gap-3 italic uppercase tracking-tight">
                 <span className="w-8 h-1 bg-gradient-to-r from-primary to-brand-orange rounded-full"></span>
-                {heading}
+                {faqHeading}
             </h2>
 
             <div className="space-y-4">

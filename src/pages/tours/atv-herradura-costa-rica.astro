@@ -1,0 +1,143 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getTourSchema, getBreadcrumbSchema, getFAQSchema } from "../../lib/seo-schemas";
+import { getTourSeoOverride } from "../../data/tour-seo-overrides";
+import TranslatedText from "../../components/TranslatedText";
+import TranslatedMarkdown from "../../components/TranslatedMarkdown";
+import TourFaqSection from "../../components/TourFaqSection";
+import TourComparisonTable from "../../components/TourComparisonTable";
+
+const seo = getTourSeoOverride("atv-herradura-costa-rica");
+const HERO_IMAGE = "/images/ATV/untitled-33.jpg";
+const BOOK_URL = "/tours/jaco-atv-adventure";
+
+// SEO structured data
+const tourSchema = getTourSchema({
+    name: "ATV Tour Herradura",
+    description: seo.schemaDescription,
+    image: HERO_IMAGE,
+    price: 60,
+    duration: "1 - 8 Hours",
+    location: "Herradura / Los Sueños, Costa Rica",
+    url: `https://www.vamosjacotours.com/tours/atv-herradura-costa-rica`,
+    category: "atv",
+    telephone: '+50687747250',
+});
+
+const breadcrumbs = getBreadcrumbSchema([
+    { name: "Home", url: "/" },
+    { name: "Tours", url: "/tours" },
+    { name: seo.h1.en, url: "/tours/atv-herradura-costa-rica" },
+]);
+
+const schemas = [tourSchema, breadcrumbs];
+const faqSchema = getFAQSchema(seo.faqs.en);
+if (faqSchema) schemas.push(faqSchema);
+---
+
+<Layout
+    title={seo.title}
+    description={seo.metaDescription}
+    image={HERO_IMAGE}
+    keywords="ATV Herradura, ATV tour Herradura Costa Rica, ATV Los Sueños, Los Sueños Marina ATV, ATV tour Jacó Herradura, off-road Herradura"
+    jsonLd={schemas}
+    preloadImage={HERO_IMAGE}
+>
+    <main>
+        <!-- Hero -->
+        <section class="relative min-h-[520px] md:h-[55vh] md:min-h-[440px] flex items-end overflow-hidden">
+            <div class="absolute inset-0 z-0 overflow-hidden bg-dark">
+                <img
+                    src={HERO_IMAGE}
+                    alt="ATV tour in Herradura Costa Rica near Los Sueños Marina"
+                    class="w-full h-full object-cover animate-ken-burns origin-center"
+                    fetchpriority="high"
+                    decoding="sync"
+                />
+                <div class="absolute inset-0 bg-gradient-to-t from-dark via-dark/50 to-dark/20"></div>
+                <div class="absolute inset-0 bg-gradient-to-r from-dark/30 via-transparent to-dark/30"></div>
+            </div>
+
+            <div class="relative z-10 w-full max-w-7xl mx-auto px-6 pb-12 pt-36 md:pt-12">
+                <div class="flex flex-wrap items-end justify-between gap-6">
+                    <div class="max-w-3xl">
+                        <a
+                            href="/tours"
+                            class="inline-flex items-center gap-2 text-white/60 hover:text-white text-sm font-medium mb-4 transition-colors"
+                        >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                            <TranslatedText client:load content={{ en: "Back to Tours", es: "Volver a los Tours" }} />
+                        </a>
+
+                        <h1 class="text-4xl md:text-6xl font-black text-white uppercase tracking-tight italic drop-shadow-2xl leading-[0.95]">
+                            <TranslatedText client:load content={seo.h1} fallback={seo.h1.en} />
+                        </h1>
+
+                        <div class="flex flex-wrap items-center gap-4 mt-6 text-white/80 text-sm">
+                            <div class="flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10">
+                                <svg class="w-4 h-4 text-brand-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                Herradura / Los Sueños
+                            </div>
+                            <div class="flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10">
+                                <svg class="w-4 h-4 text-brand-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                1 - 8 Hours
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-5 text-center min-w-[150px] shadow-2xl">
+                        <p class="text-xs text-white/80 font-medium mb-1 uppercase tracking-wider">
+                            <TranslatedText client:load content={{en: "Starting From", es: "Desde"}} />
+                        </p>
+                        <p class="text-4xl font-black text-white">$60 <span class="text-lg text-white/50 font-normal">/pp</span></p>
+                        <a
+                            href={BOOK_URL}
+                            class="mt-3 inline-block bg-brand-orange text-white font-bold py-2.5 px-5 rounded-xl text-sm uppercase tracking-wide hover:bg-brand-orange/90 active:scale-95 transition-all shadow-[0_0_20px_rgba(242,127,27,0.3)]"
+                        >
+                            <TranslatedText client:load content={{en: "Book Now", es: "Reservar"}} />
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Content -->
+        <section class="relative py-16 md:py-20">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="flex flex-col lg:flex-row gap-12 justify-between">
+                    <div class="flex-1 space-y-12 min-w-0 md:max-w-3xl">
+                        <div>
+                            <TranslatedMarkdown
+                                client:load
+                                content={seo.longDescription}
+                                className="text-gray-300 text-lg md:text-xl leading-[1.8] font-light [&>p]:mb-6 last:[&>p]:mb-0 [&_strong]:text-white [&_strong]:font-semibold [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-white [&>h2]:mb-4 [&>h2]:mt-10 first:[&>h2]:mt-0 [&>ul]:list-disc [&>ul]:pl-5 [&>ul]:mb-6 [&>ul>li]:mb-3 [&>ul>li::marker]:text-brand-orange"
+                            />
+                        </div>
+
+                        {seo.comparison && (
+                            <TourComparisonTable client:visible comparison={seo.comparison} />
+                        )}
+
+                        <TourFaqSection client:visible faqs={seo.faqs} heading={seo.faqHeading} />
+
+                        <!-- CTA -->
+                        <div class="rounded-2xl border border-primary/30 bg-primary/5 p-8 text-center">
+                            <h2 class="text-2xl md:text-3xl font-black text-white mb-3 italic uppercase tracking-tight">
+                                <TranslatedText client:load content={{en: "Ready to Ride in Herradura?", es: "¿Listo para Manejar en Herradura?"}} />
+                            </h2>
+                            <p class="text-gray-300 mb-6">
+                                <TranslatedText client:load content={{en: "Book your ATV tour in Herradura and explore the jungle, rivers and viewpoints around Los Sueños with free hotel pickup.", es: "Reserva tu tour de ATV en Herradura y explora la selva, los ríos y los miradores alrededor de Los Sueños con recogida gratuita en tu hotel."}} />
+                            </p>
+                            <a
+                                href={BOOK_URL}
+                                class="inline-block bg-primary hover:bg-primary/90 text-white font-bold py-4 px-10 rounded-xl transition-all shadow-lg hover:shadow-primary/20"
+                            >
+                                <TranslatedText client:load content={{en: "Book Your ATV Tour", es: "Reserva tu Tour de ATV"}} />
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</Layout>

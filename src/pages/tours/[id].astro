@@ -13,6 +13,7 @@ import TranslatedText from "../../components/TranslatedText";
 import TranslatedMarkdown from "../../components/TranslatedMarkdown";
 import TourInfoList from "../../components/TourInfoList";
 import TourFaqSection from "../../components/TourFaqSection";
+import TourComparisonTable from "../../components/TourComparisonTable";
 import { marked } from "marked";
 
 // In SSR mode, getStaticPaths is not used.
@@ -303,7 +304,7 @@ const remainingDescription = {
 
                             <div class="space-y-8">
                                 {
-                                    seoOverride ? (
+                                    seoOverride?.longDescription ? (
                                         <TranslatedMarkdown
                                             client:load
                                             content={seoOverride.longDescription}
@@ -343,16 +344,42 @@ const remainingDescription = {
                             </div>
                         </div>
 
+                        {/* Long-tail keyword H2 sections (only for optimized tours) */}
+                        {seoOverride?.sections && seoOverride.sections.length > 0 && (
+                            <div class="space-y-12">
+                                {seoOverride.sections.map((section) => (
+                                    <div>
+                                        <h2 class="text-2xl md:text-3xl font-black text-white mb-5 flex items-center gap-3 italic uppercase tracking-tight">
+                                            <span class="w-8 h-1 bg-gradient-to-r from-primary to-brand-orange rounded-full"></span>
+                                            <TranslatedText client:load content={section.heading} />
+                                        </h2>
+                                        <TranslatedMarkdown
+                                            client:load
+                                            content={section.content}
+                                            className="text-gray-300 text-lg leading-[1.8] font-light [&>p]:mb-6 last:[&>p]:mb-0 [&_strong]:text-white [&_strong]:font-semibold"
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
                         <!-- Highlights -->
                         <TourInfoList client:visible type="highlights" data={tour.highlights} />
 
                         <!-- What's Included -->
                         <TourInfoList client:visible type="includes" data={tour.includes} />
 
+                        <!-- Comparison table (only for optimized tours) -->
+                        {seoOverride?.comparison && (
+                            <div class="pt-2">
+                                <TourComparisonTable client:visible comparison={seoOverride.comparison} />
+                            </div>
+                        )}
+
                         <!-- SEO FAQ section (only for optimized tours) -->
                         {seoOverride?.faqs && (
                             <div class="pt-4">
-                                <TourFaqSection client:visible faqs={seoOverride.faqs} />
+                                <TourFaqSection client:visible faqs={seoOverride.faqs} heading={seoOverride.faqHeading} />
                             </div>
                         )}
                     </div>
