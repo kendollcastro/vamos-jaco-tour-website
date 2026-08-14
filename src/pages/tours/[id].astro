@@ -95,7 +95,7 @@ const remainingDescription = {
     <main>
         <!-- Tour Hero -->
         <section
-            class="relative min-h-[550px] md:h-[55vh] md:min-h-[450px] flex items-end overflow-hidden"
+            class="relative min-h-[620px] md:min-h-[70vh] flex flex-col overflow-hidden"
         >
             <div class="absolute inset-0 z-0 overflow-hidden bg-dark">
                 <img
@@ -131,10 +131,10 @@ const remainingDescription = {
             </div>
 
             <!-- Hero Content -->
-            <div class="relative z-10 w-full max-w-7xl mx-auto px-6 pb-12 pt-36 md:pt-12">
-                <div class="flex flex-wrap items-end justify-between gap-6">
-                    <div>
-                        <!-- Back Link -->
+            <div class="relative z-10 w-full max-w-7xl mx-auto px-6 pb-12 pt-32 flex-1 flex flex-col justify-between gap-10">
+                <!-- Top: Back link + badge (always clear the fixed header) -->
+                <div>
+                    <!-- Back Link -->
                         <a
                             href="/tours"
                             class="inline-flex items-center gap-2 text-white/60 hover:text-white text-sm font-medium mb-4 transition-colors"
@@ -173,7 +173,11 @@ const remainingDescription = {
                                 </div>
                             )
                         }
+                </div>
 
+                <!-- Bottom: Title + meta | Price -->
+                <div class="flex flex-wrap items-end justify-between gap-6">
+                    <div class="max-w-3xl">
                         <!-- Title -->
                         <h1
                             class="text-4xl md:text-6xl font-black text-white uppercase tracking-tight italic drop-shadow-2xl leading-[0.95]"

@@ -45,7 +45,7 @@ if (faqSchema) schemas.push(faqSchema);
 >
     <main>
         <!-- Hero -->
-        <section class="relative min-h-[520px] md:h-[55vh] md:min-h-[440px] flex items-end overflow-hidden">
+        <section class="relative min-h-[620px] md:min-h-[70vh] flex flex-col overflow-hidden">
             <div class="absolute inset-0 z-0 overflow-hidden bg-dark">
                 <img
                     src={HERO_IMAGE}
@@ -58,19 +58,22 @@ if (faqSchema) schemas.push(faqSchema);
                 <div class="absolute inset-0 bg-gradient-to-r from-dark/30 via-transparent to-dark/30"></div>
             </div>
 
-            <div class="relative z-10 w-full max-w-7xl mx-auto px-6 pb-12 pt-36 md:pt-12">
+            <div class="relative z-10 w-full max-w-7xl mx-auto px-6 pb-12 pt-32 flex-1 flex flex-col justify-between gap-10">
+                <!-- Top: Back link (always clear the fixed header) -->
+                <div>
+                    <a
+                        href="/tours"
+                        class="inline-flex items-center gap-2 text-white/60 hover:text-white text-sm font-medium mb-4 transition-colors"
+                    >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        <TranslatedText client:load content={{ en: "Back to Tours", es: "Volver a los Tours" }} />
+                    </a>
+                </div>
+
+                <!-- Bottom: Title + meta | Price -->
                 <div class="flex flex-wrap items-end justify-between gap-6">
                     <div class="max-w-3xl">
-                        <a
-                            href="/tours"
-                            class="inline-flex items-center gap-2 text-white/60 hover:text-white text-sm font-medium mb-4 transition-colors"
-                        >
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                            <TranslatedText client:load content={{ en: "Back to Tours", es: "Volver a los Tours" }} />
-                        </a>
-
-                        <h1 class="text-4xl md:text-6xl font-black text-white uppercase tracking-tight italic drop-shadow-2xl leading-[0.95]">
-                            <TranslatedText client:load content={seo.h1} fallback={seo.h1.en} />
+                        <h1 class="text-4xl md:text-6xl font-black text-white uppercase tracking-tight italic drop-shadow-2xl leading-[0.95]">                            <TranslatedText client:load content={seo.h1} fallback={seo.h1.en} />
                         </h1>
 
                         <div class="flex flex-wrap items-center gap-4 mt-6 text-white/80 text-sm">
