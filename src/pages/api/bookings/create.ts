@@ -136,9 +136,19 @@ export const POST: APIRoute = async ({ request }) => {
                 children: children || 0,
             };
             if (duration) bookingRow.duration = duration;
-            const { error } = await supabaseAdmin
+            if (extraPassengers) bookingRow.extra_passengers = extraPassengers;
+
+            let { error } = await supabaseAdmin
                 .from('bookings')
                 .insert([bookingRow]);
+
+            // Fallback while migration-extra-passengers.sql has not been applied yet
+            if (error && bookingRow.extra_passengers !== undefined) {
+                delete bookingRow.extra_passengers;
+                ({ error } = await supabaseAdmin
+                    .from('bookings')
+                    .insert([bookingRow]));
+            }
 
             if (error) {
                 console.error('Supabase booking error:', error.code);
@@ -162,6 +172,7 @@ export const POST: APIRoute = async ({ request }) => {
             tourDate: formattedDate,
             adults: adults || 1,
             children: children || 0,
+            extraPassengers: extraPassengers || 0,
             totalAmount: priceResult.total,
             language: language as 'en' | 'es'
         }).catch(e => console.error('Booking email failed:', e));

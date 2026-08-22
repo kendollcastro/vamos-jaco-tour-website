@@ -56,8 +56,8 @@ function isVehicleSlug(slug: string | null): boolean {
 function getVehicleCap(slug: string | null): number {
     if (!slug) return 1;
     const map: Record<string, number> = {
-        'side-by-side-tour': 4,
-        'jet-ski-tour': 2,
+        'side-by-side-tour': 1,
+        'jet-ski-tour': 1,
         'jaco-atv-adventure': 1,
     };
     return map[slug] || 1;
@@ -149,6 +149,18 @@ export function setExtraPassengers(count: number) {
     bookingStore.set({
         ...current,
         extraPassengers: count,
+    });
+    calculateTotal();
+}
+
+/** Vehicle tours: `machines` = units selected, `extras` = paid additional riders ($20 ea). */
+export function setVehicleBooking(machines: number, extras: number) {
+    const current = bookingStore.get();
+    bookingStore.set({
+        ...current,
+        adults: machines,
+        children: 0,
+        extraPassengers: extras,
     });
     calculateTotal();
 }

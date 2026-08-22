@@ -509,7 +509,12 @@ export default function BookingsTable({ onToast }: { onToast?: (message: string)
                                     </TableCell>
                                     <TableCell className="px-4 py-4 hidden md:table-cell">
                                         <p className="text-gray-900 dark:text-white font-bold leading-tight line-clamp-1">{booking.tour_name}</p>
-                                        <p className="text-gray-500 text-xs font-medium">{booking.adults} adults, {booking.children} kids</p>
+                                        <p className="text-gray-500 text-xs font-medium">
+                                            {booking.adults} adults, {booking.children} kids
+                                            {typeof (booking as any).extra_passengers === 'number' && (booking as any).extra_passengers > 0
+                                                ? `, ${(booking as any).extra_passengers} extra pax`
+                                                : ''}
+                                        </p>
                                     </TableCell>
                                     <TableCell className="px-4 py-4">
                                         <span className="text-gray-900 dark:text-white font-black text-base">${Number(booking.total_amount).toLocaleString()}</span>

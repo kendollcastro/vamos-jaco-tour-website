@@ -562,10 +562,8 @@ import Layout from "../layouts/Layout.astro";
         let total = 0;
         const vehicle = isVehicleTourSlug(state.tourSlug || state.tourTitle);
         if (vehicle) {
-            const capacity = state.tourSlug === 'side-by-side-tour' || (!state.tourSlug && state.tourTitle?.toLowerCase().includes('side-by-side')) ? 4
-                : state.tourSlug === 'jet-ski-tour' || (!state.tourSlug && state.tourTitle?.toLowerCase().includes('jet-ski')) ? 2
-                : 1;
-            const vehicles = Math.max(1, Math.ceil(state.adults / capacity));
+            // `adults` holds the number of machines selected; price is per machine
+            const vehicles = Math.max(1, state.adults || 1);
             total = (vehicles * state.pricePerAdult) + (state.extraPassengers * 20);
         } else {
             total = (state.adults * state.pricePerAdult) + (state.children * state.pricePerChild);
@@ -583,7 +581,9 @@ import Layout from "../layouts/Layout.astro";
             
             let guestsHtml = `${state.adults} Adults, ${state.children} Kids`;
             if (vehicle) {
-                guestsHtml = `${state.adults} ${vehicleName(state.tourSlug || state.tourTitle)}, ${state.extraPassengers || 0} Extra Pax`;
+                const es = language.get() === 'es';
+                const totalPeople = (state.adults || 0) + (state.extraPassengers || 0);
+                guestsHtml = `${state.adults} ${vehicleName(state.tourSlug || state.tourTitle)} · ${totalPeople} ${es ? 'personas' : 'people'}`;
             }
 
             // Update Main Summary List

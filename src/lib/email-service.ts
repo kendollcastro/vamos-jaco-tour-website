@@ -20,6 +20,7 @@ interface BookingEmailData {
     tourDate: string;
     adults: number;
     children: number;
+    extraPassengers?: number;
     totalAmount: number;
     language?: 'en' | 'es';
 }
@@ -53,9 +54,12 @@ export async function sendBookingNotifications(data: BookingEmailData, logoOverr
         { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
     );
 
+    const extrasSuffix = data.extraPassengers && data.extraPassengers > 0
+        ? (isEs ? `, ${data.extraPassengers} pax extra` : `, ${data.extraPassengers} extra pax`)
+        : '';
     const guestsStr = isEs
-        ? `${adults} Adulto${adults !== 1 ? 's' : ''}${children > 0 ? `, ${children} Niño${children !== 1 ? 's' : ''}` : ''}`
-        : `${adults} Adult${adults !== 1 ? 's' : ''}${children > 0 ? `, ${children} Child${children !== 1 ? 'ren' : ''}` : ''}`;
+        ? `${adults} Adulto${adults !== 1 ? 's' : ''}${children > 0 ? `, ${children} Niño${children !== 1 ? 's' : ''}` : ''}${extrasSuffix}`
+        : `${adults} Adult${adults !== 1 ? 's' : ''}${children > 0 ? `, ${children} Child${children !== 1 ? 'ren' : ''}` : ''}${extrasSuffix}`;
 
     try {
         // ── Customer confirmation email ──────────────────────────────

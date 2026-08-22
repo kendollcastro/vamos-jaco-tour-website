@@ -164,7 +164,14 @@ export const POST: APIRoute = async ({ request }) => {
             status: 'pending',
         };
         if (duration) bookingRow.duration = duration;
-        const { error: insertError } = await supabaseAdmin.from('bookings').insert([bookingRow]);
+        if (extraPassengers) bookingRow.extra_passengers = extraPassengers;
+
+        let { error: insertError } = await supabaseAdmin.from('bookings').insert([bookingRow]);
+        // Fallback while migration-extra-passengers.sql has not been applied yet
+        if (insertError && bookingRow.extra_passengers !== undefined) {
+            delete bookingRow.extra_passengers;
+            ({ error: insertError } = await supabaseAdmin.from('bookings').insert([bookingRow]));
+        }
         if (insertError) {
             console.error('Error creating booking in initiate:', insertError);
             return new Response(JSON.stringify({
@@ -186,6 +193,7 @@ export const POST: APIRoute = async ({ request }) => {
             tourDate: formattedDate,
             adults: adults || 1,
             children: children || 0,
+            extraPassengers: extraPassengers || 0,
             totalAmount: priceResult.total,
             language: language as 'en' | 'es'
         }).catch(e => console.error('Booking email failed:', e));

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useStore } from '@nanostores/react';
-import { bookingStore, setBookingDate, setBookingTime, setGuests, setBookingTour, setExtraPassengers } from '../store/booking';
+import { bookingStore, setBookingDate, setBookingTime, setGuests, setBookingTour, setVehicleBooking } from '../store/booking';
 import { Calendar, Users, Clock, CheckCircle, Info, Minus, Plus, ChevronDown, ChevronUp } from 'lucide-react';
 import { language } from '../store';
 import TranslatedText from './TranslatedText';
@@ -136,6 +136,35 @@ export default function BookingSidebar({ tourId, tourSlug, tourTitle, price, dur
     };
 
     const totalPrice = $booking.totalPrice;
+
+    // Vehicle tours: linked steppers — machines on one side, total people on the other.
+    // NOTE: `tourId` may be a Supabase UUID; detection must use the slug.
+    const vSlug = tourSlug || tourId;
+    const isVehicle = ['side-by-side-tour', 'jet-ski-tour', 'jaco-atv-adventure'].includes(vSlug);
+    const isJetSki = vSlug === 'jet-ski-tour';
+    const isBuggy = vSlug === 'side-by-side-tour';
+    const isAtv = vSlug === 'jaco-atv-adventure';
+    const vehicleCfg = isBuggy
+        ? { maxPerUnit: 4, includedPerUnit: 2 }
+        : isJetSki
+            ? { maxPerUnit: 2, includedPerUnit: 1 }
+            : { maxPerUnit: 1, includedPerUnit: 1 };
+    const totalPeople = $booking.adults + $booking.extraPassengers;
+
+    // Changing machines keeps the current group size when possible,
+    // clamped to [machines, machines × maxPerUnit].
+    const handleMachinesChange = (machines: number) => {
+        const people = Math.min(Math.max(totalPeople, machines), machines * vehicleCfg.maxPerUnit);
+        const extras = Math.max(0, people - machines * vehicleCfg.includedPerUnit);
+        setVehicleBooking(machines, extras);
+    };
+
+    // Changing people auto-fits the minimum number of machines needed.
+    const handlePeopleChange = (people: number) => {
+        const machines = Math.max(1, Math.min(Math.ceil(people / vehicleCfg.maxPerUnit), people));
+        const extras = Math.max(0, people - machines * vehicleCfg.includedPerUnit);
+        setVehicleBooking(machines, extras);
+    };
 
     const Stepper = ({ value, min, max, onChange, label }: { value: number, min: number, max: number, onChange: (val: number) => void, label?: string }) => (
         <div className="flex flex-col gap-1 w-full">
@@ -292,32 +321,45 @@ export default function BookingSidebar({ tourId, tourSlug, tourTitle, price, dur
                         <Users className="w-4 h-4" /> <TranslatedText content={{en: "Guests", es: "Huéspedes"}} />
                     </label>
                     
-                    {(tourId === 'side-by-side-tour' || tourId === 'jet-ski-tour' || tourId === 'jaco-atv-adventure') ? (
-                        <div className="grid grid-cols-2 gap-4">
-                            <Stepper 
-                                label={tourId === 'side-by-side-tour' 
-                                    ? ($language === 'en' ? "Buggies (up to 2pax)" : "Buggies (hasta 2p)")
-                                    : tourId === 'jet-ski-tour'
-                                        ? ($language === 'en' ? "Jet Skis (Solo)" : "Jet Skis (Solo)")
-                                        : ($language === 'en' ? "ATVs (Solo)" : "ATVs (Solo)")
-                                }
-                                value={$booking.adults}
-                                min={1}
-                                max={10}
-                                onChange={(val) => setGuests(val, 0)}
-                            />
+                    {isVehicle ? (
+                        <>
+                            <div className="grid grid-cols-2 gap-4">
+                                <Stepper 
+                                    label={isBuggy 
+                                        ? ($language === 'en' ? "Buggies" : "Buggies")
+                                        : isJetSki
+                                            ? ($language === 'en' ? "Jet Skis" : "Jet Skis")
+                                            : ($language === 'en' ? "ATVs (Solo)" : "ATVs (Solo)")
+                                    }
+                                    value={$booking.adults}
+                                    min={1}
+                                    max={10}
+                                    onChange={handleMachinesChange}
+                                />
 
-                            <Stepper 
-                                label={tourId === 'side-by-side-tour' 
-                                    ? ($language === 'en' ? "Extra Pax (3rd/4th)" : "Pax Extra (3ro/4to)")
-                                    : ($language === 'en' ? "Shared Pax (2nd)" : "Acompañante (2do)")
-                                }
-                                value={$booking.extraPassengers}
-                                min={0}
-                                max={tourId === 'side-by-side-tour' ? $booking.adults * 2 : $booking.adults}
-                                onChange={(val) => setExtraPassengers(val)}
-                            />
-                        </div>
+                                {!isAtv && (
+                                    <Stepper 
+                                        label={$language === 'en' ? "People" : "Personas"}
+                                        value={totalPeople}
+                                        min={1}
+                                        max={$booking.adults * vehicleCfg.maxPerUnit}
+                                        onChange={handlePeopleChange}
+                                    />
+                                )}
+                            </div>
+                            {!isAtv && (
+                                <p className="text-[10px] text-gray-500 leading-tight">
+                                    {$language === 'en'
+                                        ? (isJetSki
+                                            ? `Up to ${vehicleCfg.maxPerUnit} people per jet ski. The 2nd rider pays $20. Need more people? Add more jet skis.`
+                                            : `Up to ${vehicleCfg.maxPerUnit} people per buggy (2 included). Riders 3 & 4 pay $20 each.`)
+                                        : (isJetSki
+                                            ? `Hasta ${vehicleCfg.maxPerUnit} personas por jet ski. El 2do pasajero paga $20. ¿Más personas? Agrega más jet skis.`
+                                            : `Hasta ${vehicleCfg.maxPerUnit} personas por buggy (2 incluidas). El 3ro y 4to pagan $20 c/u.`)
+                                    }
+                                </p>
+                            )}
+                        </>
                     ) : (
                         <div className="grid grid-cols-2 gap-4">
                             <Stepper 
@@ -341,7 +383,7 @@ export default function BookingSidebar({ tourId, tourSlug, tourTitle, price, dur
                     )}
                 </div>
                 
-                {(tourId === 'side-by-side-tour' || tourId === 'jet-ski-tour' || tourId === 'jaco-atv-adventure') && (
+                {isVehicle && (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-2">
                         <div className="bg-primary/5 border border-primary/20 rounded-xl p-3 text-[10px] text-gray-400">
                             <div className="flex gap-2">
@@ -351,9 +393,11 @@ export default function BookingSidebar({ tourId, tourSlug, tourTitle, price, dur
                                         {$language === 'en' ? 'Occupancy' : 'Capacidad'}
                                     </p>
                                     <p className="leading-tight">
-                                        {tourId === 'side-by-side-tour' 
-                                            ? ($language === 'en' ? 'Base covers 2pax. Extra pax (max 4) $20 ea.' : 'Base incluye 2p. Pax extra (máx 4) $20 c/u.')
-                                            : ($language === 'en' ? 'Base covers 1px. 2nd pax costs $20.' : 'Base incluye 1p. 2do pax cuesta $20.')
+                                        {isBuggy 
+                                            ? ($language === 'en' ? 'Price is per buggy. Base covers 2pax. Extra pax (max 4) $20 ea.' : 'El precio es por buggy. Base incluye 2p. Pax extra (máx 4) $20 c/u.')
+                                            : isJetSki
+                                                ? ($language === 'en' ? 'Price is per jet ski (1 rider included). Add a shared 2nd rider for $20.' : 'El precio es por jet ski (incluye 1 piloto). Agregue un 2do pasajero por $20.')
+                                                : ($language === 'en' ? 'Price is per ATV (1 rider included).' : 'El precio es por ATV (incluye 1 piloto).')
                                         }
                                     </p>
                                 </div>
@@ -368,7 +412,7 @@ export default function BookingSidebar({ tourId, tourSlug, tourTitle, price, dur
                                         {$language === 'en' ? 'Security Hold' : 'Depósito'}
                                     </p>
                                     <p className="leading-tight">
-                                        {tourId === 'jet-ski-tour'
+                                        {isJetSki
                                             ? ($language === 'en'
                                                 ? `$${Math.max(1, $booking.adults) * 500} credit card hold ($${Math.max(1, $booking.adults)} × $500 per jet ski). Released in 24h as per bank policy.`
                                                 : `Hold de $${Math.max(1, $booking.adults) * 500} en tarjeta ($${Math.max(1, $booking.adults)} × $500 por jetski). Liberación en 24h según banco.`)

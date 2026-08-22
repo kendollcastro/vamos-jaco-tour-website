@@ -16,11 +16,16 @@ const TOUR_PRICES: Record<string, { adultPrice: number; childPrice: number }> = 
 
 const VEHICLE_TOUR_SLUGS = ['side-by-side-tour', 'jet-ski-tour', 'jaco-atv-adventure'];
 
-/** How many passengers fit in one vehicle/machine for each vehicle tour. */
+/**
+ * Units per booking for each vehicle tour. The `adults` field stores the
+ * number of machines selected (1 driver each), so capacity is always 1 and
+ * pricing is strictly per machine. Extra riders are charged via
+ * `extraPassengers` ($20 each).
+ */
 const VEHICLE_CAPACITY: Record<string, number> = {
     'jaco-atv-adventure': 1,
-    'jet-ski-tour': 2,
-    'side-by-side-tour': 4,
+    'jet-ski-tour': 1,
+    'side-by-side-tour': 1,
 };
 
 export function isVehicleTour(tourId: string): boolean {
