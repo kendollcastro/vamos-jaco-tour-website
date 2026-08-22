@@ -151,19 +151,19 @@ export default function BookingSidebar({ tourId, tourSlug, tourTitle, price, dur
             : { maxPerUnit: 1, includedPerUnit: 1 };
     const totalPeople = $booking.adults + $booking.extraPassengers;
 
-    // Changing machines keeps the current group size when possible,
-    // clamped to [machines, machines × maxPerUnit].
+    // Each stepper is independent — no auto-copying in either direction.
+    // Only hard rule: people cannot exceed machines × maxPerUnit.
     const handleMachinesChange = (machines: number) => {
-        const people = Math.min(Math.max(totalPeople, machines), machines * vehicleCfg.maxPerUnit);
+        // If the group no longer fits, cap people at the new capacity.
+        const people = Math.min(totalPeople, machines * vehicleCfg.maxPerUnit);
         const extras = Math.max(0, people - machines * vehicleCfg.includedPerUnit);
         setVehicleBooking(machines, extras);
     };
 
-    // Changing people auto-fits the minimum number of machines needed.
     const handlePeopleChange = (people: number) => {
-        const machines = Math.max(1, Math.min(Math.ceil(people / vehicleCfg.maxPerUnit), people));
-        const extras = Math.max(0, people - machines * vehicleCfg.includedPerUnit);
-        setVehicleBooking(machines, extras);
+        // The stepper's max already prevents exceeding capacity; machines stay as chosen.
+        const extras = Math.max(0, people - $booking.adults * vehicleCfg.includedPerUnit);
+        setVehicleBooking($booking.adults, extras);
     };
 
     const Stepper = ({ value, min, max, onChange, label }: { value: number, min: number, max: number, onChange: (val: number) => void, label?: string }) => (
@@ -348,16 +348,25 @@ export default function BookingSidebar({ tourId, tourSlug, tourTitle, price, dur
                                 )}
                             </div>
                             {!isAtv && (
-                                <p className="text-[10px] text-gray-500 leading-tight">
-                                    {$language === 'en'
-                                        ? (isJetSki
-                                            ? `Up to ${vehicleCfg.maxPerUnit} people per jet ski. The 2nd rider pays $20. Need more people? Add more jet skis.`
-                                            : `Up to ${vehicleCfg.maxPerUnit} people per buggy (2 included). Riders 3 & 4 pay $20 each.`)
-                                        : (isJetSki
-                                            ? `Hasta ${vehicleCfg.maxPerUnit} personas por jet ski. El 2do pasajero paga $20. ¿Más personas? Agrega más jet skis.`
-                                            : `Hasta ${vehicleCfg.maxPerUnit} personas por buggy (2 incluidas). El 3ro y 4to pagan $20 c/u.`)
-                                    }
-                                </p>
+                                <>
+                                    <p className="text-[10px] text-gray-500 leading-tight">
+                                        {$language === 'en'
+                                            ? (isJetSki
+                                                ? `Up to ${vehicleCfg.maxPerUnit} people per jet ski. The 2nd rider pays $20. Need more people? Add more jet skis.`
+                                                : `Up to ${vehicleCfg.maxPerUnit} people per buggy (2 included). Riders 3 & 4 pay $20 each.`)
+                                            : (isJetSki
+                                                ? `Hasta ${vehicleCfg.maxPerUnit} personas por jet ski. El 2do pasajero paga $20. ¿Más personas? Agrega más jet skis.`
+                                                : `Hasta ${vehicleCfg.maxPerUnit} personas por buggy (2 incluidas). El 3ro y 4to pagan $20 c/u.`)
+                                        }
+                                    </p>
+                                    {totalPeople < $booking.adults && (
+                                        <p className="text-[10px] text-gray-400 leading-tight">
+                                            {$language === 'en' 
+                                                ? 'Note: more machines selected than people.' 
+                                                : 'Nota: hay más máquinas que personas.'}
+                                        </p>
+                                    )}
+                                </>
                             )}
                         </>
                     ) : (
