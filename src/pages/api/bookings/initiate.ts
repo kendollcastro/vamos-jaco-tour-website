@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import { supabaseAdmin } from '../../../lib/supabase';
 import { sendBookingNotifications } from '../../../lib/email-service';
 import { calculateServerPrice, validatePrice, isVehicleTour, getVehicleCapacity } from '../../../lib/price-calculator';
+import { fetchBlockedRanges, isDateBlocked } from '../../../lib/blocked-dates';
 import { sanitize, sanitizeEmail, sanitizePhone } from '../../../lib/sanitize';
 
 export const prerender = false;
@@ -77,6 +78,22 @@ export const POST: APIRoute = async ({ request }) => {
                 message: 'Price verification failed' 
             }), { 
                 status: 400,
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
+
+        // Blocked dates (closures, e.g. vacations) — reject bookings inside any range
+        const requestedDateISO = new Date(date).toISOString().split('T')[0];
+        const blockedRanges = await fetchBlockedRanges(supabaseAdmin);
+        const blocked = blockedRanges.find(r => isDateBlocked(requestedDateISO, [r]));
+        if (blocked) {
+            return new Response(JSON.stringify({
+                success: false,
+                message: language === 'es'
+                    ? `Lo sentimos, estamos cerrados del ${blocked.start_date} al ${blocked.end_date}${blocked.reason ? ` (${blocked.reason})` : ''}. Por favor elige otra fecha.`
+                    : `We're closed from ${blocked.start_date} to ${blocked.end_date}${blocked.reason ? ` (${blocked.reason})` : ''}. Please choose another date.`
+            }), {
+                status: 409,
                 headers: { 'Content-Type': 'application/json' }
             });
         }

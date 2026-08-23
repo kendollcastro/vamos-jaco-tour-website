@@ -3,6 +3,8 @@ import { useStore } from '@nanostores/react';
 import { bookingStore, setBookingDate, setBookingTime, setGuests, setBookingTour, setVehicleBooking } from '../store/booking';
 import { Calendar, Users, Clock, CheckCircle, Info, Minus, Plus, ChevronDown, ChevronUp } from 'lucide-react';
 import { language } from '../store';
+import { supabase } from '../lib/supabase';
+import { fetchBlockedRanges, isDateBlocked, nextBlockedRange, localDateISO, type BlockedRange } from '../lib/blocked-dates';
 import TranslatedText from './TranslatedText';
 
 interface PricingOption {
@@ -25,6 +27,7 @@ export default function BookingSidebar({ tourId, tourSlug, tourTitle, price, dur
     const [selectedDurationIdx, setSelectedDurationIdx] = useState(0);
     const [durationOpen, setDurationOpen] = useState(false);
     const [DatePickerComp, setDatePickerComp] = useState<any>(null);
+    const [blockedRanges, setBlockedRanges] = useState<BlockedRange[]>([]);
 
     useEffect(() => {
         import('react-datepicker').then(mod => {
@@ -32,6 +35,21 @@ export default function BookingSidebar({ tourId, tourSlug, tourTitle, price, dur
             setDatePickerComp(() => mod.default);
         }).catch(e => console.error('Failed to load react-datepicker:', e));
     }, []);
+
+    // Closures (vacations, holidays) — days inside a range cannot be selected
+    useEffect(() => {
+        fetchBlockedRanges(supabase).then(setBlockedRanges);
+    }, []);
+
+    const upcomingBlock = nextBlockedRange(blockedRanges);
+
+    const formatDateRange = (r: BlockedRange) => {
+        const locale = $language === 'es' ? 'es-ES' : 'en-US';
+        const opts: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short', year: 'numeric' };
+        const start = new Date(r.start_date + 'T12:00:00').toLocaleDateString(locale, opts);
+        const end = new Date(r.end_date + 'T12:00:00').toLocaleDateString(locale, opts);
+        return start === end ? start : `${start} → ${end}`;
+    };
 
     const rawOptions = durationOptions && durationOptions.length > 0
         ? durationOptions
@@ -252,6 +270,7 @@ export default function BookingSidebar({ tourId, tourSlug, tourTitle, price, dur
                                     if (date) setBookingDate(date);
                                 }}
                                 minDate={new Date()}
+                                filterDate={(date: Date) => !isDateBlocked(localDateISO(date), blockedRanges)}
                                 placeholderText="Select a date"
                                 className="w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors cursor-pointer shadow-inner"
                                 wrapperClassName="w-full"
@@ -265,6 +284,16 @@ export default function BookingSidebar({ tourId, tourSlug, tourTitle, price, dur
                             />
                         )}
                     </div>
+                    {upcomingBlock && (
+                        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-2 flex items-center gap-2 mt-1">
+                            <Info className="w-3 h-3 text-red-400 shrink-0" />
+                            <span className="text-[10px] text-gray-400">
+                                {$language === 'en'
+                                    ? `Closed ${formatDateRange(upcomingBlock)}${upcomingBlock.reason ? ` — ${upcomingBlock.reason}` : ''}`
+                                    : `Cerrados ${formatDateRange(upcomingBlock)}${upcomingBlock.reason ? ` — ${upcomingBlock.reason}` : ''}`}
+                            </span>
+                        </div>
+                    )}
                     {!$booking.date && (
                         <div className="bg-primary/10 border border-primary/20 rounded-lg p-2 flex items-center gap-2 mt-1">
                             <Info className="w-3 h-3 text-primary" />

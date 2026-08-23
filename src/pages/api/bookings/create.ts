@@ -3,6 +3,7 @@ import { supabaseAdmin } from '../../../lib/supabase';
 import { sendBookingNotifications } from '../../../lib/email-service';
 import { checkRateLimit, getClientIP } from '../../../lib/rate-limit';
 import { calculateServerPrice, validatePrice } from '../../../lib/price-calculator';
+import { fetchBlockedRanges, isDateBlocked } from '../../../lib/blocked-dates';
 import { sanitize, sanitizeEmail, sanitizePhone } from '../../../lib/sanitize';
 
 export const POST: APIRoute = async ({ request }) => {
@@ -103,6 +104,21 @@ export const POST: APIRoute = async ({ request }) => {
 
         // Format date to YYYY-MM-DD safely
         const formattedDate = new Date(date).toISOString().split('T')[0];
+
+        // Blocked dates (closures, e.g. vacations) — reject bookings inside any range
+        const blockedRanges = await fetchBlockedRanges(supabaseAdmin);
+        const blocked = blockedRanges.find(r => isDateBlocked(formattedDate, [r]));
+        if (blocked) {
+            return new Response(JSON.stringify({
+                success: false,
+                message: language === 'es'
+                    ? `Lo sentimos, estamos cerrados del ${blocked.start_date} al ${blocked.end_date}${blocked.reason ? ` (${blocked.reason})` : ''}. Por favor elige otra fecha.`
+                    : `We're closed from ${blocked.start_date} to ${blocked.end_date}${blocked.reason ? ` (${blocked.reason})` : ''}. Please choose another date.`
+            }), {
+                status: 409,
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
 
         // Generate UUID on the server
         const generatedBookingId = crypto.randomUUID();

@@ -6,8 +6,10 @@ import { adminTranslations } from '../../lib/admin-translations';
 import { cardClasses } from '../../lib/admin-design-tokens';
 import BookingDetailsModal from './BookingDetailsModal';
 import AddBookingModal from './AddBookingModal';
+import BlockedDatesModal from './BlockedDatesModal';
 import { Button } from '../ui/button';
-import { ChevronLeft, ChevronRight, Plus, X, Clock, Users } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, X, Clock, Users, CalendarX } from 'lucide-react';
+import { fetchBlockedRanges, isDateBlocked, localDateISO, type BlockedRange } from '../../lib/blocked-dates';
 
 interface Booking {
     id: string;
@@ -32,6 +34,7 @@ interface CalendarDay {
     date: Date;
     isCurrentMonth: boolean;
     isToday: boolean;
+    isBlocked: boolean;
     bookings: Booking[];
 }
 
@@ -67,6 +70,16 @@ export default function CalendarView() {
     const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
     const [showAddModal, setShowAddModal] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
+    const [showBlockedModal, setShowBlockedModal] = useState(false);
+    const [blockedRanges, setBlockedRanges] = useState<BlockedRange[]>([]);
+
+    const loadBlockedRanges = useCallback(() => {
+        fetchBlockedRanges(supabase).then(setBlockedRanges);
+    }, []);
+
+    useEffect(() => {
+        loadBlockedRanges();
+    }, [loadBlockedRanges]);
 
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
@@ -176,6 +189,7 @@ export default function CalendarView() {
                 date,
                 isCurrentMonth: false,
                 isToday: date.getTime() === today.getTime(),
+                isBlocked: isDateBlocked(localDateISO(date), blockedRanges),
                 bookings: [],
             });
         }
@@ -190,6 +204,7 @@ export default function CalendarView() {
                 date,
                 isCurrentMonth: true,
                 isToday: date.getTime() === today.getTime(),
+                isBlocked: isDateBlocked(localDateISO(date), blockedRanges),
                 bookings: dayBookings,
             });
         }
@@ -202,6 +217,7 @@ export default function CalendarView() {
                 date,
                 isCurrentMonth: false,
                 isToday: date.getTime() === today.getTime(),
+                isBlocked: isDateBlocked(localDateISO(date), blockedRanges),
                 bookings: [],
             });
         }
@@ -254,6 +270,14 @@ export default function CalendarView() {
                     </Button>
                 </div>
                 <div className="flex items-center gap-2">
+                    <Button
+                        variant="outline"
+                        onClick={() => setShowBlockedModal(true)}
+                        className="px-3 h-10 rounded-xl text-xs font-bold gap-1.5 text-red-500 border-red-200 dark:border-red-500/30 hover:bg-red-50 dark:hover:bg-red-500/10"
+                    >
+                        <CalendarX className="w-4 h-4" />
+                        {lang === 'en' ? 'Block dates' : 'Bloquear fechas'}
+                    </Button>
                     <Button
                         variant="outline"
                         size="icon"
@@ -316,6 +340,7 @@ export default function CalendarView() {
                                 transition-all duration-200 hover:bg-gray-50 dark:hover:bg-white/[0.02] focus:outline-none focus:ring-2 focus:ring-primary focus:z-10
                                 ${!day.isCurrentMonth ? 'opacity-30' : ''}
                                 ${day.isToday ? 'bg-primary/5 dark:bg-primary/10' : ''}
+                                ${day.isBlocked ? '!bg-red-500/10 dark:!bg-red-500/15 ring-1 ring-inset ring-red-500/30' : ''}
                             `}
                         >
                             <div className="flex items-center justify-between mb-1">
@@ -323,7 +348,9 @@ export default function CalendarView() {
                                     text-sm font-bold w-7 h-7 rounded-lg flex items-center justify-center
                                     ${day.isToday 
                                         ? 'bg-primary text-white' 
-                                        : 'text-gray-700 dark:text-gray-300'
+                                        : day.isBlocked
+                                            ? 'text-red-500 dark:text-red-400'
+                                            : 'text-gray-700 dark:text-gray-300'
                                     }
                                 `}>
                                     {day.date.getDate()}
@@ -350,6 +377,12 @@ export default function CalendarView() {
                                     </Button>
                                 )}
                             </div>
+                            {day.isBlocked && (
+                                <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-wider text-red-500 dark:text-red-400">
+                                    <CalendarX className="w-2.5 h-2.5" />
+                                    {lang === 'en' ? 'Closed' : 'Cerrado'}
+                                </span>
+                            )}
                             <div className="space-y-1 overflow-y-auto max-h-[80px]">
                                 {day.bookings.slice(0, 3).map((booking) => (
                                     <div
@@ -463,6 +496,13 @@ export default function CalendarView() {
                     prefillDate={selectedDate.toISOString().split('T')[0]}
                 />
             )}
+
+            {/* Blocked Dates Modal */}
+            <BlockedDatesModal
+                isOpen={showBlockedModal}
+                onClose={() => setShowBlockedModal(false)}
+                onChanged={loadBlockedRanges}
+            />
         </div>
     );
 }
