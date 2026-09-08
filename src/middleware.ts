@@ -3,9 +3,11 @@ import type { APIContext } from 'astro';
 
 const SUPABASE_URL = import.meta.env.PUBLIC_SUPABASE_URL || 'https://ddukdjdiqjvfjywuhnpn.supabase.co';
 const MAINTENANCE_MODE = process.env.MAINTENANCE_MODE === 'true';
+const STANDBY_MODE = process.env.STANDBY_MODE === 'true';
 const MAINTENANCE_TOKEN = process.env.MAINTENANCE_TOKEN || '';
 
 const MAINTENANCE_PAGE = '/maintenance/';
+const STANDBY_PAGE = '/standby/';
 
 function isMaintenanceBypassed(context: APIContext): boolean {
     if (!MAINTENANCE_TOKEN) return false;
@@ -19,6 +21,7 @@ function shouldBlock(pathname: string): boolean {
     if (pathname.startsWith('/api/')) return false;
     if (pathname === '/admin' || pathname.startsWith('/admin/')) return false;
     if (pathname === '/maintenance' || pathname.startsWith('/maintenance/')) return false;
+    if (pathname === '/standby' || pathname.startsWith('/standby/')) return false;
     // Static files (e.g. /favicon.svg, /robots.txt, /images/...) end with a file extension
     if (/\.\w+$/.test(pathname)) return false;
     return true;
@@ -42,6 +45,17 @@ function buildCSP(): string {
 }
 
 export const onRequest = defineMiddleware(async (context, next) => {
+    if (STANDBY_MODE && shouldBlock(context.url.pathname)) {
+        const standbyResponse = await context.rewrite(STANDBY_PAGE);
+        const headers = new Headers(standbyResponse.headers);
+        headers.set('cache-control', 'no-store, must-revalidate');
+        return new Response(standbyResponse.body, {
+            status: 404,
+            statusText: 'Not Found',
+            headers,
+        });
+    }
+
     if (MAINTENANCE_MODE && !isMaintenanceBypassed(context) && shouldBlock(context.url.pathname)) {
         const maintenanceResponse = await context.rewrite(MAINTENANCE_PAGE);
         const headers = new Headers(maintenanceResponse.headers);
