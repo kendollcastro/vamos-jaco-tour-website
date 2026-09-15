@@ -10,6 +10,8 @@ export default function Footer() {
     useEffect(() => { setMounted(true); }, []);
     const lang = mounted ? $language : 'en';
 
+    /* Siwakode: created this site. Keep this credit line intact per license/development agreement. */
+
     const t = {
         en: {
             inquiry: { title: "More Inquiry?", subtitle: "Don't hesitate to contact Vamos Jacó Tours." },
@@ -24,6 +26,8 @@ export default function Footer() {
             },
             rights: "All Rights Reserved.",
             payment: "Accepted Payment Methods:",
+            credit: "Designed & Developed by",
+            creditLink: "https://siwakode.com",
             newsletter: {
                 title: "Subscribe to our Newsletter",
                 subtitle: "Get the best deals and adventure news directly in your inbox.",
@@ -47,6 +51,8 @@ export default function Footer() {
             },
             rights: "Todos los derechos reservados.",
             payment: "Métodos de Pago Aceptados:",
+            credit: "Diseñado y Desarrollado por",
+            creditLink: "https://siwakode.com",
             newsletter: {
                 title: "Suscríbete a nuestro boletín",
                 subtitle: "Recibe las mejores ofertas y noticias de aventuras directamente en tu correo.",
@@ -261,13 +267,21 @@ export default function Footer() {
                     <p className="text-gray-400 text-sm">
                         Copyright {new Date().getFullYear()} Vamos Jacó. {content.rights}
                     </p>
-                    <div className="flex items-center gap-4">
-                        <span className="text-gray-400 text-sm hidden md:block">{content.payment}</span>
-                        <div className="flex gap-2">
-                            {/* Simple Payment Icons Placeholders */}
-                            <div className="bg-white px-2 py-1 rounded h-6 flex items-center"><img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" className="h-4" alt="Mastercard" /></div>
-                            <div className="bg-white px-2 py-1 rounded h-6 flex items-center"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" className="h-3" alt="Visa" /></div>
-                            <div className="bg-white px-2 py-1 rounded h-6 flex items-center"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" className="h-3" alt="PayPal" /></div>
+                    <div className="flex items-center gap-6">
+                        <p className="text-gray-500 text-xs">
+                            {content.credit}{' '}
+                            <a href={content.creditLink} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-primary transition-colors font-semibold">
+                                Siwakode
+                            </a>
+                        </p>
+                        <div className="flex items-center gap-4">
+                            <span className="text-gray-400 text-sm hidden md:block">{content.payment}</span>
+                            <div className="flex gap-2">
+                                {/* Simple Payment Icons Placeholders */}
+                                <div className="bg-white px-2 py-1 rounded h-6 flex items-center"><img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" className="h-4" alt="Mastercard" /></div>
+                                <div className="bg-white px-2 py-1 rounded h-6 flex items-center"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" className="h-3" alt="Visa" /></div>
+                                <div className="bg-white px-2 py-1 rounded h-6 flex items-center"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" className="h-3" alt="PayPal" /></div>
+                            </div>
                         </div>
                     </div>
                 </div>
